@@ -3,7 +3,7 @@ from typing import List
 
 import requests
 from sqlmodel import Session, select
-from tqdm import tqdm
+from tqdm import tqdm  # type: ignore
 
 from model.Database import Database
 from model.Reviews import Reviews
