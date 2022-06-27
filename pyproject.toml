@@ -28,6 +28,7 @@ profile = "black"
 
 # https://github.com/tiangolo/sqlmodel/blob/main/pyproject.toml
 [tool.mypy]
+python_version = "3.10"
 # --strict
 disallow_any_generics = true
 disallow_subclassing_any = true
@@ -43,3 +44,4 @@ warn_return_any = true
 implicit_reexport = false
 strict_equality = true
 # --strict end
+

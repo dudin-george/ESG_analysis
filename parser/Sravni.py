@@ -17,14 +17,12 @@ class Sravni:
     bank_list: List[SravniBankInfo] = []
     BASE_URL: str = "sravni.ru"
 
-    def __init__(self):
+    def __init__(self) -> None:
         with Session(self.database.get_engine()) as session:
             self.bank_list = session.exec(select(SravniBankInfo)).all()
             if len(self.bank_list) == 0:
                 self.get_bank_list()
-            self.source = session.exec(
-                select(Source).where(Source.site == self.BASE_URL)
-            ).one()
+            self.source = session.exec(select(Source).where(Source.site == self.BASE_URL)).one()
 
     def get_bank_list(self) -> None:
         print("get")

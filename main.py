@@ -3,7 +3,7 @@ from parser.Sravni import Sravni
 from model.Database import Database
 
 
-def main():
+def main() -> None:
     Database()
 
     sravni_parser = Sravni()
