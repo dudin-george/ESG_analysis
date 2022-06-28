@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: example
       POSTGRES_DB: database
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - /ESGdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 

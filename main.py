@@ -1,12 +1,14 @@
-from parser.SravniReviews import SravniReviews
-import schedule
-from model.Database import Database
 import threading
+from parser.SravniReviews import SravniReviews
 from typing import Callable
+
+import schedule  # type: ignore
+
 from misc.Logger import get_logger
+from model.Database import Database
 
 
-def run_threaded(job_func: Callable) -> None:
+def run_threaded(job_func: Callable[[None], None]) -> None:
     job_thread = threading.Thread(target=job_func)
     job_thread.start()
 

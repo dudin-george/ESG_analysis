@@ -1,18 +1,16 @@
-import datetime
+from datetime import datetime
 from time import sleep
 from typing import List
 
 import requests
 from sqlmodel import Session, select
-from tqdm import tqdm  # type: ignore
 
+from misc import Logger
 from model.Banks import Banks
 from model.Database import Database
 from model.Reviews import Reviews
 from model.Sourse import Source
 from model.SravniBankInfo import SravniBankInfo
-from misc import Logger
-from datetime import datetime
 
 
 class SravniReviews:
@@ -63,12 +61,7 @@ class SravniReviews:
             bank = Banks(bank_name=names["short"], bank_full_name=names["full"], bank_official_name=names["official"])
             bank_list.append(bank)
             sravni_bank_list.append(
-                SravniBankInfo(
-                    sravni_id=item["_id"],
-                    sravni_old_id=item["oldId"],
-                    alias=item["alias"],
-                    bank_id=bank.id
-                )
+                SravniBankInfo(sravni_id=item["_id"], sravni_old_id=item["oldId"], alias=item["alias"], bank_id=bank.id)
             )
 
         with Session(self.engine) as session:
@@ -77,7 +70,7 @@ class SravniReviews:
             self.logger.info("create main table for banks")
 
             for i in range(len(bank_list)):
-                sravni_bank_list[i].bank_id = bank_list[i].id
+                sravni_bank_list[i].bank_id = bank_list[i].id  # type: ignore
             session.add_all(sravni_bank_list)
             session.commit()
             self.logger.info("commit banks to db")
@@ -88,8 +81,8 @@ class SravniReviews:
             self.source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
         last_date = self.source.last_checked if self.source.last_checked is not None else datetime.min
 
-        for bank_info in tqdm(self.bank_list):
-            self.logger.info(f"download reviews for {bank_info.alias}")
+        for i, bank_info in enumerate(self.bank_list):
+            self.logger.info(f"[{i}/{len(self.bank_list)}] download reviews for {bank_info.alias}")
             reviews = requests.get(
                 "https://www.sravni.ru/proxy-reviews/reviews?locationRoute=&newIds=true&orderBy=withRates&pageIndex"
                 f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&tag"

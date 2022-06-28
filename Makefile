@@ -20,12 +20,10 @@ lint:
 
 .PHONY: format
 format:
+	flake8 .
 	$(isort)
 	$(black)
-
-.PHONY: mypy
-mypy:
 	mypy .
 
 .PHONY: all
-all: format mypy
+all: format

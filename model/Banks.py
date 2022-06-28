@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlmodel import SQLModel, Field, Column, VARCHAR
+from sqlmodel import VARCHAR, Column, Field, SQLModel
 
 
 class Banks(SQLModel, table=True):

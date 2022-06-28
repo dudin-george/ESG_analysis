@@ -11,7 +11,7 @@ class Reviews(SQLModel, table=True):
     date: datetime
     title: str
     text: str
-    bank_id: str = Field(default=None, foreign_key="banks.id", sa_column=Column("bank_id", Integer, nullable=True))
+    bank_id: int = Field(default=None, foreign_key="banks.id", sa_column=Column("bank_id", Integer, nullable=True))
     rating: int = Field(sa_column=Column("rating", Integer, nullable=True))
     comments_num: int = Field(ge=0, default=0)
     user_id: Optional[str]

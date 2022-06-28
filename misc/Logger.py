@@ -1,5 +1,4 @@
 import logging
-from typing import Literal
 
 
 class Logger(logging.Formatter):
@@ -25,7 +24,7 @@ class Logger(logging.Formatter):
         return formatter.format(record)
 
 
-def get_logger(name: str, level: Literal[0, 10, 20, 30, 40, 50] = logging.DEBUG) -> logging.Logger:
+def get_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
