@@ -6,6 +6,7 @@ import requests
 from sqlmodel import Session, select
 from tqdm import tqdm  # type: ignore
 
+from model.Banks import Banks
 from model.Database import Database
 from model.Reviews import Reviews
 from model.Sourse import Source
@@ -19,14 +20,14 @@ class SravniReviews:
     database = Database()
     engine = database.get_engine()
     bank_list: List[SravniBankInfo] = []
-    BASE_URL: str = "sravni.ru"
+    BASE_URL: str = "sravni.ru reviews"
 
     def __init__(self) -> None:
         with Session(self.database.get_engine()) as session:
             self.bank_list = session.exec(select(SravniBankInfo)).all()
             if len(self.bank_list) == 0:
                 self.get_bank_list()
-            self.source = session.exec(select(Source).where(Source.site == self.BASE_URL)).one()
+            self.source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
 
     def get_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -55,18 +56,28 @@ class SravniReviews:
         )
         self.logger.info("finish download bank list")
 
+        sravni_bank_list = []
         bank_list = []
         for item in r.json()["items"]:
-            bank_list.append(
+            names = item["name"]
+            bank = Banks(bank_name=names["short"], bank_full_name=names["full"], bank_official_name=names["official"])
+            bank_list.append(bank)
+            sravni_bank_list.append(
                 SravniBankInfo(
-                    id=item["_id"],
-                    bank_name=item["name"]["accusative"],
+                    sravni_id=item["_id"],
+                    sravni_old_id=item["oldId"],
                     alias=item["alias"],
+                    bank_id=bank.id
                 )
             )
 
         with Session(self.engine) as session:
             session.add_all(bank_list)
+            session.commit()
+
+            for bank, sravni_bank in zip(bank_list, sravni_bank_list):
+                sravni_bank.bank_id = bank.id
+            session.add_all(sravni_bank_list)
             session.commit()
             self.logger.info("commit banks to db")
             self.bank_list = session.exec(select(SravniBankInfo)).all()
@@ -75,10 +86,10 @@ class SravniReviews:
         last_date = self.source.last_checked if self.source.last_checked is not None else datetime.min
 
         for bank_info in tqdm(self.bank_list):
-            self.logger.info(f"download reviews for {bank_info.bank_name}")
+            self.logger.info(f"download reviews for {bank_info.alias}")
             reviews = requests.get(
                 "https://www.sravni.ru/proxy-reviews/reviews?locationRoute=&newIds=true&orderBy=withRates&pageIndex"
-                f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.id}&reviewObjectType=bank&tag"
+                f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&tag"
             ).json()
             if "items" in reviews.keys():
                 reviews_array = reviews["items"]
@@ -87,7 +98,8 @@ class SravniReviews:
                     url = f"https://www.sravni.ru/bank/{bank_info.alias}/otzyvy/{review['id']}"
                     reviews.append(
                         Reviews(
-                            source=self.source.id,
+                            source_id=self.source.id,
+                            bank_id=bank_info.bank_id,
                             link=url,
                             date=review["date"],
                             title=review["title"],

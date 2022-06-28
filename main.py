@@ -18,7 +18,9 @@ def main() -> None:
     get_logger("schedule")
 
     sravni_parser = SravniReviews()
-    schedule.every(10).minute.do(run_threaded, sravni_parser.parse)
+    sravni_parser.parse()  # run one time for init
+
+    schedule.every().minute.do(run_threaded, sravni_parser.parse)
 
     while True:
         schedule.run_pending()
