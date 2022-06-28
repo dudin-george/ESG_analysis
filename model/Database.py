@@ -7,7 +7,7 @@ from model.Sourse import Source
 
 class Database:
     __DATABASE_URL = os.environ["CONNECTION"]
-    __engine = create_engine(__DATABASE_URL, echo=True)
+    __engine = create_engine(__DATABASE_URL)  # echo=True
 
     def __init__(self) -> None:
         SQLModel.metadata.create_all(self.__engine)

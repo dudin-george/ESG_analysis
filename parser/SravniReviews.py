@@ -1,3 +1,4 @@
+import datetime
 from time import sleep
 from typing import List
 
@@ -9,10 +10,13 @@ from model.Database import Database
 from model.Reviews import Reviews
 from model.Sourse import Source
 from model.SravniBankInfo import SravniBankInfo
+from misc import Logger
+from datetime import datetime
 
 
-class Sravni:
-    database: Database = Database()
+class SravniReviews:
+    logger = Logger.get_logger(__name__)
+    database = Database()
     engine = database.get_engine()
     bank_list: List[SravniBankInfo] = []
     BASE_URL: str = "sravni.ru"
@@ -25,7 +29,8 @@ class Sravni:
             self.source = session.exec(select(Source).where(Source.site == self.BASE_URL)).one()
 
     def get_bank_list(self) -> None:
-        print("get")
+        self.logger.info("start download bank list")
+        self.logger.info("send request to https://www.sravni.ru/proxy-organizations/banks/list")
         r = requests.post(
             "https://www.sravni.ru/proxy-organizations/banks/list",
             data={
@@ -48,7 +53,8 @@ class Sravni:
                 "isMainList": True,
             },
         )
-        print("load get")
+        self.logger.info("finish download bank list")
+
         bank_list = []
         for item in r.json()["items"]:
             bank_list.append(
@@ -58,13 +64,18 @@ class Sravni:
                     alias=item["alias"],
                 )
             )
+
         with Session(self.engine) as session:
             session.add_all(bank_list)
             session.commit()
+            self.logger.info("commit banks to db")
             self.bank_list = session.exec(select(SravniBankInfo)).all()
 
     def parse(self) -> None:
+        last_date = self.source.last_checked if self.source.last_checked is not None else datetime.min
+
         for bank_info in tqdm(self.bank_list):
+            self.logger.info(f"download reviews for {bank_info.bank_name}")
             reviews = requests.get(
                 "https://www.sravni.ru/proxy-reviews/reviews?locationRoute=&newIds=true&orderBy=withRates&pageIndex"
                 f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.id}&reviewObjectType=bank&tag"
@@ -88,8 +99,21 @@ class Sravni:
                     )
 
                 with Session(self.engine) as session:
-                    session.add_all(reviews)
+                    for review in reviews:
+                        last_date = max(review.date.replace(tzinfo=None), last_date)
+                        if self.source.last_checked is None:
+                            session.add(review)
+                        elif self.source.last_checked < review.date.replace(tzinfo=None):
+                            session.add(review)
+                    self.logger.info("commit reviews to db")
                     session.commit()
-                break
             sleep(1)
-        return
+
+        with Session(self.engine) as session:
+            if self.source.last_checked is None:
+                self.source.last_checked = last_date
+                session.add(self.source)
+            if last_date > self.source.last_checked:
+                self.source.last_checked = last_date
+                session.add(self.source)
+            session.commit()

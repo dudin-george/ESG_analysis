@@ -1,4 +1,4 @@
-from parser.Sravni import Sravni
+from parser.SravniReviews import SravniReviews
 
 from model.Database import Database
 
@@ -6,7 +6,7 @@ from model.Database import Database
 def main() -> None:
     Database()
 
-    sravni_parser = Sravni()
+    sravni_parser = SravniReviews()
     sravni_parser.parse()
 
 
