@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:14.4
+    restart: always
+    environment:
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: database
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+
+  grafana:
+    image: grafana/grafana:8.2.6
+    ports:
+      - 3000:3000
+    user: '104'
+
+  script:
+    depends_on:
+      - db
+    build: .
+    environment:
+      CONNECTION: "postgresql+psycopg2://example:example@db/database"
