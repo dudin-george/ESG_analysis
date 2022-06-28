@@ -9,7 +9,7 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data
     ports:
-      - 5433:5432
+      - "5432:5432"
 
   grafana:
     image: grafana/grafana:8.2.6
@@ -20,6 +20,7 @@ services:
   script:
     depends_on:
       - db
+      - grafana
     build: .
     environment:
       CONNECTION: "postgresql+psycopg2://example:example@db/database"

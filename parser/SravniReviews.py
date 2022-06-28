@@ -21,13 +21,13 @@ class SravniReviews:
     engine = database.get_engine()
     bank_list: List[SravniBankInfo] = []
     BASE_URL: str = "sravni.ru reviews"
+    source: Source
 
     def __init__(self) -> None:
         with Session(self.database.get_engine()) as session:
             self.bank_list = session.exec(select(SravniBankInfo)).all()
             if len(self.bank_list) == 0:
                 self.get_bank_list()
-            self.source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
 
     def get_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -74,15 +74,18 @@ class SravniReviews:
         with Session(self.engine) as session:
             session.add_all(bank_list)
             session.commit()
+            self.logger.info("create main table for banks")
 
-            for bank, sravni_bank in zip(bank_list, sravni_bank_list):
-                sravni_bank.bank_id = bank.id
+            for i in range(len(bank_list)):
+                sravni_bank_list[i].bank_id = bank_list[i].id
             session.add_all(sravni_bank_list)
             session.commit()
             self.logger.info("commit banks to db")
             self.bank_list = session.exec(select(SravniBankInfo)).all()
 
     def parse(self) -> None:
+        with Session(self.database.get_engine()) as session:
+            self.source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
         last_date = self.source.last_checked if self.source.last_checked is not None else datetime.min
 
         for bank_info in tqdm(self.bank_list):
