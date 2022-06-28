@@ -1,0 +1,17 @@
+* ESGanalysis
+
+** test
+
+#+begin_src shell
+docker stop (docker container ls -qa)
+docker rm (docker container ls -qa)
+#+end_src
+
+#+RESULTS:
+
+#+BEGIN_SRC shell
+docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -v /data:/var/lib/postgresql/data -d postgres
+#+END_SRC
+
+#+RESULTS:
+: 7bc29a04f5f6b87dcc1364a17050b418152693a0208ed8f4af3fa13f6777aa83
