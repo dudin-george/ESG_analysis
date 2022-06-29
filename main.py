@@ -1,11 +1,14 @@
 import threading
-from parser.SravniReviews import SravniReviews
 from typing import Callable
 
 import schedule  # type: ignore
+from sqlmodel import Session
 
 from misc.Logger import get_logger
 from model.Database import Database
+from model.Models import Models
+from model.TextResults import TextResult
+from parser.SravniReviews import SravniReviews
 
 
 def run_threaded(job_func: Callable[[None], None]) -> None:
@@ -14,14 +17,24 @@ def run_threaded(job_func: Callable[[None], None]) -> None:
 
 
 def main() -> None:
-    Database()
+    database = Database()
     logger = get_logger(__name__)
     logger.info("start app")
-    get_logger("schedule")
+
+    with Session(database.get_engine()) as session:
+        text_model = Models(model_path="test")
+        text_results = TextResult(text="test", sent_num=1, result="abaavaba", model=[text_model])
+        session.add(text_model)
+        session.add(text_results)
+        session.commit()
+
+        session.refresh(text_model)
+        session.refresh(text_results)
 
     sravni_parser = SravniReviews()
     sravni_parser.parse()  # run one time for init
 
+    get_logger("schedule")
     schedule.every().minute.do(run_threaded, sravni_parser.parse)
 
     while True:
