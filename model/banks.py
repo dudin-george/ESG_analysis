@@ -1,10 +1,10 @@
-from typing import Optional, TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
-from sqlmodel import VARCHAR, Column, Field, SQLModel, Relationship
+from sqlmodel import VARCHAR, Column, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from model.sravni_bank_info import SravniBankInfo
     from model.reviews import Reviews
+    from model.sravni_bank_info import SravniBankInfo
 
 
 class Banks(SQLModel, table=True):

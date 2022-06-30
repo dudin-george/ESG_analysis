@@ -1,11 +1,11 @@
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import VARCHAR, Column, Field, Integer, SQLModel, Relationship
+from sqlmodel import VARCHAR, Column, Field, Integer, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from model.sourse import Source
     from model.banks import Banks
+    from model.sourse import Source
 
 
 class Reviews(SQLModel, table=True):

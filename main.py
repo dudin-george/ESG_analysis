@@ -1,14 +1,14 @@
 import threading
+from parser.sravni_reviews import SravniReviews
 from typing import Callable
 
 import schedule  # type: ignore
 from sqlmodel import Session
 
 from misc.Logger import get_logger
-from model.database import engine, create_db_and_tables
+from model.database import create_db_and_tables, engine
 from model.models import Models
 from model.text_results import TextResult
-from parser.sravni_reviews import SravniReviews
 
 
 def run_threaded(job_func: Callable[[None], None]) -> None:

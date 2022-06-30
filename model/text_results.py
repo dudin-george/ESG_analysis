@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from model.models import Models
 from model.text_model import TextModels

@@ -10,7 +10,7 @@ database_url = os.environ["CONNECTION"]
 engine = create_engine(database_url)
 
 
-def create_db_and_tables():
+def create_db_and_tables() -> None:
     SQLModel.metadata.create_all(engine)
 
     sravni = Source(name="sravni.ru reviews")
