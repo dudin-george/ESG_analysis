@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from sqlmodel import SQLModel, Field, Relationship
 
-from model.TextModel import TextModels
+from model.text_model import TextModels
 
 
 class Models(SQLModel, table=True):

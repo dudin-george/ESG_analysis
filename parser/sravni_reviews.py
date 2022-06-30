@@ -6,11 +6,11 @@ import requests
 from sqlmodel import Session, select
 
 from misc import Logger
-from model.Banks import Banks
-from model.Database import Database
-from model.Reviews import Reviews
-from model.Sourse import Source
-from model.SravniBankInfo import SravniBankInfo
+from model.banks import Banks
+from model.database import Database
+from model.reviews import Reviews
+from model.sourse import Source
+from model.sravni_bank_info import SravniBankInfo
 
 
 class SravniReviews:

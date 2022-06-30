@@ -5,10 +5,10 @@ import schedule  # type: ignore
 from sqlmodel import Session
 
 from misc.Logger import get_logger
-from model.Database import Database
-from model.Models import Models
-from model.TextResults import TextResult
-from parser.SravniReviews import SravniReviews
+from model.database import Database
+from model.models import Models
+from model.text_results import TextResult
+from parser.sravni_reviews import SravniReviews
 
 
 def run_threaded(job_func: Callable[[None], None]) -> None:
