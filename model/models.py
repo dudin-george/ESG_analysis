@@ -1,8 +1,11 @@
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
 from sqlmodel import SQLModel, Field, Relationship
 
 from model.text_model import TextModels
+
+if TYPE_CHECKING:
+    from model.text_results import TextResult
 
 
 class Models(SQLModel, table=True):

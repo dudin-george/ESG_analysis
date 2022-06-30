@@ -5,7 +5,7 @@ import schedule  # type: ignore
 from sqlmodel import Session
 
 from misc.Logger import get_logger
-from model.database import Database
+from model.database import engine, create_db_and_tables
 from model.models import Models
 from model.text_results import TextResult
 from parser.sravni_reviews import SravniReviews
@@ -17,11 +17,12 @@ def run_threaded(job_func: Callable[[None], None]) -> None:
 
 
 def main() -> None:
-    database = Database()
     logger = get_logger(__name__)
     logger.info("start app")
+    create_db_and_tables()
+    logger.info("create db")
 
-    with Session(database.get_engine()) as session:
+    with Session(engine) as session:
         text_model = Models(model_path="test")
         text_results = TextResult(text="test", sent_num=1, result="abaavaba", model=[text_model])
         session.add(text_model)
