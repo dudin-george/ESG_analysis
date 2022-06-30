@@ -6,6 +6,15 @@ repos:
     -   id: check-toml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
+
+-   repo: https://github.com/python-poetry/poetry
+    rev: "1.1"
+    hooks:
+    -   id: poetry-check
+    -   id: poetry-lock
+    -   id: poetry-export
+        args: ["-f", "requirements.txt", "-o", "requirements.txt", "--without-hashes"]
+
 # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
 -   repo: local
     hooks:
