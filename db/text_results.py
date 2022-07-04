@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from model.models import Models
-from model.text_model import TextModels
+from db.models import Models
+from db.text_model import TextModels
 
 
 class TextResult(SQLModel, table=True):

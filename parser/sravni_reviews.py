@@ -3,12 +3,12 @@ from datetime import datetime
 import requests
 from sqlmodel import Session, select
 
+from db.banks import Banks
+from db.database import engine
+from db.reviews import Reviews
+from db.sourse import Source
+from db.sravni_bank_info import SravniBankInfo
 from misc import Logger
-from model.banks import Banks
-from model.database import engine
-from model.reviews import Reviews
-from model.sourse import Source
-from model.sravni_bank_info import SravniBankInfo
 
 
 class SravniReviews:

@@ -2,7 +2,7 @@ import os
 
 from sqlmodel import Session, SQLModel, create_engine, select
 
-from model.sourse import Source
+from db.sourse import Source
 
 sqlite_file_name = "database.db"
 database_url = os.environ["CONNECTION"]

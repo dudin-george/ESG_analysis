@@ -24,3 +24,5 @@ services:
     build: .
     environment:
       CONNECTION: "postgresql+psycopg2://example:example@db/database"
+    volumes:
+      - ./pretrained_models:/app/pretrained_models

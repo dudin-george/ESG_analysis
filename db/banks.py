@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, List, Optional
 from sqlmodel import VARCHAR, Column, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from model.reviews import Reviews
-    from model.sravni_bank_info import SravniBankInfo
+    from db.reviews import Reviews
+    from db.sravni_bank_info import SravniBankInfo
 
 
 class Banks(SQLModel, table=True):

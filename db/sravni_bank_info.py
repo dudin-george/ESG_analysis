@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from model.banks import Banks
+    from db.banks import Banks
 
 
 class SravniBankInfo(SQLModel, table=True):

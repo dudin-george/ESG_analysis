@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, List, Optional
 from sqlmodel import VARCHAR, Column, Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from model.reviews import Reviews
+    from db.reviews import Reviews
 
 
 class Source(SQLModel, table=True):

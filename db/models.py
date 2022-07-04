@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING, List, Optional
 
 from sqlmodel import Field, Relationship, SQLModel
 
-from model.text_model import TextModels
+from db.text_model import TextModels
 
 if TYPE_CHECKING:
-    from model.text_results import TextResult
+    from db.text_results import TextResult
 
 
 class Models(SQLModel, table=True):

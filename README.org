@@ -15,3 +15,8 @@ docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=my
 
 #+RESULTS:
 : 7bc29a04f5f6b87dcc1364a17050b418152693a0208ed8f4af3fa13f6777aa83
+
+#+BEGIN_EXAMPLE
+postgresql+psycopg2://myusername:mypassword@localhost/myusername
+sqlite:///database.db
+#+END_EXAMPLE

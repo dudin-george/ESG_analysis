@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Optional
 from sqlmodel import VARCHAR, Column, Field, Integer, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from model.banks import Banks
-    from model.sourse import Source
+    from db.banks import Banks
+    from db.sourse import Source
 
 
 class Reviews(SQLModel, table=True):

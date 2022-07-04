@@ -5,10 +5,11 @@ from typing import Callable
 import schedule  # type: ignore
 from sqlmodel import Session
 
+from db.database import create_db_and_tables, engine
+from db.models import Models
+from db.text_results import TextResult
 from misc.Logger import get_logger
-from model.database import create_db_and_tables, engine
-from model.models import Models
-from model.text_results import TextResult
+from models.ModelSentiment import ModelSentiment
 
 
 def run_threaded(job_func: Callable[[None], None]) -> None:
@@ -21,6 +22,8 @@ def main() -> None:
     logger.info("start app")
     create_db_and_tables()
     logger.info("create db")
+    model = ModelSentiment("pretrained_models", "test")
+    model(["test"])
 
     with Session(engine) as session:
         text_model = Models(model_path="test")
