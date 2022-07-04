@@ -8,11 +8,11 @@ from db.database import engine
 from db.reviews import Reviews
 from db.sourse import Source
 from db.sravni_bank_info import SravniBankInfo
-from misc import Logger
+from misc.logger import get_logger
 
 
 class SravniReviews:
-    logger = Logger.get_logger(__name__)
+    logger = get_logger(__name__)
     BASE_URL: str = "sravni.ru reviews"
 
     def __init__(self) -> None:
@@ -23,46 +23,52 @@ class SravniReviews:
 
     def get_bank_list(self) -> None:
         self.logger.info("start download bank list")
-        self.logger.info("send request to https://www.sravni.ru/proxy-organizations/banks/list")
-        r = requests.post(
-            "https://www.sravni.ru/proxy-organizations/banks/list",
-            data={
-                "select": [
-                    "oldId",
-                    "alias",
-                    "name",
-                    "license",
-                    "status",
-                    "ratings",
-                    "contacts",
-                    "requisites",
-                ],
-                "statuses": "active",
-                "type": "bank",
-                "limit": 1000,
-                "skip": 0,
-                "sort": ["-ratings", "ratings.assetsRatingPosition"],
-                "location": "6.",
-                "isMainList": True,
-            },
-        )
-        self.logger.info("finish download bank list")
-
-        sravni_bank_list = []
-        bank_list = []
-        for item in r.json()["items"]:
-            names = item["name"]
-            bank = Banks(bank_name=names["short"], bank_full_name=names["full"], bank_official_name=names["official"])
-            bank_list.append(bank)
-            sravni_bank_list.append(
-                SravniBankInfo(sravni_id=item["_id"], sravni_old_id=item["oldId"], alias=item["alias"], bank=bank)
-            )
-
         with Session(engine) as session:
-            session.add_all(bank_list)
-            session.add_all(sravni_bank_list)
-            session.commit()
-            self.logger.info("create main table for banks")
+            cbr_banks = select(Banks)
+            self.logger.info("send request to https://www.sravni.ru/proxy-organizations/banks/list")
+            r = requests.post(
+                "https://www.sravni.ru/proxy-organizations/banks/list",
+                data={
+                    "select": [
+                        "oldId",
+                        "alias",
+                        "name",
+                        "license",
+                        "status",
+                        "ratings",
+                        "contacts",
+                        "requisites",
+                    ],
+                    "statuses": "active",
+                    "type": "bank",
+                    "limit": 1000,
+                    "skip": 0,
+                    "sort": ["-ratings", "ratings.assetsRatingPosition"],
+                    "location": "6.",
+                    "isMainList": True,
+                },
+            )
+            self.logger.info("finish download bank list")
+
+            sravni_bank_list = []
+            for item in r.json()["items"]:
+                names = item["name"]
+                bank = session.exec(cbr_banks.where(Banks.id == item["license"])).one()
+                sravni_bank_list.append(
+                    SravniBankInfo(
+                        sravni_id=item["_id"],
+                        sravni_old_id=item["oldId"],
+                        alias=item["alias"],
+                        bank=bank,
+                        bank_name=names["short"],
+                        bank_full_name=names["full"],
+                        bank_official_name=names["official"],
+                    )
+                )
+
+                session.add_all(sravni_bank_list)
+                session.commit()
+                self.logger.info("create main table for banks")
 
     def parse(self) -> None:
         with Session(engine) as session:
