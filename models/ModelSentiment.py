@@ -1,36 +1,43 @@
+from typing import Any, List, Tuple
+
 import numpy as np
 import torch
+from numpy import ndarray
 from torch.utils.data import DataLoader, Dataset
-from transformers import AutoModelForSequenceClassification, BertTokenizerFast
+from transformers import (
+    AutoModelForSequenceClassification,
+    BatchEncoding,
+    BertTokenizerFast,
+    PreTrainedTokenizerBase,
+)
 
 
-class MyTextDataset(Dataset):
-    def __init__(self, sentence_list):
+class MyTextDataset(Dataset):  # type: ignore
+    def __init__(self, sentence_list: List[str]) -> None:
         self.sentences = sentence_list
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.sentences)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[int, str]:
         return idx, self.sentences[idx]
 
 
 class MyCollateBatch:
-    def __init__(self, tokenizer):
+    def __init__(self, tokenizer: PreTrainedTokenizerBase) -> None:
         self.tokenizer = tokenizer
 
-    def __call__(self, batch):
+    def __call__(self, batch: List[Tuple[int, str]]) -> BatchEncoding:
         sentences = [b[1] for b in batch]
         idx = [b[0] for b in batch]
 
         text = self.tokenizer(sentences, max_length=512, padding="max_length", truncation=True, return_tensors="pt")
         text["idx"] = idx
-        return text
+        return text  # type: ignore
 
 
 class ModelSentiment:
-    def __init__(self, model_folder, device):
-        print("Impo")
+    def __init__(self, model_folder: str, device: torch.device) -> None:
         self.device = device
         self.model_folder = model_folder
 
@@ -44,7 +51,7 @@ class ModelSentiment:
         # No training
         self.model.eval()
 
-    def __call__(self, sentence_list):
+    def __call__(self, sentence_list: List[str]) -> ndarray[Any, np.dtype[np.float_]]:
         data_ds = MyTextDataset(sentence_list)
         loader = DataLoader(data_ds, batch_size=128, collate_fn=self.collate_fn)
         result = np.zeros((len(sentence_list), len(self.class_names())))
@@ -60,6 +67,6 @@ class ModelSentiment:
 
         return result
 
-    def class_names(self):
+    def class_names(self) -> Any:  # TODO Fix type hint
         # return self.model.module.config.id2label
         return self.model.config.id2label

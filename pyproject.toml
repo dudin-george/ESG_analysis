@@ -17,6 +17,7 @@ psycopg2 = "^2.9.3"
 torch = "^1.12.0"
 nltk = "^3.7"
 transformers = "^4.20.1"
+webdriver-manager = "^3.8.0"
 
 
 [tool.poetry.dev-dependencies]
@@ -25,6 +26,8 @@ flake8 = "^4.0.1"
 black = "^22.3.0"
 mypy = "^0.961"
 isort = "^5.10.1"
+types-beautifulsoup4 = "^4.11.2"
+types-selenium = "^3.141.9"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -36,6 +39,7 @@ profile = "black"
 # https://github.com/tiangolo/sqlmodel/blob/main/pyproject.toml
 [tool.mypy]
 python_version = "3.10"
+exclude = "models/ModelSentiment"
 # --strict
 disallow_any_generics = true
 disallow_subclassing_any = true
