@@ -6,6 +6,14 @@ if TYPE_CHECKING:
     from db.banks import Banks
 
 
+class InfoBankiRu(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    bank_name: str
+    reviews_url: str
+    bank_id: str = Field(foreign_key="banks.id", default=None)
+    bank: "Banks" = Relationship(back_populates="bankiru_bank")
+
+
 class SravniBankInfo(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, index=True)
     sravni_id: str = Field(default=None, max_length=30)

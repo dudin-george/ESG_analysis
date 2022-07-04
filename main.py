@@ -1,4 +1,5 @@
 import threading
+from parser.banki_reviews import BankiReviews
 from parser.cbr_parser import CBRParser
 from parser.sravni_reviews import SravniReviews
 from typing import Callable
@@ -21,11 +22,13 @@ def main() -> None:
     logger.info("create db")
     CBRParser().parse()  # init bank list
     sravni_reviews = SravniReviews()
+    banki_ru_reviews = BankiReviews()
+    banki_ru_reviews.parse()
     # run one time for init
-    run_threaded(sravni_reviews.parse)  # type: ignore
-
+    # run_threaded(sravni_reviews.parse)  # type: ignore
+    # run_threaded(banki_ru_reviews.parse)  # type: ignore
     get_logger("schedule")
-    schedule.every().minute.do(run_threaded, sravni_reviews.parse)
+    schedule.every().day.do(run_threaded, sravni_reviews.parse)
 
     while True:
         schedule.run_pending()

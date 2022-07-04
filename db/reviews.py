@@ -10,13 +10,13 @@ if TYPE_CHECKING:
 
 class Reviews(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, index=True)
-    link: str = Field(sa_column=Column("link", VARCHAR, unique=True))
+    link: str = Field(sa_column=Column("link", VARCHAR))
     source_id: int = Field(default=None, foreign_key="source.id")
     source: "Source" = Relationship(back_populates="reviews")
     date: datetime
     title: str
     text: str
-    bank_id: int = Field(default=None, foreign_key="banks.id")
+    bank_id: str = Field(default=None, foreign_key="banks.id")
     bank: "Banks" = Relationship(back_populates="reviews")
     rating: int = Field(sa_column=Column("rating", Integer, nullable=True))
     comments_num: int = Field(ge=0, default=0)

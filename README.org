@@ -10,7 +10,7 @@ docker rm (docker container ls -qa)
 #+RESULTS:
 
 #+BEGIN_SRC shell
-docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -v /data:/var/lib/postgresql/data -d postgres
+docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -d postgres
 #+END_SRC
 
 #+RESULTS:
@@ -20,3 +20,8 @@ docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=my
 postgresql+psycopg2://myusername:mypassword@localhost/myusername
 sqlite:///database.db
 #+END_EXAMPLE
+
+
+#+BEGIN_SRC shell
+docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -v /data:/var/lib/postgresql/data -d postgres
+#+END_SRC

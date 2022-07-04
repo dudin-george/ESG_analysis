@@ -14,7 +14,7 @@ def create_db_and_tables() -> None:
     SQLModel.metadata.create_all(engine)
 
     sravni = Source(name="sravni.ru reviews")
-    banki_ru = Source(name="banki_ru")
+    banki_ru = Source(name="banki.ru reviews")
     with Session(engine) as session:
         if len(session.exec(select(Source).where(Source.name == sravni.name)).all()) == 0:
             session.add(sravni)

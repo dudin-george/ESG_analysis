@@ -6,8 +6,8 @@ from sqlmodel import Session, select
 from db.banks import Banks
 from db.database import engine
 from db.reviews import Reviews
+from db.sites_banks import SravniBankInfo
 from db.sourse import Source
-from db.sravni_bank_info import SravniBankInfo
 from misc.logger import get_logger
 
 
@@ -68,9 +68,10 @@ class SravniReviews:
 
                 session.add_all(sravni_bank_list)
                 session.commit()
-                self.logger.info("create main table for banks")
+            self.logger.info("create main table for banks")
 
     def parse(self) -> None:
+        start_date = datetime.now()
         with Session(engine) as session:
             source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
             bank_list = session.exec(select(SravniBankInfo)).all()
@@ -87,6 +88,8 @@ class SravniReviews:
                     reviews = []
                     for review in reviews_array:
                         url = f"https://www.sravni.ru/bank/{bank_info.alias}/otzyvy/{review['id']}"
+                        if last_date > review.date.replace(tzinfo=None):
+                            continue
                         reviews.append(
                             Reviews(
                                 source=source,
@@ -101,19 +104,10 @@ class SravniReviews:
                             )
                         )
 
-                    for review in reviews:
-                        last_date = max(review.date.replace(tzinfo=None), last_date)
-                        if source.last_checked is None:
-                            session.add(review)
-                        elif source.last_checked < review.date.replace(tzinfo=None):
-                            session.add(review)
+                    session.add_all(reviews)
                     self.logger.info("commit reviews to db")
                     session.commit()
 
-            if source.last_checked is None:
-                source.last_checked = last_date
-                session.add(source)
-            if last_date > source.last_checked:
-                source.last_checked = last_date
-                session.add(source)
+            source.last_checked = start_date
+            session.add(source)
             session.commit()

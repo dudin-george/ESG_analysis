@@ -1,6 +1,8 @@
+import re
+
 import requests
 from bs4 import BeautifulSoup
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from db.banks import Banks
 from db.database import engine
@@ -14,15 +16,22 @@ class CBRParser:
         pass
 
     def parse(self) -> None:
+        with Session(engine) as session:
+            bank_list = session.exec(select(Banks)).all()
+            if len(bank_list) != 0:
+                return
         self.logger.info("start download bank list")
         response = requests.get("https://www.cbr.ru/banking_sector/credit/FullCoList/")
+        if response.status_code == 403:
+            self.logger.error("cbr.ru 403 error")
+            return
         page = BeautifulSoup(response.text, "html.parser")
 
         cbr_banks = []
         for bank in page.find_all("tr")[1:]:
             items = bank.find_all("td")
             license_id = items[2].text
-            name = items[4].text.strip()
+            name = re.sub("[\xa0\n\t]", "", items[4].text.strip())
             license_status = items[7].text.strip()
             cbr_banks.append(Banks(id=license_id, bank_name=name, bank_status=license_status))
 

@@ -8,10 +8,10 @@ from selenium.webdriver.firefox.service import Service
 from sqlmodel import Session, select
 from webdriver_manager.firefox import GeckoDriverManager  # type: ignore
 
-from db.banki_ru_info import BankiRuBank
 from db.banks import Banks
 from db.database import engine
 from db.reviews import Reviews
+from db.sites_banks import InfoBankiRu
 from db.sourse import Source
 from misc.logger import get_logger
 
@@ -21,15 +21,14 @@ class BankiReviews:
     BASE_URL: str = "banki.ru reviews"
 
     def __init__(self) -> None:
-        gecko = Service(GeckoDriverManager().install())
-        self.driver = webdriver.Firefox(executable_path=gecko.path)
         with Session(engine) as session:
-            bank_list = session.exec(select(BankiRuBank)).all()
+            bank_list = session.exec(select(InfoBankiRu)).all()
             if len(bank_list) == 0:
                 self.get_bank_list()
 
     def get_bank_list(self) -> None:
-        browser = webdriver.Firefox(self.driver)
+        gecko = Service(GeckoDriverManager().install())
+        browser = webdriver.Firefox(service=gecko)  # type: ignore
         self.logger.info("start download bank list")
         browser.get("https://www.banki.ru/banks/")
         page = BeautifulSoup(browser.page_source, "html.parser")
@@ -38,6 +37,7 @@ class BankiReviews:
         banks = []
 
         with Session(engine) as session:
+            existing_id = session.exec(select(Banks.id)).all()
             cbr_banks = select(Banks)
             for i in range(1, page_num + 1):
                 if i != 1:
@@ -49,27 +49,36 @@ class BankiReviews:
                     bank_adress = bank.find("div", {"data-test": "banks-item-address"})
                     license_text = bank_adress.find_all("span")[-1].text
                     license_id = None
+                    id_exist = False
                     if license_text.find("№") != -1:
                         license_id = license_text.split("№")[-1].split()[0]
-                        cbr_bank = session.exec(cbr_banks.where(Banks.id == license_id)).one()
+                        id_exist = license_id in existing_id
 
-                    banks.append(
-                        BankiRuBank(bank_name=bank_link.text, reviews_url=bank_link["href"], bank_cbr=cbr_bank)
-                    )
+                    if id_exist and license_id is not None:
+                        cbr_bank = session.exec(cbr_banks.where(Banks.id == license_id)).one()
+                    else:
+                        continue
+                    bank_url = bank_link["href"].replace("/banks/", "https://www.banki.ru/services/responses/")
+                    banks.append(InfoBankiRu(bank_name=bank_link.text, reviews_url=bank_url, bank=cbr_bank))
             session.add_all(banks)
             session.commit()
+        gecko.stop()
+        browser.stop_client()
+        browser.quit()
         self.logger.info("finish download bank list")
 
     def parse(self) -> None:
-        self.logger.info("start parse banki.ru reviews")
-        start_time = datetime.now()
-        reviews_list = []
         with Session(engine) as session:
             source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
-            bank_list = session.exec(select(BankiRuBank)).all()
-            parsed_time = source.last_checked if source.last_checked is not None else datetime.min
-            browser = webdriver.Firefox(self.driver)
+            bank_list = session.exec(select(InfoBankiRu)).all()
+            gecko = Service(GeckoDriverManager().install())
+            self.logger.info("start parse banki.ru reviews")
+            start_time = datetime.now()
+
+            parsed_time = datetime(2022, 7, 1)
+            browser = webdriver.Firefox(service=gecko)  # type: ignore
             for bank_index, bank in enumerate(bank_list):
+                reviews_list = []
                 self.logger.info(f"[{bank_index+1}/{len(bank_list)}] Start parse bank {bank.bank_name}")
                 browser.get(bank.reviews_url)
                 page = BeautifulSoup(browser.page_source, "html.parser")
@@ -113,7 +122,7 @@ class BankiReviews:
                                 title=title,
                                 text=re.sub("[\xa0\n\t]", "", text),
                                 rating=rating,
-                                bank=bank.bank_cbr,
+                                bank=bank.bank,
                                 source=source,
                                 comments_num=comments_num,
                             )
@@ -126,8 +135,14 @@ class BankiReviews:
                     if max(times) < parsed_time:
                         break
 
+                session.add_all(reviews_list)
+                session.commit()
+
             source.last_checked = start_time
             session.add(source)
-            session.add_all(reviews_list)
             session.commit()
+
+        gecko.stop()
+        browser.stop_client()
+        browser.quit()
         self.logger.info("finish parse bank reviews")
