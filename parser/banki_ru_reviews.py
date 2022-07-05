@@ -3,16 +3,14 @@ from datetime import datetime
 from math import ceil
 
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
 from sqlmodel import Session, select
-from webdriver_manager.firefox import GeckoDriverManager  # type: ignore
 
 from db.banks import Banks
 from db.database import engine
 from db.reviews import Reviews
 from db.sites_banks import InfoBankiRu
 from db.sourse import Source
+from misc import get_browser
 from misc.logger import get_logger
 
 
@@ -27,8 +25,7 @@ class BankiReviews:
                 self.get_bank_list()
 
     def get_bank_list(self) -> None:
-        gecko = Service(GeckoDriverManager().install())
-        browser = webdriver.Firefox(service=gecko)  # type: ignore
+        browser = get_browser()
         self.logger.info("start download bank list")
         browser.get("https://www.banki.ru/banks/")
         page = BeautifulSoup(browser.page_source, "html.parser")
@@ -62,7 +59,6 @@ class BankiReviews:
                     banks.append(InfoBankiRu(bank_name=bank_link.text, reviews_url=bank_url, bank=cbr_bank))
             session.add_all(banks)
             session.commit()
-        gecko.stop()
         browser.stop_client()
         browser.quit()
         self.logger.info("finish download bank list")
@@ -71,12 +67,12 @@ class BankiReviews:
         with Session(engine) as session:
             source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
             bank_list = session.exec(select(InfoBankiRu)).all()
-            gecko = Service(GeckoDriverManager().install())
+
             self.logger.info("start parse banki.ru reviews")
             start_time = datetime.now()
 
-            parsed_time = datetime(2022, 7, 1)
-            browser = webdriver.Firefox(service=gecko)  # type: ignore
+            parsed_time = source.last_checked if source.last_checked is not None else datetime.min
+            browser = get_browser()
             for bank_index, bank in enumerate(bank_list):
                 reviews_list = []
                 self.logger.info(f"[{bank_index+1}/{len(bank_list)}] Start parse bank {bank.bank_name}")
@@ -142,7 +138,6 @@ class BankiReviews:
             session.add(source)
             session.commit()
 
-        gecko.stop()
         browser.stop_client()
         browser.quit()
         self.logger.info("finish parse bank reviews")

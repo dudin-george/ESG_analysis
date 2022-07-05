@@ -11,6 +11,11 @@ services:
     ports:
       - "5432:5432"
 
+  selenium:
+    image: selenium/standalone-firefox
+    ports:
+    - 4444:4444
+
   grafana:
     image: grafana/grafana:8.2.6
     ports:
@@ -21,8 +26,10 @@ services:
     depends_on:
       - db
       - grafana
+      - selenium
     build: .
     environment:
       CONNECTION: "postgresql+psycopg2://example:example@db/database"
+      DOCKER: "true"
     volumes:
       - ./pretrained_models:/app/pretrained_models

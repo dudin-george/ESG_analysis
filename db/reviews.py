@@ -21,3 +21,4 @@ class Reviews(SQLModel, table=True):
     rating: int = Field(sa_column=Column("rating", Integer, nullable=True))
     comments_num: int = Field(ge=0, default=0)
     user_id: Optional[str]
+    processed: Optional[bool] = Field(default=False)

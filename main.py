@@ -1,5 +1,5 @@
 import threading
-from parser.banki_reviews import BankiReviews
+from parser.banki_ru_reviews import BankiReviews
 from parser.cbr_parser import CBRParser
 from parser.sravni_reviews import SravniReviews
 from typing import Callable
