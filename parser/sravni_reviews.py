@@ -88,21 +88,20 @@ class SravniReviews:
                     reviews = []
                     for review in reviews_array:
                         url = f"https://www.sravni.ru/bank/{bank_info.alias}/otzyvy/{review['id']}"
-                        if last_date > review.date.replace(tzinfo=None):
-                            continue
-                        reviews.append(
-                            Reviews(
-                                source=source,
-                                bank=bank_info.bank,
-                                link=url,
-                                date=review["date"],
-                                title=review["title"],
-                                text=review["text"],
-                                rating=review["rating"],
-                                comments_num=review["commentsCount"],
-                                user_id=review["userId"],
-                            )
+                        parsed_review = Reviews(
+                            source=source,
+                            bank=bank_info.bank,
+                            link=url,
+                            date=review["date"],
+                            title=review["title"],
+                            text=review["text"],
+                            rating=review["rating"],
+                            comments_num=review["commentsCount"],
+                            user_id=review["userId"],
                         )
+                        if last_date > parsed_review.date.replace(tzinfo=None):
+                            continue
+                        reviews.append(parsed_review)
 
                     session.add_all(reviews)
                     self.logger.info("commit reviews to db")

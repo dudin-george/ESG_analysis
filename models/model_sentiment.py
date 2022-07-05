@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from numpy import ndarray
 from torch.utils.data import DataLoader, Dataset
-from transformers import (
+from transformers import (  # type: ignore
     AutoModelForSequenceClassification,
     BatchEncoding,
     BertTokenizerFast,
@@ -33,7 +33,7 @@ class MyCollateBatch:
 
         text = self.tokenizer(sentences, max_length=512, padding="max_length", truncation=True, return_tensors="pt")
         text["idx"] = idx
-        return text  # type: ignore
+        return text
 
 
 class ModelSentiment:
@@ -41,8 +41,8 @@ class ModelSentiment:
         self.device = device
         self.model_folder = model_folder
 
-        self.tokenizer = BertTokenizerFast.from_pretrained(model_folder)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_folder, return_dict=True)
+        self.tokenizer = BertTokenizerFast.from_pretrained(model_folder)  # type: ignore
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_folder, return_dict=True)  # type: ignore
         self.collate_fn = MyCollateBatch(self.tokenizer)
 
         # self.model = torch.nn.DataParallel(self.model)

@@ -6,6 +6,7 @@ from sqlmodel import VARCHAR, Column, Field, Integer, Relationship, SQLModel
 if TYPE_CHECKING:
     from db.banks import Banks
     from db.sourse import Source
+    from db.text_results import TextResult
 
 
 class Reviews(SQLModel, table=True):
@@ -22,3 +23,4 @@ class Reviews(SQLModel, table=True):
     comments_num: int = Field(ge=0, default=0)
     user_id: Optional[str]
     processed: Optional[bool] = Field(default=False)
+    text_results: "TextResult" = Relationship(back_populates="review")
