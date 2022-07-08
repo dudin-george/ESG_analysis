@@ -65,13 +65,13 @@ class textresult {
    integer id
 }
 
-banks  -->  infobankiru : bank_id:id
-banks  -->  reviews : bank_id:id
-source  -->  reviews : source_id:id
-banks  -->  sravnibankinfo : bank_id:id
-models  -->  textmodels : model_id:id
-textresult  -->  textmodels : text_id:id
-reviews  -->  textresult : review_id:id
+banks  -->  infobankiru : bank_id
+banks  -->  reviews : bank_id
+source  -->  reviews : source_id
+banks  -->  sravnibankinfo : bank_id
+models  -->  textmodels : model_id
+textresult  -->  textmodels : text_id
+reviews  -->  textresult : review_id
 
 #+end_src
 
