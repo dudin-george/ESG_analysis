@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
 direction BT
 class banks {
@@ -64,3 +65,4 @@ banks  -->  sravnibankinfo : bank_id:id
 models  -->  textmodels : model_id:id
 textresult  -->  textmodels : text_id:id
 reviews  -->  textresult : review_id:id
+```
