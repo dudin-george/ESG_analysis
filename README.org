@@ -5,7 +5,7 @@
 *** Добавление парсера
 Надо добавить в папку parser и в файле =main.py= запустить функцию для сбора данных с определенной периодичностью. Также надо в папку =db= файл с описанием таблицы.
 ** Схема бд
-#+begin_src mermaid
+#+begin_src mermaid :file ./test2.png
 classDiagram
 direction BT
 class banks {
@@ -74,7 +74,6 @@ textresult  -->  textmodels : text_id
 reviews  -->  textresult : review_id
 
 #+end_src
-
 ** Команды для разработки
 
 #+begin_src shell
