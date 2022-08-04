@@ -75,16 +75,22 @@ class SravniReviews:
         with Session(engine) as session:
             source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
             bank_list = session.exec(select(SravniBankInfo)).all()
-            last_date = source.last_checked if source.last_checked is not None else datetime.min
-
+            # last_date = source.last_checked if source.last_checked is not None else datetime.min
+            last_date = datetime(2022, 1, 1)
             for i, bank_info in enumerate(bank_list):
                 self.logger.info(f"[{i}/{len(bank_list)}] download reviews for {bank_info.alias}")
-                reviews = requests.get(
-                    "https://www.sravni.ru/proxy-reviews/reviews?locationRoute=&newIds=true&orderBy=withRates&pageIndex"
-                    f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&tag"
-                ).json()
-                if "items" in reviews.keys():
-                    reviews_array = reviews["items"]
+                for _ in range(3):
+                    response = requests.get(
+                        "https://www.sravni.ru/proxy-reviews/reviews?locationRoute=&newIds=true&orderBy=withRates&pageIndex"
+                        f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&tag"
+                    )
+                    if response.status_code != 500:
+                        break
+                if response.status_code == 500:
+                    continue
+                reviews_json = response.json()
+                if "items" in reviews_json.keys():
+                    reviews_array = reviews_json["items"]
                     reviews = []
                     for review in reviews_array:
                         url = f"https://www.sravni.ru/bank/{bank_info.alias}/otzyvy/{review['id']}"

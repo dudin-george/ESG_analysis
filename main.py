@@ -25,14 +25,14 @@ def main() -> None:
     sravni_reviews = SravniReviews()
     sravni_reviews.parse()
     model_parse_sentences()
-    banki_ru_reviews = BankiReviews()
-    banki_ru_reviews.parse()
+    # banki_ru_reviews = BankiReviews()
+    # banki_ru_reviews.parse()
     # run one time for init
-    run_threaded(sravni_reviews.parse)  # type: ignore
-    run_threaded(banki_ru_reviews.parse)  # type: ignore
-    get_logger("schedule")
-    schedule.every().day.do(run_threaded, sravni_reviews.parse)
-    schedule.every().day.do(run_threaded, banki_ru_reviews.parse)
+    # run_threaded(sravni_reviews.parse)  # type: ignore
+    # run_threaded(banki_ru_reviews.parse)  # type: ignore
+    # get_logger("schedule")
+    # schedule.every().day.do(run_threaded, sravni_reviews.parse)
+    # schedule.every().day.do(run_threaded, banki_ru_reviews.parse)
 
     while True:
         schedule.run_pending()
