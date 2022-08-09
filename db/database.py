@@ -25,7 +25,7 @@ def create_db_and_tables() -> None:
             session.add(banki_ru)
         exsisting_models_path = session.exec(select(Models.model_path)).all()
         for model_path in os.listdir("pretrained_models"):
-            if model_path.startswith("model") and model_path not in exsisting_models_path:
+            if model_path.startswith("model") and f"pretrained_models/{model_path}" not in exsisting_models_path:
                 models.append(Models(model_path=f"pretrained_models/{model_path}"))
         session.add_all(models)
         session.commit()
