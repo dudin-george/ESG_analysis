@@ -77,6 +77,7 @@ class BankiReviews:
                 reviews_list = []
                 self.logger.info(f"[{bank_index+1}/{len(bank_list)}] Start parse bank {bank.bank_name}")
                 browser.get(bank.reviews_url)
+                self.logger.debug(f"Send request to {bank.reviews_url}")
                 page = BeautifulSoup(browser.page_source, "html.parser")
 
                 reviews_num_elem_main = page.find("div", class_="ui-pagination__description")
@@ -87,7 +88,7 @@ class BankiReviews:
                 page_num = ceil(int(reviews_num) / 25)
 
                 for i in range(1, page_num + 1):
-                    self.logger.info(f"[{i}/{page_num+1}] start parse {bank.bank_name} reviews page {i}")
+                    self.logger.info(f"[{i}/{page_num}] start parse {bank.bank_name} reviews page {i}")
                     if i != 1:
                         browser.get(f"{bank.reviews_url}?page={i}")
                     page = BeautifulSoup(browser.page_source, "html.parser")

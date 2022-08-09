@@ -18,12 +18,12 @@ def model_parse_sentences() -> None:
 
     with Session(engine) as session:
         models = session.exec(select(Models)).all()
+        reviews = session.exec(select(Reviews).where(Reviews.processed == False)).all()  # noqa: E712
 
         for model in models:
             logger.info(f"process sentences with {model.model_path}")
             model_sentiment = ModelSentiment(model.model_path, device)
             logger.info(f"{model.model_path} loaded")
-            reviews = session.exec(select(Reviews).where(Reviews.processed == False)).all()  # noqa: E712
 
             for i, review in enumerate(reviews):
                 logger.info(f"[{i}/{len(reviews)}] process review")
@@ -36,6 +36,7 @@ def model_parse_sentences() -> None:
                             sent_num=sent_num + 1, sentence=sentence, result=str(result), review=review, model=[model]
                         )
                     )
-
+                review.processed = True
                 session.add_all(text_results)
+                session.add(review)
                 session.commit()
