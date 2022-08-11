@@ -58,7 +58,7 @@ classDiagram
        varchar result
        integer id
     }
-    
+
     banks  -->  infobankiru : bank_id
     banks  -->  reviews : bank_id
     source  -->  reviews : source_id

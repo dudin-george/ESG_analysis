@@ -125,30 +125,30 @@ where
    (result IS NOT NULL) AND (bank_id = '1000')
 GROUP BY
      date
-```     
-Запрос объединенный по банкам     
+```
+Запрос объединенный по банкам
 ``` postgresql
 SELECT
    bank_name,
    min(date),
-   sum(result) AS result2 
+   sum(result) AS result2
 FROM
-   reviews 
+   reviews
    LEFT JOIN
-      banks 
-      ON reviews.bank_id = banks.id 
+      banks
+      ON reviews.bank_id = banks.id
    LEFT JOIN
       (
          SELECT
             review_id,
-            sum(result[1] - result[3]) AS result 
+            sum(result[1] - result[3]) AS result
          FROM
-            textresult 
+            textresult
          GROUP BY
             review_id
       )
-      AS query 
-      ON query.review_id = reviews.id 
+      AS query
+      ON query.review_id = reviews.id
 GROUP BY
    bank_name
 ```
