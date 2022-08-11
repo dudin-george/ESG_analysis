@@ -10,9 +10,9 @@ repos:
 # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
 -   repo: local
     hooks:
-    -   id: lint
-        name: lint
-        entry: make format
+    -   id: lint files
+        name: lint files
+        entry: make
         types: [python]
         language: system
     -   id: export-requirements

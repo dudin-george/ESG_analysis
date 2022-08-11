@@ -2,6 +2,8 @@
 .DEFAULT_GOAL := all
 isort = isort .
 black = black .
+mypy = mypy .
+flake8  = flake8 .
 
 .PHONY: install-linting
 install-linting:
@@ -14,16 +16,16 @@ install: install-linting
 
 .PHONY: lint
 lint:
-	flake8 .
 	$(isort) --df --check-only
 	$(black) --diff --check
+	$(flake8)
 
 .PHONY: format
 format:
-	flake8 .
 	$(isort)
 	$(black)
-	mypy .
+	$(mypy)
+	$(flake8)
 
 .PHONY: all
 all: format
