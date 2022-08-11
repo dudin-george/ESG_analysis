@@ -1,5 +1,6 @@
 # ESGanalysis
 ## Описание проекта
+TODO
 ### Добавление модели
 Для добавление модели надо положить ее в папку `pretrained_models`
 ### Добавление парсера
@@ -76,35 +77,32 @@ reviews  -->  textresult : review_id
 ```
 ## Команды для разработки
 
+Остановить и удалить все контейнеры
 ``` shell
 docker stop (docker container ls -qa)
 docker rm (docker container ls -qa)
 ```
-
+Тоже остановить все контейнеры
 ```shell
 docker rm $(docker container ls -qa) -f
 ```
 
+Postgres для локальной разработки
 ``` shell
 docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -d postgres
 ```
-
+Строки подключения для локальной разработки
 ```
 postgresql+psycopg2://myusername:mypassword@localhost/myusername
 sqlite:///database.db
 ```
-
-
+Локальный докер с `voluem`
 ``` shell
 docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -v /data:/var/lib/postgresql/data -d postgres
 ```
 
-
-## TODO
-Переделать `logger`, чтобы инициализороваля только в main и импортировались нормально в классах
-
-
-## SQL
+## TODO SQL
+Запрос объединенный по дате, но без банков
 ``` postgresql
 SELECT
    date,
@@ -128,7 +126,7 @@ where
 GROUP BY
      date
 ```     
-     
+Запрос объединенный по банкам     
 ``` postgresql
 SELECT
    bank_name,
