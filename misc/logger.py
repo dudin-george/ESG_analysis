@@ -27,6 +27,7 @@ class Logger(logging.Formatter):
 def get_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
+    logger.propagate = False
 
     console_handler = logging.StreamHandler()
     console_handler.setLevel(level)
