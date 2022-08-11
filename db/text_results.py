@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, List, Optional
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlmodel import Column, Field, Float, Relationship, SQLModel
 
 from db.text_model import TextModels
 
@@ -14,6 +15,5 @@ class TextResult(SQLModel, table=True):
     review_id: int = Field(default=None, foreign_key="reviews.id")
     review: "Reviews" = Relationship(back_populates="text_results")
     sent_num: int
-    sentence: str
     model: List["Models"] = Relationship(back_populates="text_results", link_model=TextModels)
-    result: str  # TODO change type
+    result: List[float] = Field(sa_column=Column(ARRAY(Float)))

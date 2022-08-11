@@ -30,10 +30,10 @@ def model_parse_sentences() -> None:
                 sentences = tokenizer.tokenize(review.text)
                 results = model_sentiment(sentences)
                 text_results = []
-                for sent_num, (sentence, result) in enumerate(zip(sentences, results)):
+                for sent_num, result in enumerate(results):
                     text_results.append(
                         TextResult(
-                            sent_num=sent_num + 1, sentence=sentence, result=str(result), review=review, model=[model]
+                            sent_num=sent_num + 1, result=result.tolist(), review=review, model=[model]
                         )
                     )
                 review.processed = True
