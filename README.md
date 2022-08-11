@@ -102,3 +102,55 @@ docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=my
 
 ## TODO
 Переделать `logger`, чтобы инициализороваля только в main и импортировались нормально в классах
+
+
+## SQL
+``` postgresql
+SELECT
+   date,
+   sum(result) AS result
+FROM
+   reviews
+   LEFT JOIN
+      (
+         SELECT
+            review_id,
+            sum(result[1] - result[3]) AS result
+         FROM
+            textresult
+         GROUP BY
+            review_id
+      )
+      AS query
+      ON query.review_id = reviews.id
+where
+   (result IS NOT NULL) AND (bank_id = '1000')
+GROUP BY
+     date
+```     
+     
+``` postgresql
+SELECT
+   bank_name,
+   min(date),
+   sum(result) AS result2 
+FROM
+   reviews 
+   LEFT JOIN
+      banks 
+      ON reviews.bank_id = banks.id 
+   LEFT JOIN
+      (
+         SELECT
+            review_id,
+            sum(result[1] - result[3]) AS result 
+         FROM
+            textresult 
+         GROUP BY
+            review_id
+      )
+      AS query 
+      ON query.review_id = reviews.id 
+GROUP BY
+   bank_name
+```
