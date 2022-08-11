@@ -1,11 +1,12 @@
-* ESGanalysis
-** Описание проекта
-*** Добавление модели
-Для добавление модели надо положить ее в папку =pretrained_models=
-*** Добавление парсера
-Надо добавить в папку parser и в файле =main.py= запустить функцию для сбора данных с определенной периодичностью. Также надо в папку =db= файл с описанием таблицы.
-** Схема бд
-#+begin_src mermaid :file ./test2.png
+# ESGanalysis
+## Описание проекта
+### Добавление модели
+Для добавление модели надо положить ее в папку `pretrained_models`
+### Добавление парсера
+Надо добавить в папку parser и в файле `main.py` запустить функцию для сбора данных с определенной периодичностью. Также надо в папку =db= файл с описанием таблицы.
+## Схема бд
+
+``` mermaid
 classDiagram
 direction BT
 class banks {
@@ -72,34 +73,32 @@ banks  -->  sravnibankinfo : bank_id
 models  -->  textmodels : model_id
 textresult  -->  textmodels : text_id
 reviews  -->  textresult : review_id
+```
+## Команды для разработки
 
-#+end_src
-** Команды для разработки
-
-#+begin_src shell
+``` shell
 docker stop (docker container ls -qa)
 docker rm (docker container ls -qa)
-#+end_src
+```
 
-#+RESULTS:
+```shell
+docker rm $(docker container ls -qa) -f
+```
 
-#+BEGIN_SRC shell
+``` shell
 docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -d postgres
-#+END_SRC
+```
 
-#+RESULTS:
-: 7bc29a04f5f6b87dcc1364a17050b418152693a0208ed8f4af3fa13f6777aa83
-
-#+BEGIN_EXAMPLE
+```
 postgresql+psycopg2://myusername:mypassword@localhost/myusername
 sqlite:///database.db
-#+END_EXAMPLE
+```
 
 
-#+BEGIN_SRC shell
+``` shell
 docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -v /data:/var/lib/postgresql/data -d postgres
-#+END_SRC
+```
 
 
-* TODO
+## TODO
 Переделать `logger`, чтобы инициализороваля только в main и импортировались нормально в классах
