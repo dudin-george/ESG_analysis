@@ -100,6 +100,16 @@ sqlite:///database.db
 ``` shell
 docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -v /data:/var/lib/postgresql/data -d postgres
 ```
+## Подключение к БД
+
+```python
+import psycopg2
+conn = psycopg2.connect(host="localhost", database="database", user="example", password="example", port=5432)
+cur = conn.cursor()
+cur.execute("SELECT * FROM banks")
+cur.fetchone()
+# ('ПАОАКБ«1Банк»', '2896', 'ОТЗ', None)
+```
 
 ## TODO SQL
 Запрос объединенный по дате, но без банков
