@@ -21,6 +21,8 @@ services:
     ports:
       - 3000:3000
     user: "104"
+    volueme:
+    - /grafana:/var/lib/grafana
 
   script:
     depends_on:
