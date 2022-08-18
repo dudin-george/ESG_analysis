@@ -1,4 +1,5 @@
 import threading
+import time
 from parser.banki_ru_reviews import BankiReviews
 from parser.cbr_parser import CBRParser
 from parser.sravni_reviews import SravniReviews
@@ -17,6 +18,7 @@ def run_threaded(job_func: Callable[[None], None]) -> None:
 
 
 def main() -> None:
+    time.sleep(5)  # sleep 5 sec for startup
     logger = get_logger(__name__)
     logger.info("start app")
     create_db_and_tables()
