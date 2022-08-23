@@ -1,27 +1,33 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
-    -   id: check-yaml
-    -   id: check-toml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
+      - id: check-yaml
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
 
-# https://github.com/samuelcolvin/pydantic/blob/master/Makefile
--   repo: local
+  # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
+  - repo: local
     hooks:
-    -   id: lint files
+      - id: lint files
         name: lint files
         entry: make
         types: [python]
         language: system
-    -   id: export-requirements
+      - id: export-requirements
         name: Export requirements.txt
         language: system
         pass_filenames: false
         entry: poetry export -f requirements.txt -o requirements.txt --without-hashes
         files: ^(pyproject.toml|poetry.lock)$
 
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.37.3
+    hooks:
+      - id: pyupgrade
+        args: [--py310-plus]
+
 default_language_version:
-    python: python3.10
+  python: python3.10
 default_stages: [commit, push]
