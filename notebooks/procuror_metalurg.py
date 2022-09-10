@@ -12,6 +12,7 @@ from transformers import BertTokenizerFast, BertModel, BertConfig, get_scheduler
 from transformers.optimization import get_linear_schedule_with_warmup
 from torch.utils.data import DataLoader
 
+
 class SentencesDataset(Dataset):
     def __init__(self, metalurgi, prokuror, prokuror_col, data_size=None, close_sent_dist=1, far_sent_dist=10):
         self.metalurgi = metalurgi
@@ -34,17 +35,9 @@ class SentencesDataset(Dataset):
         else:
             first_sentence, second_sentence = self.get_negative_example()
 
-        examples = {
-            "sentence1": first_sentence,
-            "sentence2": second_sentence,
-            "label": label
-        }
+        examples = {"sentence1": first_sentence, "sentence2": second_sentence, "label": label}
 
         return examples
-
-    def _get_prokuror(self, prokuror_row):
-        col = np.random.choice(self.prokuror_col)
-        return prokuror_row[col]
 
     def get_positive_example(self):
         second_sentence = None
@@ -53,7 +46,7 @@ class SentencesDataset(Dataset):
             first_id = np.random.choice(self.metalurgi[self.metalurgi["INN"] == inn].index)
             first_sentence = self.metalurgi.at[first_id, "line"]
             second_id = np.random.choice(self.prokuror[self.prokuror["INN"] == inn].index)
-            second_sentence = self._get_prokuror(self.prokuror.loc[second_id])
+            second_sentence = self.prokuror.at[second_id, "line"]
         return first_sentence, second_sentence
 
     def get_negative_example(self):
@@ -64,8 +57,9 @@ class SentencesDataset(Dataset):
             while self.metalurgi.iloc[first_id]["INN"] == self.prokuror.iloc[second_id]["INN"]:
                 second_id = np.random.choice(self.prokuror.shape[0])
             first_sentence = self.metalurgi.iloc[first_id]["line"]
-            second_sentence = self._get_prokuror(self.prokuror.iloc[second_id])
+            second_sentence = self.prokuror.iloc[second_id]["line"]
         return first_sentence, second_sentence
+
 
 class ProbModel(nn.Module):
     def __init__(self, bert, custom_bert):
