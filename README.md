@@ -6,45 +6,89 @@ TODO
 ### Добавление парсера
 Надо добавить в папку parser и в файле `main.py` запустить функцию для сбора данных с определенной периодичностью. Также надо в папку =db= файл с описанием таблицы.
 ## Схема бд
-
-``` mermaid
+### Api
+```mermaid
 classDiagram
 direction BT
+
 class banks {
    varchar bank_name
    varchar bank_status
    varchar description
    varchar id
 }
+
+class models {
+   varchar model_name
+   integer id
+}
+
+class texts {
+   varchar link
+   integer rating %% убрать
+   integer source_id
+   datetime date
+   varchar title
+   varchar text %% убрать
+   varchar bank_id
+   integer comments_num %% убрать
+   varchar user_id %% убрать
+   integer id
+}
+
+class source_type {
+    int id
+    varchar name
+}
+
+class source {
+   varchar site
+   varchar description
+   integer id
+   int source_type_id
+}
+
+class text_sentences {
+    integer id
+    integer review_id
+    varchar sentence
+}
+
+class textresult {
+   integer text_sentences_id
+   array result
+   integer model_id
+   integer id
+}
+
+%%parse_sources  -->  infobankiru : bank_id
+%%parse_sources  -->  sravnibankinfo : bank_id
+
+texts --> text_sentences: review_id
+source_type --> source: id
+banks  -->  texts : bank_id
+source  -->  texts : source_id
+text_sentences --> textresult: id
+models --> textresult: model_id
+```
+### Parser service
+```mermaid
+classDiagram
+direction BT
+
 class infobankiru {
    varchar bank_name
    varchar reviews_url
    varchar bank_id
    integer id
 }
-class models {
-   varchar model_path
-   integer id
+
+class parse_sources{
+    integer id
+    varschar source_name
+    datetime parsed
 }
-class reviews {
-   varchar link
-   integer rating
-   integer source_id
-   datetime date
-   varchar title
-   varchar text
-   varchar bank_id
-   integer comments_num
-   varchar user_id
-   boolean processed
-   integer id
-}
-class source {
-   varchar site
-   datetime last_checked
-   varchar description
-   integer id
-}
+
 class sravnibankinfo {
    varchar(30) sravni_id
    integer sravni_old_id
@@ -55,25 +99,6 @@ class sravnibankinfo {
    varchar bank_id
    integer id
 }
-class textmodels {
-   integer text_id
-   integer model_id
-}
-class textresult {
-   integer review_id
-   integer sent_num
-   varchar sentence
-   varchar result
-   integer id
-}
-
-banks  -->  infobankiru : bank_id
-banks  -->  reviews : bank_id
-source  -->  reviews : source_id
-banks  -->  sravnibankinfo : bank_id
-models  -->  textmodels : model_id
-textresult  -->  textmodels : text_id
-reviews  -->  textresult : review_id
 ```
 ## Команды для разработки
 
