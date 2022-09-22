@@ -1,0 +1,706 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Texts API",
+    "description": "API for DB",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/text/sentences": {
+      "get": {
+        "tags": [
+          "text"
+        ],
+        "summary": "Get Sentences",
+        "operationId": "get_sentences_text_sentences_get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Sources",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": [
+                "new"
+              ]
+            },
+            "name": "sources",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Limit",
+              "type": "integer",
+              "default": 100
+            },
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Offset",
+              "type": "integer",
+              "default": 0
+            },
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTextSentences"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/text/": {
+      "post": {
+        "tags": [
+          "text"
+        ],
+        "summary": "Post Text",
+        "operationId": "post_text_text__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Texts",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PostTextItem"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/": {
+      "get": {
+        "tags": [
+          "model"
+        ],
+        "summary": "Get Model",
+        "operationId": "get_model_model__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Model Model  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "model"
+        ],
+        "summary": "Post Model",
+        "operationId": "post_model_model__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostModelResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/textresult/": {
+      "get": {
+        "tags": [
+          "textresult"
+        ],
+        "summary": "Get Text Results",
+        "operationId": "get_text_results_textresult__get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Date",
+              "type": "string",
+              "format": "date-time"
+            },
+            "name": "date",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Source",
+              "type": "string"
+            },
+            "name": "source",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Bank Id",
+              "type": "string"
+            },
+            "name": "bank_id",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Text Id",
+              "type": "integer"
+            },
+            "name": "text_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTextResultItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "textresult"
+        ],
+        "summary": "Post Text Result",
+        "operationId": "post_text_result_textresult__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Texts",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PostTextResult"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/source/": {
+      "get": {
+        "tags": [
+          "source"
+        ],
+        "summary": "Get Source",
+        "operationId": "get_source_source__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Source Source  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetSource"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "source"
+        ],
+        "summary": "Post Source",
+        "operationId": "post_source_source__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostSource"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostSourceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GetModel": {
+        "title": "GetModel",
+        "required": [
+          "model_name",
+          "id",
+          "model_type"
+        ],
+        "type": "object",
+        "properties": {
+          "model_name": {
+            "title": "Model Name",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "model_type": {
+            "title": "Model Type",
+            "type": "string"
+          }
+        }
+      },
+      "GetSource": {
+        "title": "GetSource",
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "title": "Items",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetSourceItem"
+            }
+          }
+        }
+      },
+      "GetSourceItem": {
+        "title": "GetSourceItem",
+        "required": [
+          "source",
+          "source_type",
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "source_type": {
+            "title": "Source Type",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          }
+        }
+      },
+      "GetTextResultItem": {
+        "title": "GetTextResultItem",
+        "required": [
+          "id",
+          "text_sentence_id",
+          "result",
+          "model_id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "text_sentence_id": {
+            "title": "Text Sentence Id",
+            "type": "integer"
+          },
+          "result": {
+            "title": "Result",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "integer"
+          }
+        }
+      },
+      "GetTextSentences": {
+        "title": "GetTextSentences",
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "title": "Items",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TextSentenceItem"
+            }
+          }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "PostModel": {
+        "title": "PostModel",
+        "required": [
+          "model_name",
+          "model_type"
+        ],
+        "type": "object",
+        "properties": {
+          "model_name": {
+            "title": "Model Name",
+            "type": "string"
+          },
+          "model_type": {
+            "title": "Model Type",
+            "type": "string"
+          }
+        }
+      },
+      "PostModelResponse": {
+        "title": "PostModelResponse",
+        "required": [
+          "model_id"
+        ],
+        "type": "object",
+        "properties": {
+          "model_id": {
+            "title": "Model Id",
+            "type": "integer"
+          }
+        }
+      },
+      "PostSource": {
+        "title": "PostSource",
+        "required": [
+          "source",
+          "source_type"
+        ],
+        "type": "object",
+        "properties": {
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "source_type": {
+            "title": "Source Type",
+            "type": "string"
+          }
+        }
+      },
+      "PostSourceResponse": {
+        "title": "PostSourceResponse",
+        "required": [
+          "source_id"
+        ],
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "title": "Source Id",
+            "type": "integer"
+          }
+        }
+      },
+      "PostTextItem": {
+        "title": "PostTextItem",
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "title": "Items",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TextItem"
+            }
+          },
+          "parsed_state": {
+            "title": "Parsed State",
+            "type": "string"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PostTextResult": {
+        "title": "PostTextResult",
+        "required": [
+          "text_result",
+          "model",
+          "text_sentence_id"
+        ],
+        "type": "object",
+        "properties": {
+          "text_result": {
+            "title": "Text Result",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "model": {
+            "title": "Model",
+            "type": "integer"
+          },
+          "text_sentence_id": {
+            "title": "Text Sentence Id",
+            "type": "integer"
+          }
+        }
+      },
+      "TextItem": {
+        "title": "TextItem",
+        "required": [
+          "source",
+          "date",
+          "title",
+          "text",
+          "bank_id",
+          "link"
+        ],
+        "type": "object",
+        "properties": {
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "format": "date-time"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "bank_id": {
+            "title": "Bank Id",
+            "type": "string"
+          },
+          "link": {
+            "title": "Link",
+            "type": "string"
+          },
+          "comments_num": {
+            "title": "Comments Num",
+            "type": "integer"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          },
+          "rating": {
+            "title": "Rating",
+            "type": "integer"
+          }
+        }
+      },
+      "TextSentenceItem": {
+        "title": "TextSentenceItem",
+        "required": [
+          "id",
+          "sentence",
+          "review_id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "sentence": {
+            "title": "Sentence",
+            "type": "string"
+          },
+          "review_id": {
+            "title": "Review Id",
+            "type": "integer"
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

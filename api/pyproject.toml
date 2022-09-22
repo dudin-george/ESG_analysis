@@ -7,17 +7,14 @@ authors = ["Samoed <samoed.roman@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 requests = "^2.28.0"
-selenium = "^4.3.0"
-beautifulsoup4 = "^4.11.1"
-# SQLAlchemy = "<=1.4.35" # github.com/tiangolo/sqlmodel/issues/315
-sqlmodel = "^0.0.7"
 tqdm = "^4.64.0"
-schedule = "^1.1.0"
 psycopg2 = "^2.9.3"
-torch = "^1.12.0"
 nltk = "^3.7"
-transformers = "^4.20.1"
 webdriver-manager = "^3.8.0"
+fastapi = "^0.85.0"
+pydantic = "^1.10.2"
+SQLAlchemy = "^1.4.41"
+uvicorn = "^0.18.3"
 
 
 [tool.poetry.dev-dependencies]
