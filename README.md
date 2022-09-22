@@ -18,21 +18,24 @@ class banks {
    varchar id
 }
 
+class model_type {
+   varchar model_type
+   integer id
+}
+
 class models {
    varchar model_name
+   integer model_type
    integer id
 }
 
 class texts {
    varchar link
-   integer rating %% убрать
    integer source_id
    datetime date
    varchar title
-   varchar text %% убрать
    varchar bank_id
-   integer comments_num %% убрать
-   varchar user_id %% убрать
+   integer comments_num
    integer id
 }
 
@@ -42,15 +45,16 @@ class source_type {
 }
 
 class source {
-   varchar site
-   varchar description
    integer id
+   varchar site
+   varchar parser_state
    int source_type_id
 }
 
 class text_sentences {
     integer id
     integer review_id
+    integer sentence_num
     varchar sentence
 }
 
@@ -61,15 +65,13 @@ class textresult {
    integer id
 }
 
-%%parse_sources  -->  infobankiru : bank_id
-%%parse_sources  -->  sravnibankinfo : bank_id
-
 texts --> text_sentences: review_id
 source_type --> source: id
 banks  -->  texts : bank_id
 source  -->  texts : source_id
-text_sentences --> textresult: id
+text_sentences --> textresult: text_sentences_id
 models --> textresult: model_id
+model_type --> models: model_type
 ```
 ### Parser service
 ```mermaid
