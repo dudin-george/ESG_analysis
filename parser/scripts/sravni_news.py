@@ -4,13 +4,12 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
-from sqlmodel import Session, select
-
 from db.banks import Banks
 from db.database import engine
 from db.reviews import Reviews
 from db.sites_banks import SravniBankInfo
 from db.sourse import Source
+from sqlmodel import Session, select
 
 
 class SravniNews:
@@ -25,13 +24,18 @@ class SravniNews:
 
     def parse(self) -> None:
         with Session(engine) as session:
-            source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
+            source = session.exec(
+                select(Source).where(Source.name == self.BASE_URL)
+            ).one()
             bank_list = session.exec(select(SravniBankInfo)).all()
         for bank in bank_list:
             id = bank.sravni_old_id
             urls = []
             for page in range(5):
-                r = requests.post("https://www.sravni.ru/ajax/partnernews/", data={"page": page, "organizationId": id})
+                r = requests.post(
+                    "https://www.sravni.ru/ajax/partnernews/",
+                    data={"page": page, "organizationId": id},
+                )
                 for news in r.json():
                     urls.append(news["url"])
 
@@ -54,5 +58,3 @@ class SravniNews:
             #         news["miniPicture"] = None
             #         news["htmlBody"] =
             #         news_list.append({"name": name} | news)
-
-

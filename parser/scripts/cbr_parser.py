@@ -2,11 +2,10 @@ import re
 
 import requests
 from bs4 import BeautifulSoup
-from sqlmodel import Session, select
-
 from db.banks import Banks
 from db.database import engine
 from misc.logger import get_logger
+from sqlmodel import Session, select
 
 
 class CBRParser:
@@ -33,7 +32,9 @@ class CBRParser:
             license_id = items[2].text
             name = re.sub("[\xa0\n\t]", "", items[4].text.strip())
             license_status = items[7].text.strip()
-            cbr_banks.append(Banks(id=license_id, bank_name=name, bank_status=license_status))
+            cbr_banks.append(
+                Banks(id=license_id, bank_name=name, bank_status=license_status)
+            )
 
         with Session(engine) as session:
             session.add_all(cbr_banks)

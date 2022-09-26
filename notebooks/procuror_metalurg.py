@@ -1,25 +1,38 @@
-import pandas as pd
-import numpy as np
-from tqdm import tqdm
-
-import torch.nn.functional as F
-from torch import nn, Tensor
-import torch
-from enum import Enum
 import ast
-from torch.utils.data import Dataset
-from transformers import BertTokenizerFast, BertModel, BertConfig, get_scheduler
+from enum import Enum
+
+import numpy as np
+import pandas as pd
+import torch
+import torch.nn.functional as F
+from torch import Tensor, nn
+from torch.utils.data import DataLoader, Dataset
+from tqdm import tqdm
+from transformers import BertConfig, BertModel, BertTokenizerFast, get_scheduler
 from transformers.optimization import get_linear_schedule_with_warmup
-from torch.utils.data import DataLoader
 
 
 class SentencesDataset(Dataset):
-    def __init__(self, metalurgi, prokuror, prokuror_col, data_size=None, close_sent_dist=1, far_sent_dist=10):
+    def __init__(
+        self,
+        metalurgi,
+        prokuror,
+        prokuror_col,
+        data_size=None,
+        close_sent_dist=1,
+        far_sent_dist=10,
+    ):
         self.metalurgi = metalurgi
         self.prokuror = prokuror
         self.prokuror_col = prokuror_col
-        self.exsist_inn = self.prokuror.loc[self.prokuror["INN"].isin(self.metalurgi["INN"]), "INN"].unique()
-        self.data_size = data_size if data_size is not None else min(self.metalurgi.shape[0], self.prokuror.shape[0])
+        self.exsist_inn = self.prokuror.loc[
+            self.prokuror["INN"].isin(self.metalurgi["INN"]), "INN"
+        ].unique()
+        self.data_size = (
+            data_size
+            if data_size is not None
+            else min(self.metalurgi.shape[0], self.prokuror.shape[0])
+        )
         self.close_sent_dist = close_sent_dist
         self.far_sent_dist = far_sent_dist
 
@@ -35,7 +48,11 @@ class SentencesDataset(Dataset):
         else:
             first_sentence, second_sentence = self.get_negative_example()
 
-        examples = {"sentence1": first_sentence, "sentence2": second_sentence, "label": label}
+        examples = {
+            "sentence1": first_sentence,
+            "sentence2": second_sentence,
+            "label": label,
+        }
 
         return examples
 
@@ -43,9 +60,13 @@ class SentencesDataset(Dataset):
         second_sentence = None
         while second_sentence is None or pd.isnull(second_sentence):
             inn = np.random.choice(self.exsist_inn)
-            first_id = np.random.choice(self.metalurgi[self.metalurgi["INN"] == inn].index)
+            first_id = np.random.choice(
+                self.metalurgi[self.metalurgi["INN"] == inn].index
+            )
             first_sentence = self.metalurgi.at[first_id, "line"]
-            second_id = np.random.choice(self.prokuror[self.prokuror["INN"] == inn].index)
+            second_id = np.random.choice(
+                self.prokuror[self.prokuror["INN"] == inn].index
+            )
             second_sentence = self.prokuror.at[second_id, "line"]
         return first_sentence, second_sentence
 
@@ -54,7 +75,10 @@ class SentencesDataset(Dataset):
         while second_sentence is None or pd.isnull(second_sentence):
             first_id = np.random.choice(self.metalurgi.shape[0])
             second_id = np.random.choice(self.prokuror.shape[0])
-            while self.metalurgi.iloc[first_id]["INN"] == self.prokuror.iloc[second_id]["INN"]:
+            while (
+                self.metalurgi.iloc[first_id]["INN"]
+                == self.prokuror.iloc[second_id]["INN"]
+            ):
                 second_id = np.random.choice(self.prokuror.shape[0])
             first_sentence = self.metalurgi.iloc[first_id]["line"]
             second_sentence = self.prokuror.iloc[second_id]["line"]

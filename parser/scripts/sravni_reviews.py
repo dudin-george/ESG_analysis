@@ -1,14 +1,13 @@
 from datetime import datetime
 
 import requests
-from sqlmodel import Session, select
-
 from db.banks import Banks
 from db.database import engine
 from db.reviews import Reviews
 from db.sites_banks import SravniBankInfo
 from db.sourse import Source
 from misc.logger import get_logger
+from sqlmodel import Session, select
 
 
 class SravniReviews:
@@ -25,7 +24,9 @@ class SravniReviews:
         self.logger.info("start download bank list")
         with Session(engine) as session:
             cbr_banks = select(Banks)
-            self.logger.info("send request to https://www.sravni.ru/proxy-organizations/banks/list")
+            self.logger.info(
+                "send request to https://www.sravni.ru/proxy-organizations/banks/list"
+            )
             r = requests.post(
                 "https://www.sravni.ru/proxy-organizations/banks/list",
                 data={
@@ -73,12 +74,16 @@ class SravniReviews:
     def parse(self) -> None:
         start_date = datetime.now()
         with Session(engine) as session:
-            source = session.exec(select(Source).where(Source.name == self.BASE_URL)).one()
+            source = session.exec(
+                select(Source).where(Source.name == self.BASE_URL)
+            ).one()
             bank_list = session.exec(select(SravniBankInfo)).all()
             # last_date = source.last_checked if source.last_checked is not None else datetime.min
             last_date = datetime(2022, 1, 1)
             for i, bank_info in enumerate(bank_list):
-                self.logger.info(f"[{i}/{len(bank_list)}] download reviews for {bank_info.alias}")
+                self.logger.info(
+                    f"[{i}/{len(bank_list)}] download reviews for {bank_info.alias}"
+                )
                 for _ in range(3):
                     response = requests.get(
                         "https://www.sravni.ru/proxy-reviews/reviews?locationRoute=&newIds=true&orderBy=withRates&pageIndex"
