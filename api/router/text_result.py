@@ -8,8 +8,7 @@ router = APIRouter(prefix="/textresult", tags=["textresult"])
 
 
 @router.get("/", response_model=GetTextResultItem)
-async def get_text_results(date: datetime = None, source: str = None, bank_id: str = None,
-                           text_id: int = None):
+async def get_text_results(date: datetime = None, source: str = None, bank_id: str = None, text_id: int = None):
     return {"message": "OK"}
 
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from shemes import PostModel, GetModel, PostModelResponse
+from shemes import GetModel, PostModel, PostModelResponse
 
 router = APIRouter(prefix="/model", tags=["model"])
 
