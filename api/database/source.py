@@ -1,14 +1,20 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, relationship
+
 from database.base import Base
+
+if TYPE_CHECKING:
+    from database.text import Text
 
 
 class SourceType(Base):
     __tablename__ = "source_type"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    sources = relationship("Source", back_populates="source_type")
+    name = Column(String, index=True)
+    sources: Mapped[list["Source"]] = relationship("Source", back_populates="source_type")
 
 
 class Source(Base):
@@ -16,7 +22,8 @@ class Source(Base):
 
     id = Column(Integer, primary_key=True)
     site = Column(String)
-    source_type_id = Column(Integer, ForeignKey("source_type.id"))
-    source_type = relationship("SourceType", back_populates="sources")
+    source_type_id = Column(Integer, ForeignKey("source_type.id"), index=True)
+    source_type: Mapped["SourceType"] = relationship("SourceType", back_populates="sources")
     parser_state = Column(String, nullable=True)
     last_update = Column(DateTime, nullable=True)
+    texts: Mapped[list["Text"]] = relationship("Text", back_populates="source")

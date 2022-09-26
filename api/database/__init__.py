@@ -1,17 +1,13 @@
-import os
-
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from database.bank import Bank
-from database.model import ModelType, Model
-from database.text import Text
-from database.text_sentence import TextSentence
-from database.text_result import TextResult
+from database.model import Model, ModelType
 from database.source import Source
+from database.text import Text
+from database.text_result import TextResult
+from database.text_sentence import TextSentence
+from settings import Settings
 
-
-DATABASE_URL = os.environ.get("DATABASE_URL", None)
-if DATABASE_URL is None:
-    raise ValueError("DATABASE_URL is not set")
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(Settings().database_url, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

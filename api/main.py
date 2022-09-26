@@ -1,9 +1,9 @@
 import fastapi
+from sqlalchemy_utils import create_database, database_exists  # type: ignore
 
-from router import model, sources, text, text_result
-from sqlalchemy_utils import database_exists, create_database
 from database import engine
 from database.base import Base
+from router import model, sources, text, text_result
 
 app = fastapi.FastAPI(
     title="Texts API",
