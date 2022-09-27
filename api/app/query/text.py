@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.database import Source, Text, TextSentence, SourceType
+from app.database import Source, SourceType, Text, TextSentence
 from app.schemes.text import PostTextItem
 from app.tasks.transform_texts import transform_texts
 
@@ -39,6 +39,11 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
 
 
 async def get_text_sentences(db: Session, sources: list[str], limit: int) -> list[TextSentence]:
-    # query = db.query(TextSentence).filter(TextSentence.text.source.source_type.name.in_(sources))
-    query = db.query(TextSentence).join(TextSentence.text).join(Text.source).join(Source.source_type).filter(SourceType.name.in_(sources))
+    query = (
+        db.query(TextSentence)
+        .join(TextSentence.text)
+        .join(Text.source)
+        .join(Source.source_type)
+        .filter(SourceType.name.in_(sources))
+    )
     return query.limit(limit).all()

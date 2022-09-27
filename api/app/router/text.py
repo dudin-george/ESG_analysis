@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.query.text import create_text_sentences, get_text_sentences
-from app.schemes.text import GetTextSentences, PostTextItem, TextSentence
+from app.schemes.text import GetTextSentences, PostTextItem
 
 router = APIRouter(prefix="/text", tags=["text"])
 
