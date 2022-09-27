@@ -64,7 +64,11 @@ class GetTextResultItem(BaseModel):
     model_id: int
 
 
+class GetTextResult(BaseModel):
+    items: list[GetTextResultItem]
+
+
 class PostTextResult(BaseModel):
     text_result: list[float]
-    model: int
+    model_id: int
     text_sentence_id: int
