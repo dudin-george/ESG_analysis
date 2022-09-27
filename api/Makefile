@@ -25,7 +25,7 @@ format:
 	$(isort)
 	$(black)
 	$(flake8)
-	$(mypy)
+	# $(mypy)
 
 .PHONY: all
 all: format

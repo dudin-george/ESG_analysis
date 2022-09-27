@@ -22,6 +22,7 @@ black = "^22.3.0"
 mypy = "^0.961"
 isort = "^5.10.1"
 SQLAlchemy = {extras = ["mypy"], version = "^1.4.41"}
+pyright = "^1.1.272"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -37,7 +38,6 @@ exclude = [
     "app/database",
 ]
 # --strict
-follow_imports = "silent"
 disallow_any_generics = true
 disallow_subclassing_any = true
 disallow_untyped_calls = true
@@ -54,7 +54,7 @@ plugins = [
     "sqlalchemy.ext.mypy.plugin",
     "pydantic.mypy",
 ]
-# ignore_missing_imports = true
+ignore_missing_imports = false
 # --strict end
 
 [tool.black]

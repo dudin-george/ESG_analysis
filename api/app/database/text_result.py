@@ -18,4 +18,4 @@ class TextResult(Base):
     text_sentence: Mapped["TextSentence"] = relationship("TextSentence", back_populates="text_results")
     model_id = Column(Integer, ForeignKey("model.id"), index=True)
     model: Mapped["Model"] = relationship("Model", back_populates="text_results")
-    result: Mapped[list[Float]] = Column(ARRAY(Float))  # type: ignore
+    result: Mapped[list[Float]] = Column(ARRAY(Float))

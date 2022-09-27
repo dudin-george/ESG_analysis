@@ -87,7 +87,7 @@ class SentencesDataset(Dataset):
 
 class ProbModel(nn.Module):
     def __init__(self, bert, custom_bert):
-        super(ProbModel, self).__init__()
+        super().__init__()
         self.bert = bert
         self.custom_bert = custom_bert
         self.dense = nn.Linear(768, 768)

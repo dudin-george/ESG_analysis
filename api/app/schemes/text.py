@@ -11,8 +11,34 @@ class TextItem(BaseModel):
     bank_id: str
     link: str
     comments_num: int | None = None
-    user_id: str | None = None
-    rating: int | None = None
+
+
+class Text(BaseModel):
+    id: int
+    link: str
+    source: str
+    date: datetime
+    title: str
+    bank_id: str
+    source_id: int
+    comments_num: int | None = None
+
+    class Config:
+        orm_mode = True
+
+
+class TextResult(BaseModel):
+    id: int
+    text_sentence_id: int
+    model_id: int
+    result: list[float]
+
+    class Config:
+        orm_mode = True
+
+
+class TextResultItem(BaseModel):
+    pass
 
 
 class PostTextItem(BaseModel):

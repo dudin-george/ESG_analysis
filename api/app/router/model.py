@@ -2,8 +2,15 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.query.model import get_model_items, create_model, get_model_types_items
-from app.schemes.model import GetModel, PostModel, PostModelResponse, GetModelItem, GetModelType, ModelType
+from app.query.model import create_model, get_model_items, get_model_types_items
+from app.schemes.model import (
+    GetModel,
+    GetModelItem,
+    GetModelType,
+    ModelType,
+    PostModel,
+    PostModelResponse,
+)
 
 router = APIRouter(prefix="/model", tags=["model"])
 
