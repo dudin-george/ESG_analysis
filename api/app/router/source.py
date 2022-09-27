@@ -7,14 +7,13 @@ from app.query.source import (  # type: ignore
     get_source_items,
     get_source_types_items,
 )
-from app.shemes.source import (
+from app.schemes.source import (
     CreateSource,
     GetSource,
     GetSourceItem,
     GetSourceTypes,
     SourceTypes,
     PostSourceResponse,
-    Source
 )
 
 router = APIRouter(prefix="/source", tags=["source"])
@@ -24,7 +23,7 @@ router = APIRouter(prefix="/source", tags=["source"])
 async def get_sources(db: Session = Depends(get_db)) -> GetSource:
     source_items = await get_source_items(db)
     get_source = GetSource(items=[])
-    for source_item in source_items:  # todo orm mode
+    for source_item in source_items:
         get_source_item = GetSourceItem(
             id=source_item.id,
             site=source_item.site,

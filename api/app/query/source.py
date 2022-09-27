@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 
 from app.database.source import Source, SourceType
-from app.shemes.source import CreateSource
+from app.schemes.source import CreateSource
 
 
 async def get_source_items(db: Session) -> list[Source]:

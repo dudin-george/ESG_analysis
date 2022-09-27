@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi import APIRouter
 
-from app.shemes.text import GetTextResultItem, PostTextResult
+from app.schemes.text import GetTextResultItem, PostTextResult
 
 router = APIRouter(prefix="/textresult", tags=["textresult"])
 

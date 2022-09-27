@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.shemes.model import GetModel, PostModel, PostModelResponse
+from app.schemes.model import GetModel, PostModel, PostModelResponse
 
 router = APIRouter(prefix="/model", tags=["model"])
 
