@@ -21,7 +21,7 @@ class Model(Base):
     __tablename__ = "model"
 
     id = Column(Integer, primary_key=True, index=True)
-    model_name = Column(String, index=True)
+    name = Column(String, index=True)
     model_type_id = Column(Integer, ForeignKey("model_type.id"), index=True)
     model_type: Mapped["ModelType"] = relationship("ModelType", back_populates="models")
     text_results: Mapped["TextResult"] = relationship("TextResult", back_populates="model")
