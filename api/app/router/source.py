@@ -2,7 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.query.source import create_source, get_source_items, get_source_types_items
+from app.query.source import (  # type: ignore
+    create_source,
+    get_source_items,
+    get_source_types_items,
+)
 from app.schemes.source import (
     CreateSource,
     GetSource,
