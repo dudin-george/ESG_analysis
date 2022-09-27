@@ -12,8 +12,9 @@ from app.shemes.source import (
     GetSource,
     GetSourceItem,
     GetSourceTypes,
-    GetSourceTypesItem,
+    SourceTypes,
     PostSourceResponse,
+    Source
 )
 
 router = APIRouter(prefix="/source", tags=["source"])
@@ -47,6 +48,6 @@ async def get_source_types(db: Session = Depends(get_db)) -> GetSourceTypes:
     source_types = await get_source_types_items(db)
     get_source_type = GetSourceTypes(items=[])
     for source_item in source_types:
-        get_source_item = GetSourceTypesItem(id=source_item.id, name=source_item.name)
+        get_source_item = SourceTypes.from_orm(source_item)
         get_source_type.items.append(get_source_item)
     return get_source_type
