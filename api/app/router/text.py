@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 
-from shemes import GetTextSentences, PostTextItem
+from app.shemes import GetTextSentences, PostTextItem
 
 router = APIRouter(prefix="/text", tags=["text"])
 

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from fastapi import APIRouter
 
-from shemes import GetTextResultItem, PostTextResult
+from app.shemes import GetTextResultItem, PostTextResult
 
 router = APIRouter(prefix="/textresult", tags=["textresult"])
 

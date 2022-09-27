@@ -60,19 +60,36 @@ class PostTextResult(BaseModel):
 
 
 class GetSourceItem(BaseModel):
-    source: str
-    source_type: str
     id: int
+    site: str
+    source_type_id: int
+    source_type: str
+    parser_state: str | None
+    last_update: datetime | None
 
 
 class GetSource(BaseModel):
     items: list[GetSourceItem]
 
 
-class PostSource(BaseModel):
-    source: str
+class CreateSource(BaseModel):
+    site: str
     source_type: str
 
 
 class PostSourceResponse(BaseModel):
     source_id: int
+
+
+class GetSourceTypesItem(BaseModel):
+    id: int
+    name: str
+
+
+class GetSourceTypes(BaseModel):
+    items: list[GetSourceTypesItem]
+
+
+class Bank(BaseModel):
+    id: str
+    bank_name: str

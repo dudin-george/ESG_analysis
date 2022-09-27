@@ -1,9 +1,10 @@
 import fastapi
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
 
-from database import engine
-from database.base import Base
-from router import model, sources, text, text_result
+from app.database import engine, SessionLocal
+from app.database.base import Base
+from app.router import model, source, text, text_result
+from app.bank_parser import CBRParser
 
 app = fastapi.FastAPI(
     title="Texts API",
@@ -13,7 +14,7 @@ app = fastapi.FastAPI(
 app.include_router(text.router)
 app.include_router(model.router)
 app.include_router(text_result.router)
-app.include_router(sources.router)
+app.include_router(source.router)
 
 
 @app.on_event("startup")
@@ -21,6 +22,7 @@ def startup() -> None:
     if not database_exists(engine.url):
         create_database(engine.url)
     Base.metadata.create_all(bind=engine)
+    CBRParser(SessionLocal()).load_banks()
 
 
 def main() -> None:
