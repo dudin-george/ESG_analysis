@@ -1,10 +1,10 @@
 import fastapi
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
 
-from app.database import engine, SessionLocal
+from app.bank_parser import CBRParser
+from app.database import SessionLocal, engine
 from app.database.base import Base
 from app.router import model, source, text, text_result
-from app.bank_parser import CBRParser
 
 app = fastapi.FastAPI(
     title="Texts API",

@@ -33,8 +33,11 @@ profile = "black"
 # https://github.com/tiangolo/sqlmodel/blob/main/pyproject.toml
 [tool.mypy]
 python_version = "3.10"
-exclude = "models/ModelSentiment"
+exclude = [
+    "app/database",
+]
 # --strict
+follow_imports = "silent"
 disallow_any_generics = true
 disallow_subclassing_any = true
 disallow_untyped_calls = true
@@ -46,9 +49,12 @@ no_implicit_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_return_any = true
-implicit_reexport = false
 strict_equality = true
-plugins = "sqlalchemy.ext.mypy.plugin"
+plugins = [
+    "sqlalchemy.ext.mypy.plugin",
+    "pydantic.mypy",
+]
+# ignore_missing_imports = true
 # --strict end
 
 [tool.black]

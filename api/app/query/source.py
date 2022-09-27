@@ -1,13 +1,15 @@
-from app.database.source import Source, SourceType
+# type: ignore
 from sqlalchemy.orm import Session
-from app.shemes import CreateSource
+
+from app.database.source import Source, SourceType
+from app.shemes.source import CreateSource
 
 
-async def get_source_items(db: Session):
+async def get_source_items(db: Session) -> list[Source]:
     return db.query(Source).all()
 
 
-async def create_source(db: Session, model: CreateSource):
+async def create_source(db: Session, model: CreateSource) -> int:
     source = db.query(Source).filter(Source.site == model.site).first()
     if source:
         return source.id

@@ -1,15 +1,14 @@
+# from misc.logger import get_logger
+import logging
 import re
-from asyncio import sleep
+from time import sleep
 
 import requests
 from bs4 import BeautifulSoup
-# from misc.logger import get_logger
-import logging
-
 from sqlalchemy.orm import Session
 
-from app.query.bank import get_bank_count, load_bank
 from app.database.bank import Bank
+from app.query.bank import get_bank_count, load_bank
 
 
 class CBRParser:
@@ -28,7 +27,7 @@ class CBRParser:
         response = requests.get("https://www.cbr.ru/banking_sector/credit/FullCoList/")
         if response.status_code == 403:
             self.logger.error("cbr.ru 403 error")
-            return
+            return None
         page = BeautifulSoup(response.text, "html.parser")
         return page
 
@@ -39,9 +38,7 @@ class CBRParser:
             items = bank.find_all("td")
             license_id = items[2].text
             name = re.sub("[\xa0\n\t]", " ", items[4].text)
-            cbr_banks.append(
-                Bank(id=license_id, bank_name=name)
-            )
+            cbr_banks.append(Bank(id=license_id, bank_name=name))
         return cbr_banks
 
     def parse(self) -> None:

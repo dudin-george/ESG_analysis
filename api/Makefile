@@ -1,9 +1,9 @@
 # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
 .DEFAULT_GOAL := all
-isort = isort .
-black = black .
-mypy = mypy .
-flake8  = flake8 .
+isort = isort app/
+black = black app/
+mypy = mypy app/
+flake8  = flake8 app/
 
 .PHONY: install-linting
 install-linting:
@@ -24,8 +24,8 @@ lint:
 format:
 	$(isort)
 	$(black)
-	$(mypy)
 	$(flake8)
+	$(mypy)
 
 .PHONY: all
 all: format
