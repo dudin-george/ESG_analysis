@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.database.bank import Bank  # noqa: F401
 from app.database.model import Model, ModelType  # noqa: F401
-from app.database.source import Source  # noqa: F401
+from app.database.source import Source, SourceType  # noqa: F401
 from app.database.text import Text  # noqa: F401
 from app.database.text_result import TextResult  # noqa: F401
 from app.database.text_sentence import TextSentence  # noqa: F401

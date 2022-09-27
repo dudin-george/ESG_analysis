@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from sqlalchemy.orm import Session
 
 from app.database.text_result import TextResult
@@ -18,7 +16,7 @@ async def create_text_results(db: Session, texts: list[PostTextResult]) -> None:
     for text in texts:
         text_result = TextResult(
             text_sentence_id=text.text_sentence_id,
-            result=text.text_result,  # type: ignore
+            result=text.text_result,
             model_id=text.model_id,
         )
         text_results.append(text_result)

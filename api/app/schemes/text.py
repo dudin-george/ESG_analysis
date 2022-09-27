@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class TextItem(BaseModel):
-    source: str
+    source_id: int
     date: datetime
     title: str
     text: str
@@ -37,8 +37,14 @@ class TextResult(BaseModel):
         orm_mode = True
 
 
-class TextResultItem(BaseModel):
-    pass
+class TextSentence(BaseModel):
+    id: int
+    text_id: int
+    sentence: str
+    sentence_num: int
+
+    class Config:
+        orm_mode = True
 
 
 class PostTextItem(BaseModel):
@@ -47,14 +53,8 @@ class PostTextItem(BaseModel):
     date: datetime | None
 
 
-class TextSentenceItem(BaseModel):
-    id: int
-    sentence: str
-    review_id: int
-
-
 class GetTextSentences(BaseModel):
-    items: list[TextSentenceItem]
+    items: list[TextSentence]
 
 
 class GetTextResultItem(BaseModel):
