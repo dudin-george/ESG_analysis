@@ -4,7 +4,7 @@ from sqlalchemy_utils import create_database, database_exists  # type: ignore
 from app.bank_parser import CBRParser
 from app.database import SessionLocal, engine
 from app.database.base import Base
-from app.router import model, source, text, text_result
+from app.router import model, source, text, text_result, bank
 
 app = fastapi.FastAPI(
     title="Texts API",
@@ -15,6 +15,7 @@ app.include_router(text.router)
 app.include_router(model.router)
 app.include_router(text_result.router)
 app.include_router(source.router)
+app.include_router(bank.router)
 
 
 @app.on_event("startup")
