@@ -1,8 +1,8 @@
 from typing import Iterator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
+
 from settings import Settings
 
 Base = declarative_base()

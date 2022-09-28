@@ -23,8 +23,8 @@ lint:
 format:
 	$(isort)
 	$(black)
-	$(mypy)
 	$(flake8)
+	$(mypy)
 
 .PHONY: all
 all: format

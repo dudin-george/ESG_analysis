@@ -6,8 +6,9 @@ from db.database import engine
 from db.reviews import Reviews
 from db.sites_banks import SravniBankInfo
 from db.sourse import Source
-from misc.logger import get_logger
 from sqlmodel import Session, select
+
+from misc.logger import get_logger
 
 
 class SravniReviews:
