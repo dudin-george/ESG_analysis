@@ -7,8 +7,7 @@ flake8  = flake8 .
 
 .PHONY: install-linting
 install-linting:
-	poetry add flake8 black isort mypy -D
-	pre-commit install
+	poetry add flake8 black isort mypy -G dev
 
 .PHONY: install
 install: install-linting
