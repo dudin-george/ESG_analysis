@@ -24,5 +24,9 @@ async def create_source(db: Session, model: CreateSource) -> int:
     return source.id
 
 
+async def get_source_item_by_id(db: Session, source_id: int) -> Source:
+    return db.query(Source).filter(Source.id == source_id).first()
+
+
 async def get_source_types_items(db: Session) -> list[SourceType]:
     return db.query(SourceType).all()
