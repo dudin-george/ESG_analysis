@@ -31,9 +31,7 @@ class BankiReviews:
         page_num = ceil(int(page_num_text.text.strip().split()[-1]) / per_page)
         return page_num
 
-    def get_page(
-        self, browser: webdriver.Firefox | webdriver.Remote, url: str
-    ) -> BeautifulSoup:
+    def get_page(self, browser: webdriver.Firefox | webdriver.Remote, url: str) -> BeautifulSoup:
         browser.get(url)
         self.logger.debug(f"Send request to {url}")
         page = BeautifulSoup(browser.page_source, "html.parser")
@@ -47,12 +45,8 @@ class BankiReviews:
             return None
         license_id = license_text.split("№")[-1].split()[0]
 
-        bank_url = bank_link["href"].replace(
-            "/banks/", "https://www.banki.ru/services/responses/"
-        )
-        return BankiRuItem(
-            id=license_id, bank_name=bank_link.text, reviews_url=bank_url
-        )
+        bank_url = bank_link["href"].replace("/banks/", "https://www.banki.ru/services/responses/")
+        return BankiRuItem(id=license_id, bank_name=bank_link.text, reviews_url=bank_url)
 
     def get_bank_list(self) -> None:
         browser = get_browser()
@@ -64,9 +58,7 @@ class BankiReviews:
         banks_id = [bank.id for bank in existing_banks]
         for i in range(1, page_num + 1):
             if i != 1:
-                page = self.get_page(
-                    browser, f"https://www.banki.ru/banks/?PAGEN_1={i}"
-                )
+                page = self.get_page(browser, f"https://www.banki.ru/banks/?PAGEN_1={i}")
             for bank_page_item in page.find_all("tr", {"data-test": "banks-list-item"}):
                 bank = self.get_bank(bank_page_item)
                 if bank is None or bank.id not in banks_id:
@@ -77,12 +69,11 @@ class BankiReviews:
         for bank in banks:
             banks_db.append(BankiRu.from_pydantic(bank))
         create_banks(banks_db)
+        self.bank_list = banks_db
         browser.stop_client()
         browser.close()
 
-    def get_reviews(
-        self, reviews: ResultSet, parsed_time: datetime, bank_id: str
-    ) -> tuple[list[Text], list[datetime]]:
+    def get_reviews(self, reviews: ResultSet, parsed_time: datetime, bank_id: str) -> tuple[list[Text], list[datetime]]:
         reviews_list = []
         times = []
         for review in reviews:
@@ -93,7 +84,7 @@ class BankiReviews:
             time = datetime.strptime(
                 review.find("time", class_="display-inline-block").text,
                 "%d.%m.%Y %H:%M",
-            )
+            )  # TODO validator
             comments_num = review.find("span", class_="responses__item__comment-count")
 
             if time < parsed_time:
@@ -104,7 +95,7 @@ class BankiReviews:
                     link=link,
                     date=time,
                     title=title,
-                    text=re.sub("[\xa0\n\t]", " ", text),
+                    text=re.sub("[\xa0\n\t]", " ", text),  # TODO validator
                     comments_num=comments_num,
                     bank_id=bank_id,
                     source_id=self.source_id,
@@ -123,18 +114,14 @@ class BankiReviews:
         browser = get_browser()
         for bank_index, bank in enumerate(self.bank_list):
             reviews_list = []
-            self.logger.info(
-                f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}"
-            )
+            self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
             page = self.get_page(browser, bank.reviews_url)
             page_num = self.get_page_num(page, 25)
             if page_num == -1:
                 continue
 
             for i in range(1, page_num + 1):
-                self.logger.info(
-                    f"[{i}/{page_num}] start parse {bank.bank_name} reviews page {i}"
-                )
+                self.logger.info(f"[{i}/{page_num}] start parse {bank.bank_name} reviews page {i}")
                 if i != 1:
                     page = self.get_page(browser, f"{bank.reviews_url}?page={i}")
 
@@ -142,9 +129,7 @@ class BankiReviews:
                 if responses_list is None:
                     continue
 
-                responses, times = self.get_reviews(
-                    responses_list.find_all("article"), parsed_time, bank.bank_id
-                )
+                responses, times = self.get_reviews(responses_list.find_all("article"), parsed_time, bank.bank_id)
 
                 if len(times) == 0:
                     break
