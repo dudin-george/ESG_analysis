@@ -13,6 +13,22 @@ class BankiRuItem(BaseModel):
     bank_name: str
     reviews_url: str
 
+    class Config:
+        orm_mode = True
+
+
+class SravniRuItem(BaseModel):
+    sravni_id: str
+    sravni_old_id: int
+    alias: str
+    bank_name: str
+    bank_full_name: str
+    bank_official_name: str
+    bank_id: str
+
+    class Config:
+        orm_mode = True
+
 
 class Source(BaseModel):
     site: str
