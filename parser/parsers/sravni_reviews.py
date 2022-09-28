@@ -20,7 +20,7 @@ class SravniReviews:
         if len(self.bank_list) == 0:
             self.get_bank_list()
 
-    def request_bank_list(self) -> dict:
+    def request_bank_list(self) -> Response:
         data = {
             "select": [
                 "oldId",
@@ -40,12 +40,13 @@ class SravniReviews:
             "location": "6.",
             "isMainList": True,
         }
-        return requests.post("https://www.sravni.ru/proxy-organizations/banks/list", data=data).json()["items"]
+        return requests.post("https://www.sravni.ru/proxy-organizations/banks/list", data=data)
 
     def get_bank_list(self) -> None:
         self.logger.info("start download bank list")
         self.logger.info("send request to https://www.sravni.ru/proxy-organizations/banks/list")
-        items = self.request_bank_list()
+        request = self.request_bank_list()
+        items = request.json()["items"]
         self.logger.info("finish download bank list")
         existing_banks = api.get_bank_list()
         banks_id = [bank.id for bank in existing_banks]
@@ -72,7 +73,9 @@ class SravniReviews:
         self.bank_list = banks_db
         self.logger.info("create main table for banks")
 
-    def parse_reviews(self, reviews_array: dict, last_date: datetime, bank: SravniBankInfo) -> list[Text]:
+    def parse_reviews(
+        self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
+    ) -> list[Text]:
         reviews = []
         for review in reviews_array:
             url = f"https://www.sravni.ru/bank/{bank.alias}/otzyvy/{review['id']}"
@@ -80,10 +83,10 @@ class SravniReviews:
                 source_id=self.source_id,
                 bank_id=bank.bank_id,
                 link=url,
-                date=review["date"],
+                date=review["date"],  # TODO: fix
                 title=review["title"],
                 text=review["text"],
-                comments_num=review["commentsCount"],
+                comments_num=int(review["commentsCount"]),
             )
             if last_date > parsed_review.date.replace(tzinfo=None):
                 continue
@@ -98,7 +101,7 @@ class SravniReviews:
                 f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&tag"
             )
             if response.status_code != 500:
-                return response.json()
+                return response
         return response
 
     def parse(self) -> None:

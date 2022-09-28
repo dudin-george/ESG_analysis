@@ -8,7 +8,7 @@ def get_bank_list() -> list[BankiRu]:
     return bank_list
 
 
-def create_banks(bank_list: list[BankiRu]):
+def create_banks(bank_list: list[BankiRu]) -> None:
     with SessionLocal() as db:
         db.add_all(bank_list)
         db.commit()

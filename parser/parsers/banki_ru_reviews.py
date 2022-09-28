@@ -46,7 +46,7 @@ class BankiReviews:
         license_id = license_text.split("№")[-1].split()[0]
 
         bank_url = bank_link["href"].replace("/banks/", "https://www.banki.ru/services/responses/")
-        return BankiRuItem(id=license_id, bank_name=bank_link.text, reviews_url=bank_url)
+        return BankiRuItem(bank_id=license_id, bank_name=bank_link.text, reviews_url=bank_url)
 
     def get_bank_list(self) -> None:
         browser = get_browser()
@@ -61,7 +61,7 @@ class BankiReviews:
                 page = self.get_page(browser, f"https://www.banki.ru/banks/?PAGEN_1={i}")
             for bank_page_item in page.find_all("tr", {"data-test": "banks-list-item"}):
                 bank = self.get_bank(bank_page_item)
-                if bank is None or bank.id not in banks_id:
+                if bank is None or bank.bank_id not in banks_id:
                     continue
                 banks.append(bank)
         self.logger.info("finish download bank list")
@@ -70,8 +70,7 @@ class BankiReviews:
             banks_db.append(BankiRu.from_pydantic(bank))
         create_banks(banks_db)
         self.bank_list = banks_db
-        browser.stop_client()
-        browser.close()
+        browser.quit()
 
     def get_reviews(self, reviews: ResultSet, parsed_time: datetime, bank_id: str) -> tuple[list[Text], list[datetime]]:
         reviews_list = []
@@ -113,6 +112,7 @@ class BankiReviews:
             parsed_time = datetime.min
         browser = get_browser()
         for bank_index, bank in enumerate(self.bank_list):
+            bank = BankiRuItem.from_orm(bank)
             reviews_list = []
             self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
             page = self.get_page(browser, bank.reviews_url)
@@ -141,6 +141,5 @@ class BankiReviews:
 
             api.send_texts(TextRequest(items=reviews_list, last_update=start_time))
 
-        browser.stop_client()
         browser.quit()
         self.logger.info("finish parse bank reviews")

@@ -9,7 +9,7 @@ class Bank(BaseModel):
 
 
 class BankiRuItem(BaseModel):
-    id: str
+    bank_id: str
     bank_name: str
     reviews_url: str
 

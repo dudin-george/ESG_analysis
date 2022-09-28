@@ -10,11 +10,11 @@ class BankiRu(Base):
     reviews_url = Column(String)
 
     @staticmethod
-    def from_pydantic(bank: BankiRuItem):
+    def from_pydantic(bank: BankiRuItem) -> "BankiRu":
         return BankiRu(
             bank_name=bank.bank_name,
             reviews_url=bank.reviews_url,
-            bank_id=bank.id,
+            bank_id=bank.bank_id,
         )
 
 
@@ -28,7 +28,7 @@ class SravniBankInfo(Base):
     bank_official_name: str = Column(String)
 
     @staticmethod
-    def from_pydantic(bank: SravniRuItem):
+    def from_pydantic(bank: SravniRuItem) -> "SravniBankInfo":
         return SravniBankInfo(
             sravni_id=bank.sravni_id,
             sravni_old_id=bank.sravni_old_id,
