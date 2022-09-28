@@ -85,14 +85,8 @@ class infobankiru {
    integer id
 }
 
-class parse_sources{
-    integer id
-    varschar source_name
-    datetime parsed
-}
-
 class sravnibankinfo {
-   varchar(30) sravni_id
+   varchar sravni_id
    integer sravni_old_id
    varchar alias
    varchar bank_name

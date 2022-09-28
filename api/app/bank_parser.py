@@ -1,5 +1,4 @@
-# from misc.logger import get_logger
-import logging
+from fastapi.logger import logger
 import re
 from time import sleep
 
@@ -12,7 +11,7 @@ from app.query.bank import get_bank_count, load_bank
 
 
 class CBRParser:
-    logger = logging.getLogger(__name__)
+    logger = logger
 
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -22,6 +21,7 @@ class CBRParser:
             count = get_bank_count(session)
         if count == 0:
             self.parse()
+        self.logger.info("finish download bank list")
 
     def get_page(self) -> BeautifulSoup | None:
         response = requests.get("https://www.cbr.ru/banking_sector/credit/FullCoList/")
