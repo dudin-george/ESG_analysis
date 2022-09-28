@@ -24,8 +24,12 @@ lint:
 format:
 	$(isort)
 	$(black)
-	$(flake8)
 	$(mypy)
+	$(flake8)
+
+.PHONY: export-dependencies
+export-dependencies:
+	poetry export -f requirements.txt --output requirements.txt --without-hashes
 
 .PHONY: all
-all: format
+all: format export-dependencies
