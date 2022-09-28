@@ -1,6 +1,7 @@
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.database import Source, SourceType, Text, TextSentence
+from app.database import Source, Text, TextResult, TextSentence
 from app.schemes.text import PostTextItem
 from app.tasks.transform_texts import transform_texts
 
@@ -27,7 +28,11 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
         source.last_update = post_texts.date
         db.refresh(source)
     db.add_all(text_db)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        raise e
     ids = []
     for text_db_item in text_db:
         db.refresh(text_db_item)
@@ -38,12 +43,13 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
     transform_texts(ids, texts)  # type: ignore
 
 
-async def get_text_sentences(db: Session, sources: list[str], limit: int) -> list[TextSentence]:
+async def get_text_sentences(db: Session, model_id: int, sources: list[str], limit: int) -> list[TextSentence]:
     query = (
         db.query(TextSentence)
         .join(TextSentence.text)
         .join(Text.source)
-        .join(Source.source_type)
-        .filter(SourceType.name.in_(sources))
+        .join(TextSentence.text_results, isouter=True)
+        .filter(Source.site.in_(sources))
+        .filter(TextSentence.id.not_in(db.query(TextResult.text_sentence_id).filter(TextResult.model_id == model_id)))
     )
     return query.limit(limit).all()

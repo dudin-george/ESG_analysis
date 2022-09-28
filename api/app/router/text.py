@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -10,13 +11,19 @@ router = APIRouter(prefix="/text", tags=["text"])
 
 @router.get("/sentences", response_model=GetTextSentences)
 async def get_sentences(
-    sources: list[str] = Query(default=["new"]), limit: int = 100, db: Session = Depends(get_db)
+    sources: list[str] = Query(default=["new"]),
+    model_id: int = Query(),
+    limit: int = 100,
+    db: Session = Depends(get_db),
 ) -> GetTextSentences:
-    sentences = await get_text_sentences(db, sources, limit)
+    sentences = await get_text_sentences(db, model_id, sources, limit)
     return GetTextSentences(items=sentences)
 
 
 @router.post("/")
-async def post_text(texts: PostTextItem, db: Session = Depends(get_db)) -> dict[str, str]:
-    await create_text_sentences(db, texts)
-    return {"message": "OK"}
+async def post_text(texts: PostTextItem, db: Session = Depends(get_db)) -> JSONResponse:
+    try:
+        await create_text_sentences(db, texts)
+    except Exception as e:
+        return JSONResponse({"message": str(e)}, status_code=400)
+    return JSONResponse({"message": "OK"})
