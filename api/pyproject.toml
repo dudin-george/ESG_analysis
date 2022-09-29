@@ -1,0 +1,69 @@
+[tool.poetry]
+name = "api"
+version = "0.1.0"
+description = ""
+authors = ["Samoed <samoed.roman@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.28.0"
+psycopg2 = "^2.9.3"
+fastapi = "^0.85.0"
+pydantic = "^1.10.2"
+SQLAlchemy = "^1.4.41"
+uvicorn = "^0.18.3"
+SQLAlchemy-Utils = "^0.38.3"
+beautifulsoup4 = "^4.11.1"
+#  celery = "^5.2.7"
+nltk = "^3.7"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^4.0.1"
+black = "^22.3.0"
+mypy = "^0.961"
+isort = "^5.10.1"
+SQLAlchemy = {extras = ["mypy"], version = "^1.4.41"}
+#  celery-types = "^0.14.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+# https://github.com/tiangolo/sqlmodel/blob/main/pyproject.toml
+[tool.mypy]
+python_version = "3.10"
+# --strict
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+strict_equality = true
+plugins = [
+    "sqlalchemy.ext.mypy.plugin",
+    "pydantic.mypy",
+]
+ignore_missing_imports = false
+# --strict end
+
+[tool.black]
+line-length = 120
+target-version = ['py310']
+preview = true
+exclude = '''
+/(
+    .git
+  | .venv
+  | notebooks
+)/
+'''

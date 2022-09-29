@@ -1,11 +1,10 @@
 services:
-  db:
+  database:
     image: postgres:14.4
     restart: always
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
-      POSTGRES_DB: database
     volumes:
       - /ESGdata:/var/lib/postgresql/data
     ports:
@@ -26,12 +25,20 @@ services:
 
   script:
     depends_on:
-      - db
-      - grafana
-      - selenium
-    build: .
+      - database
+    build: api
     environment:
-      CONNECTION: "postgresql+psycopg2://example:example@db/database"
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/database"
+    ports:
+      - 8000:8000
+
+  parsers:
+    depends_on:
+      - script
+      - database
+      - selenium
+    build: parser
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/parser"
       DOCKER: "true"
-    volumes:
-      - ./pretrained_models:/app/pretrained_models
+      API_URL: "http://script:8000"
