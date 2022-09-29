@@ -1,6 +1,6 @@
 import threading
 from typing import Callable
-
+from time import sleep
 import schedule  # type: ignore
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
 
@@ -29,6 +29,7 @@ def parsers_setup() -> None:
 
 
 def main() -> None:
+    sleep(5)
     logger = get_logger(__name__)
     logger.info("start app")
     if not database_exists(engine.url):

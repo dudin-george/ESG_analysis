@@ -5,24 +5,23 @@ services:
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
-#      POSTGRES_DB: database
     volumes:
       - /ESGdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
-#  selenium:
-#    image: selenium/standalone-firefox
-#    ports:
-#    - 4444:4444
-#
-#  grafana:
-#    image: grafana/grafana:8.2.6
-#    ports:
-#      - 3000:3000
-#    user: ":"
-#    volumes:
-#    - /grafana:/var/lib/grafana
+  selenium:
+    image: selenium/standalone-firefox
+    ports:
+    - 4444:4444
+
+  grafana:
+    image: grafana/grafana:8.2.6
+    ports:
+      - 3000:3000
+    user: ":"
+    volumes:
+    - /grafana:/var/lib/grafana
 
   script:
     depends_on:
@@ -32,3 +31,14 @@ services:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/database"
     ports:
       - 8000:8000
+
+  parsers:
+    depends_on:
+      - script
+      - database
+      - selenium
+    build: parser
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/parser"
+      DOCKER: "true"
+      API_URL: "http://script:8000"
