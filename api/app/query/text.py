@@ -26,7 +26,8 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
             return None
         source.parser_state = post_texts.parsed_state
         source.last_update = post_texts.date
-        db.refresh(source)
+        db.add(source)
+        db.commit()
     db.add_all(text_db)
     try:
         db.commit()

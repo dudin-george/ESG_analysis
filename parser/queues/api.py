@@ -31,7 +31,7 @@ def send_texts(text: TextRequest) -> None:
         d = item.dict()
         d["date"] = d["date"].isoformat()
         items.append(d)
-    request = {"items": items, "last_update": text.last_update.isoformat()}
+    request = {"items": items, "date": text.last_update.isoformat()}
     r = requests.post(URL + "/text", json=request)
     if r.status_code != 200:
         print(r.json())
