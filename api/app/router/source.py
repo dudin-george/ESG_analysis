@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.query.source import (  # type: ignore
     create_source,
+    get_source_item_by_id,
     get_source_items,
     get_source_types_items,
-    get_source_item_by_id,
 )
 from app.schemes.source import (
     CreateSource,
@@ -15,8 +15,8 @@ from app.schemes.source import (
     GetSourceItem,
     GetSourceTypes,
     PostSourceResponse,
-    SourceTypes,
     Source,
+    SourceTypes,
 )
 
 router = APIRouter(prefix="/source", tags=["source"])

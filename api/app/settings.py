@@ -1,4 +1,4 @@
-from pydantic import AmqpDsn, BaseSettings, Field, PostgresDsn
+from pydantic import BaseSettings, Field, PostgresDsn
 
 
 class Settings(BaseSettings):

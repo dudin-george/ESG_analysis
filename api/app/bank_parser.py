@@ -1,9 +1,9 @@
-from fastapi.logger import logger
 import re
 from time import sleep
 
 import requests
 from bs4 import BeautifulSoup
+from fastapi.logger import logger
 from sqlalchemy.orm import Session
 
 from app.database.bank import Bank

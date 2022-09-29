@@ -1,6 +1,8 @@
+from datetime import datetime
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from datetime import datetime
+
 from app.database import Source, Text, TextResult, TextSentence
 from app.schemes.text import PostTextItem
 from app.tasks.transform_texts import transform_texts
