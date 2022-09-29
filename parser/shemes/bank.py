@@ -52,8 +52,19 @@ class Text(BaseModel):
     link: str
     comments_num: int | None
 
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+        }
+
 
 class TextRequest(BaseModel):
     items: list[Text]
     parsed_state: str | None = None
     last_update: datetime | None = None
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+        }
+

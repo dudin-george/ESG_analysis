@@ -5,7 +5,10 @@ from shemes.bank import BankiRuItem, SravniRuItem
 
 
 class BankiRu(Base):
-    bank_id = Column(String, primary_key=True, index=True)
+    __tablename__ = "banki_ru"
+
+    id: int = Column(Integer, primary_key=True, index=True)
+    bank_id = Column(String, index=True)  # some ids are not unique
     bank_name = Column(String)
     reviews_url = Column(String)
 
@@ -19,7 +22,10 @@ class BankiRu(Base):
 
 
 class SravniBankInfo(Base):
-    bank_id: str = Column(String, primary_key=True, index=True)
+    __tablename__ = "sravni_bank_info"
+
+    id: int = Column(Integer, primary_key=True, index=True)
+    bank_id: str = Column(String, index=True)  # some ids are not unique (modulebank and hice)
     sravni_id: str = Column(String)
     sravni_old_id: int = Column(Integer)
     alias: str = Column(String)

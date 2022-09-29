@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-
+from datetime import datetime
 from app.database import Source, Text, TextResult, TextSentence
 from app.schemes.text import PostTextItem
 from app.tasks.transform_texts import transform_texts
@@ -40,7 +40,9 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
     texts = [text.text for text in post_texts.items]
     if len(texts) == 0 or len(ids) == 0:
         return None
+    time = datetime.now()
     transform_texts(ids, texts)  # type: ignore
+    print(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
 
 async def get_text_sentences(db: Session, model_id: int, sources: list[str], limit: int) -> list[TextSentence]:

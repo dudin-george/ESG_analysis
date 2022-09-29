@@ -1,5 +1,5 @@
 import requests
-
+import json
 from settings import Settings
 from shemes.bank import Bank, Source, SourceResponse, TextRequest
 
@@ -14,6 +14,9 @@ def get_bank_list() -> list[Bank]:
 
 def send_source(source: Source) -> int:
     r = requests.post(URL + "/source", json=source.dict())
+    if r.status_code != 200:
+        print(r.json())
+        raise Exception("Error send source")
     return int(r.json()["source_id"])
 
 
@@ -23,4 +26,13 @@ def get_source_by_id(source_id: int) -> SourceResponse:
 
 
 def send_texts(text: TextRequest) -> None:
-    requests.post(URL + "/text", json=text.dict())
+    items = []
+    for item in text.items:
+        d = item.dict()
+        d["date"] = d["date"].isoformat()
+        items.append(d)
+    request = {"items": items, "last_update": text.last_update.isoformat()}
+    r = requests.post(URL + "/text", json=request)
+    if r.status_code != 200:
+        print(r.json())
+        raise Exception("Error send text")

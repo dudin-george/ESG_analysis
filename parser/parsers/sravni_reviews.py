@@ -1,6 +1,8 @@
 from datetime import datetime
-from queue import api
-from queue.sravni_ru import create_banks, get_bank_list
+from math import ceil
+
+from queues import api
+from queues.sravni_ru import create_banks, get_bank_list
 
 import requests
 from requests import Response
@@ -83,7 +85,7 @@ class SravniReviews:
                 source_id=self.source_id,
                 bank_id=bank.bank_id,
                 link=url,
-                date=review["date"],  # TODO: fix
+                date=review["date"],  # type: ignore
                 title=review["title"],
                 text=review["text"],
                 comments_num=int(review["commentsCount"]),
@@ -93,16 +95,39 @@ class SravniReviews:
             reviews.append(parsed_review)
         return reviews
 
-    def get_bank_info(self, bank_info: SravniBankInfo) -> Response:
+    def get_bank_info(self, bank_info: SravniBankInfo, page_num: int = 0, page_size: int = 1000) -> Response:
         response = Response()
         for _ in range(3):
             response = requests.get(
-                "https://www.sravni.ru/proxy-reviews/reviews?locationRoute=&newIds=true&orderBy=withRates&pageIndex"
-                f"=0&pageSize=100000&rated=any&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&tag"
-            )
+                f"https://www.sravni.ru/proxy-reviews/reviews/?filterBy=withRates&isClient=false&locationRoute=&newIds=true&orderBy=byDate&pageIndex={page_num}&pageSize={page_size}&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&specificProductId=&tag=&withVotes=true"
+            )  # todo params to dict
             if response.status_code != 500:
                 return response
         return response
+
+    def get_num_reviews(self, bank_info: SravniBankInfo) -> int:
+        response = self.get_bank_info(bank_info, page_size=1)
+        if response.status_code != 200:
+            self.logger.error(f"error {response.status_code} for {bank_info.alias}")
+            return 0
+        reviews_total = int(response.json()["total"])
+        return ceil(reviews_total / 1000)
+
+    def get_reviews(self, parsed_time: datetime, bank_info: SravniBankInfo) -> list[Text]:
+        reviews_array = []
+        page_num = self.get_num_reviews(bank_info)
+        for i in range(page_num):
+            response = self.get_bank_info(bank_info, i)
+
+            if response.status_code == 500 or response.status_code is None:
+                break
+            reviews_json = response.json()
+            reviews = reviews_json.get("items", [])
+            if len(reviews) == 0:
+                break
+            reviews_array.extend(reviews)
+
+        return self.parse_reviews(reviews_array, parsed_time, bank_info)
 
     def parse(self) -> None:
         start_time = datetime.now()
@@ -113,13 +138,8 @@ class SravniReviews:
 
         for i, bank_info in enumerate(self.bank_list):
             self.logger.info(f"[{i}/{len(self.bank_list)}] download reviews for {bank_info.alias}")
-            response = self.get_bank_info(bank_info)
 
-            if response.status_code == 500 or response.status_code is None:
-                continue
-            reviews_json = response.json()
-            if "items" in reviews_json.keys():
-                reviews_array = reviews_json["items"]
-                reviews = self.parse_reviews(reviews_array, parsed_time, bank_info)
-                api.send_texts(TextRequest(items=reviews, last_update=start_time))
-                self.logger.info("commit reviews to db")
+            reviews = self.get_reviews(parsed_time, bank_info)
+            time = datetime.now()
+            api.send_texts(TextRequest(items=reviews, last_update=start_time))
+            self.logger.debug(f"Time for {bank_info.alias} send reviews: {datetime.now() - time}")
