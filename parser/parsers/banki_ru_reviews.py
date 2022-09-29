@@ -1,8 +1,8 @@
 import re
 from datetime import datetime
 from math import ceil
-from queue import api
-from queue.banki_ru import create_banks, get_bank_list
+from queues import api
+from queues.banki_ru import create_banks, get_bank_list
 
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
@@ -84,8 +84,8 @@ class BankiReviews:
                 review.find("time", class_="display-inline-block").text,
                 "%d.%m.%Y %H:%M",
             )  # TODO validator
-            comments_num = review.find("span", class_="responses__item__comment-count")
-
+            comments_num_elem = review.find("span", class_="responses__item__comment-count")
+            comments_num = int(comments_num_elem.text) if comments_num_elem is not None else 0
             if time < parsed_time:
                 continue
 
