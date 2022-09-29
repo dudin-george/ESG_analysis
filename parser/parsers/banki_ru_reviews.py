@@ -23,6 +23,7 @@ class BankiReviews:
         self.source_id = api.send_source(self.source)
         if len(self.bank_list) == 0:
             self.get_bank_list()
+            self.bank_list = get_bank_list()
 
     def get_page_num(self, page: BeautifulSoup, per_page: int = 50) -> int:
         page_num_text = page.find("div", class_="ui-pagination__description")
@@ -71,7 +72,6 @@ class BankiReviews:
         for bank in banks:
             banks_db.append(BankiRu.from_pydantic(bank))
         create_banks(banks_db)
-        self.bank_list = banks_db
         browser.quit()
 
     def get_reviews(

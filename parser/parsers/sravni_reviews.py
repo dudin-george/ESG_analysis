@@ -20,6 +20,7 @@ class SravniReviews:
         self.source_id = api.send_source(self.source)
         if len(self.bank_list) == 0:
             self.get_bank_list()
+            self.bank_list = get_bank_list()
 
     def request_bank_list(self) -> Response:
         data = {
@@ -71,7 +72,6 @@ class SravniReviews:
         for bank in sravni_bank_list:
             banks_db.append(SravniBankInfo.from_pydantic(bank))
         create_banks(banks_db)
-        self.bank_list = banks_db
         self.logger.info("create main table for banks")
 
     def parse_reviews(
