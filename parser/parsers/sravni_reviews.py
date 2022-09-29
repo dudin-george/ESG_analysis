@@ -117,6 +117,7 @@ class SravniReviews:
         reviews_array = []
         page_num = self.get_num_reviews(bank_info)
         for i in range(page_num):
+            self.logger.debug(f"download page {i} for {bank_info.alias}")
             response = self.get_bank_info(bank_info, i)
 
             if response.status_code == 500 or response.status_code is None:

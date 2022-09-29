@@ -17,7 +17,7 @@ def transform_texts(texts_ids: list[int], texts: list[str]) -> None:
             text_sentences.append(
                 TextSentence(
                     text_id=text_id,
-                    sentence=sentence,
+                    sentence=sentence.strip(),
                     sentence_num=i,
                 )
             )
