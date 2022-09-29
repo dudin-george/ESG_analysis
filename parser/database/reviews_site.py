@@ -8,9 +8,9 @@ class BankiRu(Base):
     __tablename__ = "banki_ru"
 
     id: int = Column(Integer, primary_key=True, index=True)
-    bank_id = Column(String, index=True)  # some ids are not unique
-    bank_name = Column(String)
-    reviews_url = Column(String)
+    bank_id: str = Column(String, index=True)  # some ids are not unique
+    bank_name: str = Column(String)
+    reviews_url: str = Column(String)
 
     @staticmethod
     def from_pydantic(bank: BankiRuItem) -> "BankiRu":

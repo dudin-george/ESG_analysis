@@ -1,14 +1,13 @@
 from datetime import datetime
 from math import ceil
 
-from queues import api
-from queues.sravni_ru import create_banks, get_bank_list
-
 import requests
 from requests import Response
 
 from database.reviews_site import SravniBankInfo
 from misc.logger import get_logger
+from queues import api
+from queues.sravni_ru import create_banks, get_bank_list
 from shemes.bank import Source, SravniRuItem, Text, TextRequest
 
 
@@ -81,11 +80,12 @@ class SravniReviews:
         reviews = []
         for review in reviews_array:
             url = f"https://www.sravni.ru/bank/{bank.alias}/otzyvy/{review['id']}"
+            # noinspection PyTypeChecker
             parsed_review = Text(
                 source_id=self.source_id,
                 bank_id=bank.bank_id,
                 link=url,
-                date=review["date"],  # type: ignore
+                date=review["date"],
                 title=review["title"],
                 text=review["text"],
                 comments_num=int(review["commentsCount"]),

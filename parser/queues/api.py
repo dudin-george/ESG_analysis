@@ -1,5 +1,5 @@
 import requests
-import json
+
 from settings import Settings
 from shemes.bank import Bank, Source, SourceResponse, TextRequest
 

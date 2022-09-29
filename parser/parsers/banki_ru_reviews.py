@@ -1,8 +1,6 @@
 import re
 from datetime import datetime
 from math import ceil
-from queues import api
-from queues.banki_ru import create_banks, get_bank_list
 
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
@@ -11,6 +9,8 @@ from selenium import webdriver
 from database.reviews_site import BankiRu
 from misc import get_browser
 from misc.logger import get_logger
+from queues import api
+from queues.banki_ru import create_banks, get_bank_list
 from shemes.bank import BankiRuItem, Source, Text, TextRequest
 
 
@@ -40,12 +40,14 @@ class BankiReviews:
     def get_bank(self, page: BeautifulSoup) -> BankiRuItem | None:
         bank_link = page.find("a", class_="widget__link")
         bank_address = page.find("div", {"data-test": "banks-item-address"})
-        license_text = bank_address.find_all("span")[-1].text
+        if bank_link is None or bank_address is None:
+            return None
+        license_text = bank_address.find_all("span")[-1].text  # type: ignore
         if license_text.find("№") == -1:
             return None
         license_id = license_text.split("№")[-1].split()[0]
 
-        bank_url = bank_link["href"].replace("/banks/", "https://www.banki.ru/services/responses/")
+        bank_url = bank_link["href"].replace("/banks/", "https://www.banki.ru/services/responses/")  # type: ignore
         return BankiRuItem(bank_id=license_id, bank_name=bank_link.text, reviews_url=bank_url)
 
     def get_bank_list(self) -> None:
@@ -72,7 +74,9 @@ class BankiReviews:
         self.bank_list = banks_db
         browser.quit()
 
-    def get_reviews(self, reviews: ResultSet, parsed_time: datetime, bank_id: str) -> tuple[list[Text], list[datetime]]:
+    def get_reviews(
+        self, reviews: ResultSet, parsed_time: datetime, bank_id: str  # type: ignore
+    ) -> tuple[list[Text], list[datetime]]:
         reviews_list = []
         times = []
         for review in reviews:
@@ -111,8 +115,8 @@ class BankiReviews:
         if parsed_time is None:
             parsed_time = datetime.min
         browser = get_browser()
-        for bank_index, bank in enumerate(self.bank_list):
-            bank = BankiRuItem.from_orm(bank)
+        for bank_index, bank_pydantic in enumerate(self.bank_list):
+            bank = BankiRuItem.from_orm(bank_pydantic)
             reviews_list = []
             self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
             page = self.get_page(browser, bank.reviews_url)
@@ -128,8 +132,8 @@ class BankiReviews:
                 responses_list = page.find("div", class_="responses-list")
                 if responses_list is None:
                     continue
-
-                responses, times = self.get_reviews(responses_list.find_all("article"), parsed_time, bank.bank_id)
+                response_array = responses_list.find_all("article")  # type: ignore
+                responses, times = self.get_reviews(response_array, parsed_time, bank.bank_id)
 
                 if len(times) == 0:
                     break

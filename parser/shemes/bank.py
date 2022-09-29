@@ -61,10 +61,9 @@ class Text(BaseModel):
 class TextRequest(BaseModel):
     items: list[Text]
     parsed_state: str | None = None
-    last_update: datetime | None = None
+    last_update: datetime
 
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat(),
         }
-

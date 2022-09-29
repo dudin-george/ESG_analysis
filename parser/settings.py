@@ -1,4 +1,4 @@
-from pydantic import BaseSettings, Field, AnyHttpUrl, PostgresDsn
+from pydantic import AnyHttpUrl, BaseSettings, Field, PostgresDsn
 
 
 class Settings(BaseSettings):
