@@ -9,20 +9,24 @@ services:
       - /ESGdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    shm_size: 512mb
-
-  selenium:
-    image: selenium/standalone-firefox
-    ports:
-    - 4444:4444
+    #shm_size: 512mb
 
   grafana:
-    image: grafana/grafana:8.2.6
+    depends_on:
+      - database
+    image: grafana/grafana:8.5.13
     ports:
       - 3000:3000
     user: ":"
     volumes:
     - /grafana:/var/lib/grafana
+    - ./configs/provisioning:/etc/grafana/provisioning
+    - ./configs/provisioning/dashboards:/var/lib/grafana/dashboards
+
+  selenium:
+    image: selenium/standalone-firefox
+    ports:
+    - 4444:4444
 
   script:
     depends_on:
