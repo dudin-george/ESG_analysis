@@ -1,13 +1,13 @@
 # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
 .DEFAULT_GOAL := all
-isort = isort app/
-black = black app/
+isort = isort app/ tests/
+black = black app/ tests/
 mypy = mypy app/
-flake8  = flake8 app/
+flake8  = flake8 app/ tests/
 
 .PHONY: install-linting
 install-linting:
-	poetry add flake8 black isort mypy -D
+	poetry add flake8 black isort mypy -G dev
 	pre-commit install
 
 .PHONY: install
