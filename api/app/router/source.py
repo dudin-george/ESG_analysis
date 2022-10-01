@@ -45,7 +45,7 @@ async def post_source(source: CreateSource, db: Session = Depends(get_db)) -> Po
     return PostSourceResponse(source_id=source_id)
 
 
-@router.get("/{source_id}", response_model=Source)
+@router.get("/item/{source_id}", response_model=Source)
 async def get_source(source_id: int, db: Session = Depends(get_db)) -> Source | JSONResponse:
     source_item = await get_source_item_by_id(db, source_id)
     if source_item is None:
@@ -53,7 +53,7 @@ async def get_source(source_id: int, db: Session = Depends(get_db)) -> Source | 
     return Source.from_orm(source_item)
 
 
-@router.get("type/", response_model=GetSourceTypes)
+@router.get("/type/", response_model=GetSourceTypes)
 async def get_source_types(db: Session = Depends(get_db)) -> GetSourceTypes:
     source_types = await get_source_types_items(db)
     get_source_type = GetSourceTypes(items=[])

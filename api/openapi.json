@@ -336,13 +336,13 @@
         }
       }
     },
-    "/source/{source_id}": {
+    "/source/item/{source_id}": {
       "get": {
         "tags": [
           "source"
         ],
         "summary": "Get Source",
-        "operationId": "get_source_source__source_id__get",
+        "operationId": "get_source_source_item__source_id__get",
         "parameters": [
           {
             "required": true,
@@ -378,13 +378,13 @@
         }
       }
     },
-    "/sourcetype/": {
+    "/source/type/": {
       "get": {
         "tags": [
           "source"
         ],
         "summary": "Get Source Types",
-        "operationId": "get_source_types_sourcetype__get",
+        "operationId": "get_source_types_source_type__get",
         "responses": {
           "200": {
             "description": "Successful Response",
