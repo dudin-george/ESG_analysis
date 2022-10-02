@@ -1,5 +1,4 @@
 import re
-from time import sleep
 
 import requests
 from bs4 import BeautifulSoup
@@ -45,9 +44,8 @@ class CBRParser:
         self.logger.info("start download bank list")
         page = self.get_page()
         if page is None:
-            while page is None:
-                page = self.get_page()
-                sleep(3)
+            self.logger.error("cbr.ru 403 error")
+            raise Exception("cbr.ru 403 error")
         banks = self.get_bank_list(page)
         with self.db as session:
             load_bank(session, banks)
