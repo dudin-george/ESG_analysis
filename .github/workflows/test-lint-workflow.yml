@@ -18,7 +18,7 @@ jobs:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
     # Docker Hub image that `container-job` executes in
-    container: node:10.18-jessie
+    container: python:3.10
 
     # Service containers to run with `container-job`
     services:
@@ -47,8 +47,6 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: |
-          apt update
-          apt -y install glibc
           python -m pip install --upgrade pip
           pip install -r api/requirements/requirements-test.txt
       - name: Lint files
