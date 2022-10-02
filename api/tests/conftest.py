@@ -62,12 +62,3 @@ def client(mocker, cbr_page):
     app.dependency_overrides[get_db] = override_get_db
     CBRParser(test_database.TestingSessionLocal()).load_banks()
     return TestClient(app)
-
-
-@pytest.fixture
-def post_source(client):
-    response = client.post(
-        "/source/",
-        json={"site": "example.com", "source_type": "review"},
-    )
-    assert response.status_code == 200, response.text
