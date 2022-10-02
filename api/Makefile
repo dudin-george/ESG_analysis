@@ -8,21 +8,21 @@ pyupgrade = pyupgrade --py310-plus
 
 .PHONY: install-linting
 install-linting:
-	poetry add flake8 black isort mypy -G dev
-	pre-commit install
+	poetry add flake8 black isort mypy pyupgrade -G dev
 
 .PHONY: install
 install: install-linting
+	pre-commit install
 	@echo 'installed development requirements'
 
 .PHONY: lint
-lint:
+lint: install-linting
 	$(isort) --df --check-only
 	$(black) --diff --check
 	$(flake8)
 
 .PHONY: format
-format:
+format: install-linting
 	$(pyupgrade)
 	$(isort)
 	$(black)
