@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.exceptions import IdNotFoundError
 from app.query.text import create_text_sentences, get_text_sentences
 from app.schemes.text import GetTextSentences, PostTextItem
 
@@ -24,6 +25,8 @@ async def get_sentences(
 async def post_text(texts: PostTextItem, db: Session = Depends(get_db)) -> JSONResponse:
     try:
         await create_text_sentences(db, texts)
+    except IdNotFoundError as e:
+        return JSONResponse(status_code=404, content={"message": str(e)})
     except Exception as e:
         return JSONResponse({"message": str(e)}, status_code=400)
     return JSONResponse({"message": "OK"})

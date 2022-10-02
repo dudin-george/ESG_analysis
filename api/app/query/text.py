@@ -3,7 +3,8 @@ from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.database import Source, Text, TextResult, TextSentence
+from app.database import Bank, Source, Text, TextResult, TextSentence
+from app.exceptions import IdNotFoundError
 from app.schemes.text import PostTextItem
 from app.tasks.transform_texts import transform_texts
 
@@ -12,24 +13,23 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
     text_db = []
 
     for text in post_texts.items:
-        text_db.append(
-            Text(
-                link=text.link,
-                source_id=text.source_id,
-                date=text.date,
-                title=text.title,
-                bank_id=text.bank_id,
-                comment_num=text.comments_num,
-            )
+        text_db_item = Text(
+            link=text.link,
+            source_id=text.source_id,
+            date=text.date,
+            title=text.title,
+            bank_id=text.bank_id,
+            comment_num=text.comments_num,
         )
-    if (post_texts.parsed_state or post_texts.date) and len(text_db) > 0:
-        source = db.query(Source).filter(Source.id == text_db[0].source_id).first()
-        if source is None:
-            return None
-        source.parser_state = post_texts.parsed_state
-        source.last_update = post_texts.date
-        db.add(source)
-        db.commit()
+        text_db.append(text_db_item)
+        source = db.query(Source).filter(Source.id == text_db_item.source_id).first()
+        bank = db.query(Bank).filter(Bank.id == text_db_item.bank_id).first()
+        if source is None or bank is None:
+            raise IdNotFoundError("Source or bank not found")
+        if (post_texts.parsed_state or post_texts.date) and len(text_db) > 0:
+            source.parser_state = post_texts.parsed_state
+            source.last_update = post_texts.date
+            db.add(source)
     db.add_all(text_db)
     try:
         db.commit()

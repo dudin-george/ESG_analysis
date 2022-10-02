@@ -1,8 +1,9 @@
+import os
+
 import pytest
 
 from app.bank_parser import CBRParser
 from app.query.bank import get_bank_count
-import os
 
 TEST_REAL_PAGE = os.getenv("TEST_REAL_PAGE", "False").lower() == "true"
 
