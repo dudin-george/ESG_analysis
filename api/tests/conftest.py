@@ -1,18 +1,19 @@
 import pytest
+from bs4 import BeautifulSoup
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy_utils import (  # type: ignore
     create_database,
     database_exists,
     drop_database,
 )
-from bs4 import BeautifulSoup
+
+from app.bank_parser import CBRParser
 from app.database import get_db
 from app.database.base import Base
 from app.main import app
-from app.bank_parser import CBRParser
 from app.settings import Settings
 
 
@@ -25,7 +26,7 @@ test_database = DataBase()
 
 
 @pytest.fixture
-def session():
+def session() -> Session:
     return test_database.TestingSessionLocal()
 
 
@@ -50,14 +51,14 @@ def override_get_db():
 
 
 @pytest.fixture(scope="session")
-def cbr_page():
+def cbr_page() -> BeautifulSoup:
     with open("html_pages/cbr_page.html", "r") as f:
         cbr_page = f.read()
     return BeautifulSoup(cbr_page, "html.parser")
 
 
 @pytest.fixture
-def client(mocker, cbr_page):
+def client(mocker, cbr_page: BeautifulSoup) -> TestClient:
     mocker.patch("app.bank_parser.CBRParser.get_page", return_value=cbr_page)
     app.dependency_overrides[get_db] = override_get_db
     CBRParser(test_database.TestingSessionLocal()).load_banks()
