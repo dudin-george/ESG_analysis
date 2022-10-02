@@ -193,13 +193,13 @@
         }
       }
     },
-    "/textresult/": {
+    "/text_result/": {
       "get": {
         "tags": [
-          "textresult"
+          "text_result"
         ],
         "summary": "Get Text Results",
-        "operationId": "get_text_results_textresult__get",
+        "operationId": "get_text_results_text_result__get",
         "parameters": [
           {
             "required": false,
@@ -236,10 +236,10 @@
       },
       "post": {
         "tags": [
-          "textresult"
+          "text_result"
         ],
         "summary": "Post Text Result",
-        "operationId": "post_text_result_textresult__post",
+        "operationId": "post_text_result_text_result__post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -719,8 +719,8 @@
               "$ref": "#/components/schemas/TextItem"
             }
           },
-          "parsed_state": {
-            "title": "Parsed State",
+          "parser_state": {
+            "title": "Parser State",
             "type": "string"
           },
           "date": {

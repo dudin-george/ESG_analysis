@@ -26,8 +26,8 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
         bank = db.query(Bank).filter(Bank.id == text_db_item.bank_id).first()
         if source is None or bank is None:
             raise IdNotFoundError("Source or bank not found")
-        if (post_texts.parsed_state or post_texts.date) and len(text_db) > 0:
-            source.parser_state = post_texts.parsed_state
+        if (post_texts.parser_state or post_texts.date) and len(text_db) > 0:
+            source.parser_state = post_texts.parser_state
             source.last_update = post_texts.date
             db.add(source)
     db.add_all(text_db)

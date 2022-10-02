@@ -49,7 +49,7 @@ class TextSentence(BaseModel):
 
 class PostTextItem(BaseModel):
     items: list[TextItem]
-    parsed_state: str | None
+    parser_state: str | None
     date: datetime | None
 
 

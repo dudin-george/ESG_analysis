@@ -6,9 +6,9 @@ import pytest
 @pytest.mark.parametrize(
     "data",
     [
-        {"parsed_state": "new", "date": "2022-10-02T11:23:03"},
+        {"parser_state": "new", "date": "2022-10-02T11:23:03"},
         {"date": datetime.now().isoformat()},
-        {"parsed_state": "new"},
+        {"parser_state": "new"},
         {},
     ],
 )
@@ -192,7 +192,7 @@ def test_get_text(client, post_text):
 
 def test_update_source(client, post_source):
     date = datetime.now().isoformat()
-    parsed_state = "test"
+    parser_state = "test"
     response = client.post(
         "/text/",
         json={
@@ -208,7 +208,7 @@ def test_update_source(client, post_source):
                 }
             ],
             "date": date,
-            "parsed_state": parsed_state,
+            "parser_state": parser_state,
         },
     )
     assert response.status_code == 200, response.text
@@ -216,7 +216,7 @@ def test_update_source(client, post_source):
     assert response.status_code == 200, response.text
     data = response.json()
     assert data["last_update"] == date
-    assert data["parser_state"] == parsed_state
+    assert data["parser_state"] == parser_state
 
 
 def test_update_two_source_in_request(client):
@@ -231,7 +231,7 @@ def test_update_two_source_in_request(client):
     )
     assert response.status_code == 200, response.text
     date = datetime.now().isoformat()
-    parsed_state = "test"
+    parser_state = "test"
     response = client.post(
         "/text/",
         json={
@@ -256,7 +256,7 @@ def test_update_two_source_in_request(client):
                 }
             ],
             "date": date,
-            "parsed_state": parsed_state,
+            "parser_state": parser_state,
         },
     )
     assert response.status_code == 200, response.text
@@ -264,9 +264,9 @@ def test_update_two_source_in_request(client):
     assert response.status_code == 200, response.text
     data = response.json()
     assert data["last_update"] == date
-    assert data["parser_state"] == parsed_state
+    assert data["parser_state"] == parser_state
     response = client.get("/source/item/2")
     assert response.status_code == 200, response.text
     data = response.json()
     assert data["last_update"] == date
-    assert data["parser_state"] == parsed_state
+    assert data["parser_state"] == parser_state

@@ -5,7 +5,7 @@ from app.database import get_db
 from app.query.text_result import create_text_results, get_text_result_items
 from app.schemes.text import GetTextResult, GetTextResultItem, PostTextResult
 
-router = APIRouter(prefix="/textresult", tags=["textresult"])
+router = APIRouter(prefix="/text_result", tags=["text_result"])
 
 
 @router.get("/", response_model=GetTextResult)
