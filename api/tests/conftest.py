@@ -48,7 +48,7 @@ def override_get_db():
 
 @pytest.fixture(scope="session")
 def cbr_page() -> BeautifulSoup:
-    with open("tests/html_pages/cbr_page.html", "r") as f:
+    with open("tests/html_pages/cbr_page.html") as f:
         cbr_page = f.read()
     return BeautifulSoup(cbr_page, "html.parser")
 
