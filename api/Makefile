@@ -31,5 +31,13 @@ format:
 export-dependencies:
 	poetry export -f requirements.txt --output requirements.txt --without-hashes
 
+.PHONY: database
+database:
+	docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -d postgres
+
+.PHONY: test
+test:
+	docker compose -f docker-compose.test.yaml up --build
+
 .PHONY: all
 all: format export-dependencies
