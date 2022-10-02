@@ -1,15 +1,6 @@
 import pytest
 
 
-@pytest.fixture
-def post_source(client) -> None:
-    response = client.post(
-        "/source/",
-        json={"site": "example.com", "source_type": "review"},
-    )
-    assert response.status_code == 200, response.text
-
-
 @pytest.mark.parametrize(
     "data",
     [

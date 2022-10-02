@@ -1,7 +1,7 @@
 import nltk  # type: ignore
+from sqlalchemy.orm import Session
 
 from ..database.text_sentence import TextSentence
-from sqlalchemy.orm import Session
 
 # from . import celery_app
 

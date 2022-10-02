@@ -63,3 +63,39 @@ def client(mocker, cbr_page: BeautifulSoup) -> TestClient:
     app.dependency_overrides[get_db] = override_get_db
     CBRParser(test_database.TestingSessionLocal()).load_banks()
     return TestClient(app)
+
+
+@pytest.fixture
+def post_source(client) -> None:
+    response = client.post(
+        "/source/",
+        json={"site": "example.com", "source_type": "review"},
+    )
+    assert response.status_code == 200, response.text
+
+
+@pytest.fixture
+def post_model(client):
+    response = client.post("/model/", json={"model_name": "test_model", "model_type": "test_type"})
+    assert response.status_code == 200, response.text
+
+
+@pytest.fixture
+def post_text(client, post_source) -> None:
+    response = client.post(
+        "/text/",
+        json={
+            "items": [
+                {
+                    "source_id": 0,
+                    "date": "2022-10-02T10:12:01.154Z",
+                    "title": "string",
+                    "text": "string",
+                    "bank_id": "string",
+                    "link": "string",
+                    "comments_num": 0,
+                }
+            ],
+        },
+    )
+    assert response.status_code == 200, response.text
