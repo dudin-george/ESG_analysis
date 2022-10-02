@@ -44,7 +44,7 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
     if len(texts) == 0 or len(ids) == 0:
         return None
     time = datetime.now()
-    transform_texts(ids, texts)  # type: ignore
+    transform_texts(ids, texts, db)  # type: ignore
     print(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
 
