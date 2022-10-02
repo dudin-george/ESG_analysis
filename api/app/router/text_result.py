@@ -8,8 +8,8 @@ from app.schemes.text import GetTextResult, GetTextResultItem, PostTextResult
 router = APIRouter(prefix="/text_result", tags=["text_result"])
 
 
-@router.get("/", response_model=GetTextResult)
-async def get_text_results(text_id: int | None = None, db: Session = Depends(get_db)) -> GetTextResult:
+@router.get("/item/{text_id}", response_model=GetTextResult)
+async def get_text_results(text_id: int, db: Session = Depends(get_db)) -> GetTextResult:
     texts = await get_text_result_items(db, text_id)
     get_text_result = GetTextResult(items=[])
     for text in texts:

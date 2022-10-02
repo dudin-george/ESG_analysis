@@ -99,3 +99,18 @@ def post_text(client, post_source) -> None:
         },
     )
     assert response.status_code == 200, response.text
+
+
+@pytest.fixture
+def post_text_result(client, post_model, post_text) -> None:
+    response = client.post(
+        "/text_result/",
+        json=[
+            {
+                "text_result": [0.1, 1, 3],
+                "source_id": 1,
+                "model_id": 1,
+            }
+        ],
+    )
+    assert response.status_code == 200, response.text

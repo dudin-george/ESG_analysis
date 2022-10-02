@@ -1,13 +1,12 @@
 from sqlalchemy.orm import Session
 
 from app.database.text_result import TextResult
+from app.database.text_sentence import TextSentence
 from app.schemes.text import PostTextResult
 
 
-async def get_text_result_items(db: Session, text_id: int | None) -> list[TextResult]:
-    query = db.query(TextResult)
-    if text_id:
-        query = query.filter(TextResult.text_sentence_id.in_(text_id))
+async def get_text_result_items(db: Session, text_id: int) -> list[TextResult]:
+    query = db.query(TextResult).join(TextResult.text_sentence).filter(TextSentence.text_id == text_id)
     return query.all()
 
 
