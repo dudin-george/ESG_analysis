@@ -1,4 +1,4 @@
-import nltk  # type: ignore
+import nltk
 from sqlalchemy.orm import Session
 
 from ..database.text_sentence import TextSentence

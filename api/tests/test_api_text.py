@@ -253,7 +253,7 @@ def test_update_two_source_in_request(client):
                     "bank_id": "1000",
                     "link": "string",
                     "comments_num": 0,
-                }
+                },
             ],
             "date": date,
             "parser_state": parser_state,

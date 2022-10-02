@@ -11,7 +11,8 @@ async def get_model_items(db: Session) -> list[Model]:
 async def create_model(db: Session, post_model: PostModel) -> int:
     model = db.query(Model).filter(Model.name == post_model.model_name).first()
     if model:
-        return model.id  # type: ignore
+        model_id = model.id  # type: int
+        return model_id
 
     model_type = db.query(ModelType).filter(ModelType.model_type == post_model.model_type).first()
     if model_type is None:

@@ -1,4 +1,3 @@
-# type: ignore
 from sqlalchemy.orm import Session
 
 from app.database.source import Source, SourceType
@@ -9,10 +8,11 @@ async def get_source_items(db: Session) -> list[Source]:
     return db.query(Source).all()
 
 
-async def create_source(db: Session, model: CreateSource) -> int:
+async def create_source(db: Session, model: CreateSource) -> int | None:
     source = db.query(Source).filter(Source.site == model.site).first()
     if source:
-        return source.id
+        return_id = source.id  # type: int
+        return return_id
 
     source_type = db.query(SourceType).filter(SourceType.name == model.source_type).first()
     if source_type is None:
@@ -24,7 +24,7 @@ async def create_source(db: Session, model: CreateSource) -> int:
     return source.id
 
 
-async def get_source_item_by_id(db: Session, source_id: int) -> Source:
+async def get_source_item_by_id(db: Session, source_id: int) -> Source | None:
     return db.query(Source).filter(Source.id == source_id).first()
 
 

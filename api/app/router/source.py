@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.query.source import (  # type: ignore
+from app.query.source import (
     create_source,
     get_source_item_by_id,
     get_source_items,
