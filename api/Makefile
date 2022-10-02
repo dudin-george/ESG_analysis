@@ -22,7 +22,7 @@ lint: install-linting
 	$(flake8)
 
 .PHONY: format
-format: install-linting
+format:
 	$(pyupgrade)
 	$(isort)
 	$(black)
