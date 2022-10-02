@@ -25,6 +25,7 @@ mypy = "^0.961"
 isort = "^5.10.1"
 SQLAlchemy = {extras = ["mypy"], version = "^1.4.41"}
 #  celery-types = "^0.14.0"
+pyupgrade = "^2.38.2"
 
 
 [tool.poetry.group.test.dependencies]

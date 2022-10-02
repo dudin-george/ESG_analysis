@@ -4,6 +4,7 @@ isort = isort app/ tests/
 black = black app/ tests/
 mypy = mypy app/
 flake8  = flake8 app/ tests/
+pyupgrade = pyupgrade --py310-plus
 
 .PHONY: install-linting
 install-linting:
@@ -22,6 +23,7 @@ lint:
 
 .PHONY: format
 format:
+	$(pyupgrade)
 	$(isort)
 	$(black)
 	$(mypy)

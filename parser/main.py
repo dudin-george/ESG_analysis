@@ -1,5 +1,5 @@
 import threading
-from typing import Callable
+from collections.abc import Callable
 from time import sleep
 import schedule  # type: ignore
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
