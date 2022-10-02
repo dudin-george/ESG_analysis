@@ -217,3 +217,56 @@ def test_update_source(client, post_source):
     data = response.json()
     assert data["last_update"] == date
     assert data["parser_state"] == parsed_state
+
+
+def test_update_two_source_in_request(client):
+    response = client.post(
+        "/source/",
+        json={"site": "example.com", "source_type": "review"},
+    )
+    assert response.status_code == 200, response.text
+    response = client.post(
+        "/source/",
+        json={"site": "test.com", "source_type": "test"},
+    )
+    assert response.status_code == 200, response.text
+    date = datetime.now().isoformat()
+    parsed_state = "test"
+    response = client.post(
+        "/text/",
+        json={
+            "items": [
+                {
+                    "source_id": 1,
+                    "date": "2022-10-02T10:12:01.154Z",
+                    "title": "string",
+                    "text": "string",
+                    "bank_id": "1000",
+                    "link": "string",
+                    "comments_num": 0,
+                },
+                {
+                    "source_id": 2,
+                    "date": "2022-10-02T10:12:01.154Z",
+                    "title": "string",
+                    "text": "string",
+                    "bank_id": "1000",
+                    "link": "string",
+                    "comments_num": 0,
+                }
+            ],
+            "date": date,
+            "parsed_state": parsed_state,
+        },
+    )
+    assert response.status_code == 200, response.text
+    response = client.get("/source/item/1")
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["last_update"] == date
+    assert data["parser_state"] == parsed_state
+    response = client.get("/source/item/2")
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["last_update"] == date
+    assert data["parser_state"] == parsed_state
