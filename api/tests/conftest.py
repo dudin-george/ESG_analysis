@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from bs4 import BeautifulSoup
 from fastapi.testclient import TestClient
@@ -46,9 +48,14 @@ def override_get_db():
         db.close()
 
 
+def relative_path(path: str) -> str:
+    return f"{Path(__file__).parent}/{path}"
+
+
 @pytest.fixture(scope="session")
 def cbr_page() -> BeautifulSoup:
-    with open("tests/html_pages/cbr_page.html") as f:
+    path = relative_path("html_pages/cbr_page.html")
+    with open(path) as f:
         cbr_page = f.read()
     return BeautifulSoup(cbr_page, "html.parser")
 
