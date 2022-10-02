@@ -3,9 +3,7 @@ FROM python:3.10
 RUN pip install -U nltk
 RUN python -c "import nltk; nltk.download('punkt'); nltk.data.load('tokenizers/punkt/russian.pickle')"
 WORKDIR "/app"
-COPY pyproject.toml pyproject.toml
-RUN pip install poetry
-RUN poetry config virtualenvs.create false
-RUN poetry install --with=test
+COPY requirements/requirements-test.txt requirements.txt
+RUN pip install -r requirements.txt
 COPY . .
 CMD ["python", "-m", "pytest", "."]
