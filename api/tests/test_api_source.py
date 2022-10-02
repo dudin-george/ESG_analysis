@@ -80,3 +80,21 @@ def test_get_source_type(client, post_source):
             {"id": 2, "name": "news"},
         ]
     }
+
+
+def test_post_existing_source(client):
+    source = {"site": "example.com", "source_type": "review"}
+    response = client.post(
+        "/source/",
+        json=source,
+    )
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["source_id"] == 1
+    response = client.post(
+        "/source/",
+        json=source,
+    )
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["source_id"] == 1

@@ -87,11 +87,11 @@ def post_text(client, post_source) -> None:
         json={
             "items": [
                 {
-                    "source_id": 0,
+                    "source_id": 1,
                     "date": "2022-10-02T10:12:01.154Z",
                     "title": "string",
                     "text": "string",
-                    "bank_id": "string",
+                    "bank_id": "1000",
                     "link": "string",
                     "comments_num": 0,
                 }
