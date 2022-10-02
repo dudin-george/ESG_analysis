@@ -33,6 +33,7 @@ setuptools = "^65.4.1"
 pytest-mock = "^3.9.0"
 coverage = "^6.5.0"
 tox = "^3.26.0"
+pytest-cov = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -63,6 +64,16 @@ plugins = [
 ]
 ignore_missing_imports = false
 # --strict end
+exclude = [
+    "tests/"
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "sqlalchemy_utils",
+    "nltk"
+]
+ignore_missing_imports = true
 
 [tool.black]
 line-length = 120
@@ -75,3 +86,6 @@ exclude = '''
   | notebooks
 )/
 '''
+
+[tool.coverage.run]
+source = ["app"]
