@@ -4,10 +4,10 @@ from time import sleep
 import schedule  # type: ignore
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
 
-from parsers.database import Base, engine
-from parsers.misc.logger import get_logger
-from parsers.settings import Settings
-from parsers.sravni_reviews.sravni_reviews import SravniReviews
+from database import Base, engine
+from misc.logger import get_logger
+from settings import Settings
+from sravni_reviews.sravni_reviews import SravniReviews
 
 
 def parsers_setup() -> None:

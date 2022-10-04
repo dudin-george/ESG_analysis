@@ -5,13 +5,13 @@ from math import ceil
 import requests
 from requests import Response
 
-from parsers import api
-from parsers.misc.logger import get_logger
-from parsers.settings import Settings
-from parsers.shemes import PatchSource, SourceRequest, Text, TextRequest
-from parsers.sravni_reviews.database import SravniBankInfo
-from parsers.sravni_reviews.queries import create_banks, get_bank_list
-from parsers.sravni_reviews.shemes import SravniRuItem
+import api
+from misc.logger import get_logger
+from settings import Settings
+from shemes import PatchSource, SourceRequest, Text, TextRequest
+from sravni_reviews.database import SravniBankInfo
+from sravni_reviews.queries import create_banks, get_bank_list
+from sravni_reviews.shemes import SravniRuItem
 
 
 # noinspection PyMethodMayBeStatic

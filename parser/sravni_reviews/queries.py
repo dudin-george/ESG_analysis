@@ -1,5 +1,5 @@
-from parsers.database import SessionLocal
-from parsers.sravni_reviews.database import SravniBankInfo
+from database import SessionLocal
+from sravni_reviews.database import SravniBankInfo
 
 
 def get_bank_list() -> list[SravniBankInfo]:

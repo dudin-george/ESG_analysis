@@ -7,14 +7,14 @@ from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 from selenium import webdriver
 
-from parsers import api
-from parsers.banki_ru_reviews.database import BankiRu
-from parsers.banki_ru_reviews.queries import create_banks, get_bank_list
-from parsers.banki_ru_reviews.shemes import BankiRuItem
-from parsers.misc import get_browser
-from parsers.misc.logger import get_logger
-from parsers.settings import Settings
-from parsers.shemes import PatchSource, SourceRequest, Text, TextRequest
+import api
+from banki_ru_reviews.database import BankiRu
+from banki_ru_reviews.queries import create_banks, get_bank_list
+from banki_ru_reviews.shemes import BankiRuItem
+from misc import get_browser
+from misc.logger import get_logger
+from settings import Settings
+from shemes import PatchSource, SourceRequest, Text, TextRequest
 
 
 # noinspection PyMethodMayBeStatic

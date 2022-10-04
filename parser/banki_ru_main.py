@@ -4,10 +4,10 @@ from time import sleep
 import schedule
 from sqlalchemy_utils import create_database, database_exists
 
-from parsers.database import Base, engine
-from parsers.misc.logger import get_logger
-from parsers.settings import Settings
-from parsers.banki_ru_reviews.reviews_parser import BankiReviews
+from database import Base, engine
+from misc.logger import get_logger
+from settings import Settings
+from banki_ru_reviews.reviews_parser import BankiReviews
 
 
 def parsers_setup() -> None:

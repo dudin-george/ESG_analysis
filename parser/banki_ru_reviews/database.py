@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 
-from parsers.banki_ru_reviews.shemes import BankiRuItem
-from parsers.database import Base
+from banki_ru_reviews.shemes import BankiRuItem
+from database import Base
 
 
 class BankiRu(Base):
