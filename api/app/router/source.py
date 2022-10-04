@@ -16,7 +16,6 @@ from app.schemes.source import (
     GetSourceItem,
     GetSourceTypes,
     PatchSource,
-    PostSourceResponse,
     Source,
     SourceTypes,
 )
@@ -43,8 +42,7 @@ async def get_sources(db: Session = Depends(get_db)) -> GetSource:
 
 @router.post("/", response_model=Source)
 async def post_source(source: CreateSource, db: Session = Depends(get_db)) -> Source:
-    source = await create_source(db, source)
-    return source  # type: ignore
+    return await create_source(db, source)  # type: ignore
 
 
 @router.get("/item/{source_id}", response_model=Source)
@@ -64,7 +62,6 @@ async def patch_source(
     source_item = await patch_source_by_id(db, source_id, patch_source_item)
     if source_item is None:
         return JSONResponse(status_code=404, content={"detail": "Source not found"})
-    s = Source.from_orm(source_item)
     return Source.from_orm(source_item)
 
 

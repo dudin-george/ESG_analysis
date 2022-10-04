@@ -8,7 +8,7 @@ class TextItem(BaseModel):
     date: datetime
     title: str
     text: str
-    bank_id: str
+    bank_id: int
     link: str
     comments_num: int | None = None
 
@@ -19,7 +19,7 @@ class Text(BaseModel):
     source: str
     date: datetime
     title: str
-    bank_id: str
+    bank_id: int
     source_id: int
     comments_num: int | None = None
 

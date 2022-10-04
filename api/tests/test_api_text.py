@@ -101,6 +101,20 @@ def test_post_text_200(client, item, data, post_source):
             ],
             "date": "test",
         },
+        {
+            "items": [
+                {
+                    "source_id": 0,
+                    "date": "2022-10-02T10:12:01.154Z",
+                    "title": "string",
+                    "text": "string",
+                    "bank_id": "test",
+                    "link": "string",
+                    "comments_num": 0,
+                }
+            ],
+            "date": "test",
+        },
     ],
 )
 def test_post_text_422(client, data):
@@ -131,7 +145,7 @@ def test_post_text_422(client, data):
                     "date": "2022-10-02T10:12:01.154Z",
                     "title": "string",
                     "text": "string",
-                    "bank_id": "test_id",
+                    "bank_id": "0",
                     "link": "string",
                 }
             ],

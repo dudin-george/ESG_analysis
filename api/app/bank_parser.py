@@ -35,8 +35,12 @@ class CBRParser:
         cbr_banks = []
         for bank in page.find_all("tr")[1:]:
             items = bank.find_all("td")
-            license_id = items[2].text
+            license_id_text = items[2].text
             name = re.sub("[\xa0\n\t]", " ", items[4].text)
+            if license_id_text.isnumeric():
+                license_id = int(license_id_text)
+            else:
+                license_id = int(license_id_text.split("-")[0])  # if license id with *-K, *-M, remove suffix
             cbr_banks.append(Bank(id=license_id, bank_name=name))
         return cbr_banks
 

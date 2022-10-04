@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class Bank(BaseModel):
-    id: str
+    id: int
     bank_name: str
 
     class Config:

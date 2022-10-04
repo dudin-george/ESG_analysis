@@ -20,7 +20,7 @@ class Text(Base):
     source: Mapped["Source"] = relationship("Source", back_populates="texts")
     date = Column(DateTime, index=True)
     title = Column(String)
-    bank_id = Column(String, ForeignKey("bank.id"), index=True)
+    bank_id = Column(Integer, ForeignKey("bank.id"), index=True)
     bank: Mapped["Bank"] = relationship("Bank", back_populates="texts")
     comment_num = Column(Integer, nullable=True)
     text_sentences: Mapped[list["TextSentence"]] = relationship("TextSentence", back_populates="text")

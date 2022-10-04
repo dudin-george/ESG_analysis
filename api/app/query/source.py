@@ -11,7 +11,7 @@ async def get_source_items(db: Session) -> list[Source]:
 async def create_source(db: Session, model: CreateSource) -> Source:
     source = db.query(Source).filter(Source.site == model.site).first()
     if source:
-        return source
+        return source  # type: ignore
 
     source_type = db.query(SourceType).filter(SourceType.name == model.source_type).first()
     if source_type is None:
