@@ -52,7 +52,10 @@ def send_texts(text: TextRequest) -> None:
         d = item.dict()
         d["date"] = d["date"].isoformat()
         items.append(d)
-    request = {"items": items, "date": text.last_update, "parser_state": text.parsed_state}
+    last_update = None
+    if text.parsed_state:
+        last_update = text.last_update.isoformat()
+    request = {"items": items, "date": last_update, "parser_state": text.parsed_state}
     url = URL + "/text"
     logger.debug(f"Send texts to {url}")
     r = requests.post(url, json=request)
