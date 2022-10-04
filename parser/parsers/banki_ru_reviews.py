@@ -1,5 +1,7 @@
+import json
 import re
 from datetime import datetime
+from logging import getLogger
 from math import ceil
 
 from bs4 import BeautifulSoup
@@ -11,12 +13,13 @@ from misc import get_browser
 from misc.logger import get_logger
 from queues import api
 from queues.banki_ru import create_banks, get_bank_list
-from shemes.bank import BankiRuItem, Source, Text, TextRequest
+from settings import Settings
+from shemes.bank import BankiRuItem, Source, Text, TextRequest, PatchSource, SourceRequest
 
 
+# noinspection PyMethodMayBeStatic
 class BankiReviews:
-    logger = get_logger(__name__)
-    source = Source(site="banki.ru", source_type="reviews")
+    logger = get_logger(__name__, Settings().logger_level)
 
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
@@ -47,8 +50,11 @@ class BankiReviews:
         license_text = bank_address.find_all("span")[-1].text  # type: ignore
         if license_text.find("№") == -1:
             return None
-        license_id = license_text.split("№")[-1].split()[0]
-
+        license_id_text = license_text.split("№")[-1].split()[0]
+        if license_id_text.isnumeric():
+            license_id = int(license_id_text)
+        else:
+            license_id = int(license_id_text.split("-")[0])
         bank_url = bank_link["href"].replace("/banks/", "https://www.banki.ru/services/responses/")  # type: ignore
         return BankiRuItem(bank_id=license_id, bank_name=bank_link.text, reviews_url=bank_url)
 

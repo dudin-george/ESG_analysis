@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from math import ceil
 
@@ -5,15 +6,16 @@ import requests
 from requests import Response
 
 from database.reviews_site import SravniBankInfo
-from misc.logger import get_logger
+from settings import Settings
 from queues import api
+from misc.logger import get_logger
 from queues.sravni_ru import create_banks, get_bank_list
-from shemes.bank import Source, SravniRuItem, Text, TextRequest
+from shemes.bank import Source, SravniRuItem, Text, TextRequest, PatchSource, SourceRequest
 
 
+# noinspection PyMethodMayBeStatic
 class SravniReviews:
-    logger = get_logger(__name__)
-    source = Source(site="sravni.ru", source_type="reviews")
+    logger = get_logger(__name__, Settings().logger_level)
 
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
@@ -58,12 +60,13 @@ class SravniReviews:
             if item["license"] not in banks_id:
                 continue
             names = item["name"]
+            license_id = item["license"].split("-")[0]
             sravni_bank_list.append(
                 SravniRuItem(
                     sravni_id=item["_id"],
                     sravni_old_id=item["oldId"],
                     alias=item["alias"],
-                    bank_id=item["license"],
+                    bank_id=license_id,
                     bank_name=names["short"],
                     bank_full_name=names["full"],
                     bank_official_name=names["official"],
@@ -73,7 +76,7 @@ class SravniReviews:
         for bank in sravni_bank_list:
             banks_db.append(SravniBankInfo.from_pydantic(bank))
         create_banks(banks_db)
-        self.logger.info("create main table for banks")
+        self.logger.info("create table for sravni banks")
 
     def parse_reviews(
         self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
@@ -83,7 +86,7 @@ class SravniReviews:
             url = f"https://www.sravni.ru/bank/{bank.alias}/otzyvy/{review['id']}"
             # noinspection PyTypeChecker
             parsed_review = Text(
-                source_id=self.source_id,
+                source_id=self.source.id,
                 bank_id=bank.bank_id,
                 link=url,
                 date=review["date"],

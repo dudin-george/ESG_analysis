@@ -25,7 +25,7 @@ class SravniBankInfo(Base):
     __tablename__ = "sravni_bank_info"
 
     id: int = Column(Integer, primary_key=True, index=True)
-    bank_id: str = Column(String, index=True)  # some ids are not unique (modulebank and hice)
+    bank_id: int = Column(Integer, index=True)
     sravni_id: str = Column(String)
     sravni_old_id: int = Column(Integer)
     alias: str = Column(String)

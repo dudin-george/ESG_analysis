@@ -1,5 +1,6 @@
 import threading
 from collections.abc import Callable
+from logging import getLogger
 from time import sleep
 import schedule  # type: ignore
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
@@ -8,6 +9,7 @@ from database import Base, engine
 from misc.logger import get_logger
 from parsers.banki_ru_reviews import BankiReviews
 from parsers.sravni_reviews import SravniReviews
+from settings import Settings
 
 
 def run_threaded(job_func: Callable[[None], None]) -> None:
@@ -17,12 +19,12 @@ def run_threaded(job_func: Callable[[None], None]) -> None:
 
 def parsers_setup() -> None:
     sravni_reviews = SravniReviews()
-    banki_ru_reviews = BankiReviews()
+    # banki_ru_reviews = BankiReviews()
     run_threaded(sravni_reviews.parse)  # type: ignore
-    run_threaded(banki_ru_reviews.parse)  # type: ignore
-    get_logger("schedule")
+    # run_threaded(banki_ru_reviews.parse)  # type: ignore
+    getLogger("schedule")
     schedule.every().day.do(run_threaded, sravni_reviews.parse)
-    schedule.every().day.do(run_threaded, banki_ru_reviews.parse)
+    # schedule.every().day.do(run_threaded, banki_ru_reviews.parse)
 
     while True:
         schedule.run_pending()
@@ -30,7 +32,7 @@ def parsers_setup() -> None:
 
 def main() -> None:
     sleep(5)
-    logger = get_logger(__name__)
+    logger = get_logger(__name__, Settings().logger_level)
     logger.info("start app")
     if not database_exists(engine.url):
         create_database(engine.url)

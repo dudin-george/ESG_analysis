@@ -9,7 +9,7 @@ class Bank(BaseModel):
 
 
 class BankiRuItem(BaseModel):
-    bank_id: str
+    bank_id: int
     bank_name: str
     reviews_url: str
 
@@ -24,7 +24,7 @@ class SravniRuItem(BaseModel):
     bank_name: str
     bank_full_name: str
     bank_official_name: str
-    bank_id: str
+    bank_id: int
 
     class Config:
         orm_mode = True
