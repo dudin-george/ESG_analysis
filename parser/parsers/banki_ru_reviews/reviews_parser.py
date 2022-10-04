@@ -156,7 +156,7 @@ class BankiReviews:
 
                 reviews_list.extend(responses)
 
-            api.send_texts(TextRequest(items=reviews_list, parsed_state=json.dumps({"bank_id": bank.bank_id})))
+            api.send_texts(TextRequest(items=reviews_list, parsed_state=json.dumps({"bank_id": bank.bank_id}), last_update=parsed_time))
 
         browser.quit()
         self.logger.info("finish parse bank reviews")

@@ -153,7 +153,7 @@ class SravniReviews:
                 continue
             reviews = self.get_reviews(parsed_time, bank_info)
             time = datetime.now()
-            api.send_texts(TextRequest(items=reviews, parsed_state=json.dumps({"bank_id": bank_info.bank_id})))
+            api.send_texts(TextRequest(items=reviews, parsed_state=json.dumps({"bank_id": bank_info.bank_id}), last_update=parsed_time))
             self.logger.debug(f"Time for {bank_info.alias} send reviews: {datetime.now() - time}")
         patch_source = PatchSource(last_update=start_time)
         self.source = api.patch_source(self.source.id, patch_source)  # type: ignore
