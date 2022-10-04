@@ -8,12 +8,14 @@ from app.query.source import (
     get_source_item_by_id,
     get_source_items,
     get_source_types_items,
+    patch_source_by_id,
 )
 from app.schemes.source import (
     CreateSource,
     GetSource,
     GetSourceItem,
     GetSourceTypes,
+    PatchSource,
     PostSourceResponse,
     Source,
     SourceTypes,
@@ -50,6 +52,19 @@ async def get_source(source_id: int, db: Session = Depends(get_db)) -> Source | 
     source_item = await get_source_item_by_id(db, source_id)
     if source_item is None:
         return JSONResponse(status_code=404, content={"detail": "Source not found"})
+    return Source.from_orm(source_item)
+
+
+@router.patch("/item/{source_id}", response_model=Source)
+async def patch_source(
+    source_id: int, patch_source_item: PatchSource, db: Session = Depends(get_db)
+) -> Source | JSONResponse:
+    if patch_source_item.parser_state is None and patch_source_item.last_update is None:
+        return JSONResponse(status_code=400, content={"detail": "Bad request"})
+    source_item = await patch_source_by_id(db, source_id, patch_source_item)
+    if source_item is None:
+        return JSONResponse(status_code=404, content={"detail": "Source not found"})
+    s = Source.from_orm(source_item)
     return Source.from_orm(source_item)
 
 

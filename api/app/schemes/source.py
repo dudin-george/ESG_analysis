@@ -41,3 +41,8 @@ class SourceTypes(BaseModel):
 
 class GetSourceTypes(BaseModel):
     items: list[SourceTypes]
+
+
+class PatchSource(BaseModel):
+    parser_state: str | None
+    last_update: datetime | None
