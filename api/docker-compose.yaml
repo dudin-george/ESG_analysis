@@ -13,6 +13,7 @@ services:
       - database
     build: .
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/test"
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/database"
+      ECHO: False
     ports:
       - 8000:8000
