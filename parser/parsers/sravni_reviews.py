@@ -17,7 +17,8 @@ class SravniReviews:
 
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
-        self.source_id = api.send_source(self.source)
+        source_create = SourceRequest(site="sravni.ru", source_type="reviews")
+        self.source = api.send_source(source_create)
         if len(self.bank_list) == 0:
             self.get_bank_list()
             self.bank_list = get_bank_list()
@@ -132,15 +133,21 @@ class SravniReviews:
 
     def parse(self) -> None:
         start_time = datetime.now()
-        current_source = api.get_source_by_id(self.source_id)
+        current_source = api.get_source_by_id(self.source.id)
         parsed_time = current_source.last_update
         if parsed_time is None:
             parsed_time = datetime.min
-
+        parsed_state = {}
+        if current_source.parser_state is not None:
+            parsed_state = json.loads(current_source.parser_state)
+        parsed_bank_id = int(parsed_state.get("bank_id", "0"))
         for i, bank_info in enumerate(self.bank_list):
-            self.logger.info(f"[{i}/{len(self.bank_list)}] download reviews for {bank_info.alias}")
-
+            self.logger.info(f"[{i+1}/{len(self.bank_list)}] download reviews for {bank_info.alias}")
+            if bank_info.bank_id <= parsed_bank_id:
+                continue
             reviews = self.get_reviews(parsed_time, bank_info)
             time = datetime.now()
-            api.send_texts(TextRequest(items=reviews, last_update=start_time))
+            api.send_texts(TextRequest(items=reviews, parsed_state=json.dumps({"bank_id": bank_info.bank_id})))
             self.logger.debug(f"Time for {bank_info.alias} send reviews: {datetime.now() - time}")
+        patch_source = PatchSource(last_update=start_time)
+        self.source = api.patch_source(self.source.id, patch_source)

@@ -1,28 +1,48 @@
 import requests
-
+from misc.logger import get_logger
 from settings import Settings
-from shemes.bank import Bank, Source, SourceResponse, TextRequest
+from shemes.bank import Bank, Source, SourceRequest, TextRequest, PatchSource
 
 URL = Settings().api_url
+logger = get_logger(__name__)
 
 
 def get_bank_list() -> list[Bank]:
-    r = requests.get(URL + "/bank")
+    url = URL + "/bank"
+    logger.debug(f"Get bank list from {url}")
+    r = requests.get(url)
     banks = [Bank(**bank) for bank in r.json()["items"]]
     return banks
 
 
-def send_source(source: Source) -> int:
-    r = requests.post(URL + "/source", json=source.dict())
+def send_source(source: SourceRequest) -> Source:
+    url = URL + "/source"
+    logger.debug(f"Send source to {url}")
+    r = requests.post(url, json=source.dict())
     if r.status_code != 200:
-        print(r.json())
+        logger.error(r.json())
         raise Exception("Error send source")
-    return int(r.json()["source_id"])
+    return Source(**r.json())
 
 
-def get_source_by_id(source_id: int) -> SourceResponse:
-    r = requests.get(URL + f"/source/{source_id}")
-    return SourceResponse(**r.json())
+def get_source_by_id(source_id: int) -> Source:
+    url = URL + f"/source/item/{source_id}"
+    logger.debug(f"Patch source {url}")
+    r = requests.get(url)
+    return Source(**r.json())
+
+
+def patch_source(source_id: int, source: PatchSource) -> Source:
+    data = source.dict()
+    if data["last_update"]:
+        data["last_update"] = data["last_update"].isoformat()
+    url = URL + f"/source/item/{source_id}"
+    logger.debug(f"Patch source {url}")
+    r = requests.patch(url, json=data)
+    if r.status_code != 200:
+        logger.error(r.json())
+        raise Exception("Error patch source")
+    return Source(**r.json())
 
 
 def send_texts(text: TextRequest) -> None:
@@ -31,8 +51,10 @@ def send_texts(text: TextRequest) -> None:
         d = item.dict()
         d["date"] = d["date"].isoformat()
         items.append(d)
-    request = {"items": items, "date": text.last_update.isoformat()}
-    r = requests.post(URL + "/text", json=request)
+    request = {"items": items, "date": text.last_update, "parser_state": text.parsed_state}
+    url = URL + "/text"
+    logger.debug(f"Send texts to {url}")
+    r = requests.post(url, json=request)
     if r.status_code != 200:
-        print(r.json())
+        logger.error(r.json())
         raise Exception("Error send text")

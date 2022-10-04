@@ -20,7 +20,8 @@ class BankiReviews:
 
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
-        self.source_id = api.send_source(self.source)
+        source_create = SourceRequest(site="banki.ru", source_type="reviews")
+        self.source = api.send_source(source_create)
         if len(self.bank_list) == 0:
             self.get_bank_list()
             self.bank_list = get_bank_list()
@@ -87,7 +88,7 @@ class BankiReviews:
             time = datetime.strptime(
                 review.find("time", class_="display-inline-block").text,
                 "%d.%m.%Y %H:%M",
-            )  # TODO validator
+            )
             comments_num_elem = review.find("span", class_="responses__item__comment-count")
             comments_num = int(comments_num_elem.text) if comments_num_elem is not None else 0
             if time < parsed_time:
@@ -101,7 +102,7 @@ class BankiReviews:
                     text=re.sub("[\xa0\n\t]", " ", text),  # TODO validator
                     comments_num=comments_num,
                     bank_id=bank_id,
-                    source_id=self.source_id,
+                    source_id=self.source.id,
                 )
             )
             times.append(time)
@@ -110,13 +111,19 @@ class BankiReviews:
     def parse(self) -> None:
         self.logger.info("start parse banki.ru reviews")
         start_time = datetime.now()
-        current_source = api.get_source_by_id(self.source_id)
+        current_source = api.get_source_by_id(self.source.id)
         parsed_time = current_source.last_update
         if parsed_time is None:
             parsed_time = datetime.min
+        parsed_state = {}
+        if current_source.parser_state is not None:
+            parsed_state = json.loads(current_source.parser_state)
+        parsed_bank_id = parsed_state.get("bank_id", "0")
         browser = get_browser()
         for bank_index, bank_pydantic in enumerate(self.bank_list):
             bank = BankiRuItem.from_orm(bank_pydantic)
+            if bank.bank_id <= parsed_bank_id:
+                continue
             reviews_list = []
             self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
             page = self.get_page(browser, bank.reviews_url)
@@ -143,7 +150,9 @@ class BankiReviews:
 
                 reviews_list.extend(responses)
 
-            api.send_texts(TextRequest(items=reviews_list, last_update=start_time))
+            api.send_texts(TextRequest(items=reviews_list, parsed_state=json.dumps({"bank_id": bank.bank_id})))
 
         browser.quit()
         self.logger.info("finish parse bank reviews")
+        patch_source = PatchSource(last_update=start_time)
+        self.source = api.patch_source(self.source.id, patch_source)
