@@ -1,5 +1,5 @@
-from database import SessionLocal
-from database.reviews_site import BankiRu
+from parsers.banki_ru_reviews.database import BankiRu
+from parsers.database import SessionLocal
 
 
 def get_bank_list() -> list[BankiRu]:

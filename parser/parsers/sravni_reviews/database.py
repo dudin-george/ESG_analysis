@@ -1,24 +1,7 @@
 from sqlalchemy import Column, Integer, String
 
-from database import Base
-from shemes.bank import BankiRuItem, SravniRuItem
-
-
-class BankiRu(Base):
-    __tablename__ = "banki_ru"
-
-    id: int = Column(Integer, primary_key=True, index=True)
-    bank_id: str = Column(String, index=True)  # some ids are not unique
-    bank_name: str = Column(String)
-    reviews_url: str = Column(String)
-
-    @staticmethod
-    def from_pydantic(bank: BankiRuItem) -> "BankiRu":
-        return BankiRu(
-            bank_name=bank.bank_name,
-            reviews_url=bank.reviews_url,
-            bank_id=bank.bank_id,
-        )
+from parsers.database import Base
+from parsers.sravni_reviews.shemes import SravniRuItem
 
 
 class SravniBankInfo(Base):

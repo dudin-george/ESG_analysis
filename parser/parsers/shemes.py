@@ -4,35 +4,8 @@ from pydantic import BaseModel
 
 
 class Bank(BaseModel):
-    id: str
+    id: int
     bank_name: str
-
-
-class BankiRuItem(BaseModel):
-    bank_id: int
-    bank_name: str
-    reviews_url: str
-
-    class Config:
-        orm_mode = True
-
-
-class SravniRuItem(BaseModel):
-    sravni_id: str
-    sravni_old_id: int
-    alias: str
-    bank_name: str
-    bank_full_name: str
-    bank_official_name: str
-    bank_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class SourceRequest(BaseModel):
-    site: str
-    source_type: str
 
 
 class Source(BaseModel):
@@ -48,7 +21,7 @@ class Text(BaseModel):
     date: datetime
     title: str
     text: str
-    bank_id: str
+    bank_id: int
     link: str
     comments_num: int | None
 
@@ -77,3 +50,8 @@ class PatchSource(BaseModel):
         json_encoders = {
             datetime: lambda v: v.isoformat(),
         }
+
+
+class SourceRequest(BaseModel):
+    site: str
+    source_type: str

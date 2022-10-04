@@ -5,12 +5,13 @@ from math import ceil
 import requests
 from requests import Response
 
-from database.reviews_site import SravniBankInfo
-from settings import Settings
-from queues import api
-from misc.logger import get_logger
-from queues.sravni_ru import create_banks, get_bank_list
-from shemes.bank import Source, SravniRuItem, Text, TextRequest, PatchSource, SourceRequest
+from parsers import api
+from parsers.misc.logger import get_logger
+from parsers.settings import Settings
+from parsers.shemes import PatchSource, SourceRequest, Text, TextRequest
+from parsers.sravni_reviews.database import SravniBankInfo
+from parsers.sravni_reviews.queries import create_banks, get_bank_list
+from parsers.sravni_reviews.shemes import SravniRuItem
 
 
 # noinspection PyMethodMayBeStatic
@@ -57,10 +58,12 @@ class SravniReviews:
         banks_id = [bank.id for bank in existing_banks]
         sravni_bank_list = []
         for item in items:
-            if item["license"] not in banks_id:
+            license_id_str = item["license"].split("-")[0]
+            license_id = int(license_id_str)
+            if license_id not in banks_id:
                 continue
             names = item["name"]
-            license_id = item["license"].split("-")[0]
+
             sravni_bank_list.append(
                 SravniRuItem(
                     sravni_id=item["_id"],
@@ -136,7 +139,7 @@ class SravniReviews:
 
     def parse(self) -> None:
         start_time = datetime.now()
-        current_source = api.get_source_by_id(self.source.id)
+        current_source = api.get_source_by_id(self.source.id)  # type: ignore
         parsed_time = current_source.last_update
         if parsed_time is None:
             parsed_time = datetime.min
@@ -153,4 +156,4 @@ class SravniReviews:
             api.send_texts(TextRequest(items=reviews, parsed_state=json.dumps({"bank_id": bank_info.bank_id})))
             self.logger.debug(f"Time for {bank_info.alias} send reviews: {datetime.now() - time}")
         patch_source = PatchSource(last_update=start_time)
-        self.source = api.patch_source(self.source.id, patch_source)
+        self.source = api.patch_source(self.source.id, patch_source)  # type: ignore

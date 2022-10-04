@@ -1,20 +1,20 @@
 import json
 import re
 from datetime import datetime
-from logging import getLogger
 from math import ceil
 
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 from selenium import webdriver
 
-from database.reviews_site import BankiRu
-from misc import get_browser
-from misc.logger import get_logger
-from queues import api
-from queues.banki_ru import create_banks, get_bank_list
-from settings import Settings
-from shemes.bank import BankiRuItem, Source, Text, TextRequest, PatchSource, SourceRequest
+from parsers import api
+from parsers.banki_ru_reviews.database import BankiRu
+from parsers.banki_ru_reviews.queries import create_banks, get_bank_list
+from parsers.banki_ru_reviews.shemes import BankiRuItem
+from parsers.misc import get_browser
+from parsers.misc.logger import get_logger
+from parsers.settings import Settings
+from parsers.shemes import PatchSource, SourceRequest, Text, TextRequest
 
 
 # noinspection PyMethodMayBeStatic
@@ -82,7 +82,7 @@ class BankiReviews:
         browser.quit()
 
     def get_reviews(
-        self, reviews: ResultSet, parsed_time: datetime, bank_id: str  # type: ignore
+        self, reviews: ResultSet, parsed_time: datetime, bank_id: int  # type: ignore
     ) -> tuple[list[Text], list[datetime]]:
         reviews_list = []
         times = []
@@ -117,7 +117,7 @@ class BankiReviews:
     def parse(self) -> None:
         self.logger.info("start parse banki.ru reviews")
         start_time = datetime.now()
-        current_source = api.get_source_by_id(self.source.id)
+        current_source = api.get_source_by_id(self.source.id)  # type: ignore
         parsed_time = current_source.last_update
         if parsed_time is None:
             parsed_time = datetime.min
@@ -161,4 +161,4 @@ class BankiReviews:
         browser.quit()
         self.logger.info("finish parse bank reviews")
         patch_source = PatchSource(last_update=start_time)
-        self.source = api.patch_source(self.source.id, patch_source)
+        self.source = api.patch_source(self.source.id, patch_source)  # type: ignore
