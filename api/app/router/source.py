@@ -41,10 +41,10 @@ async def get_sources(db: Session = Depends(get_db)) -> GetSource:
     return get_source_response_item
 
 
-@router.post("/", response_model=PostSourceResponse)
-async def post_source(source: CreateSource, db: Session = Depends(get_db)) -> PostSourceResponse:
-    source_id = await create_source(db, source)
-    return PostSourceResponse(source_id=source_id)
+@router.post("/", response_model=Source)
+async def post_source(source: CreateSource, db: Session = Depends(get_db)) -> Source:
+    source = await create_source(db, source)
+    return source  # type: ignore
 
 
 @router.get("/item/{source_id}", response_model=Source)

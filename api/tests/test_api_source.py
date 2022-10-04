@@ -16,7 +16,7 @@ def test_post_source_200(client, data):
     )
     assert response.status_code == 200, response.text
     data = response.json()
-    assert data["source_id"] == 1
+    assert data["id"] == 1
 
 
 @pytest.mark.parametrize(
@@ -92,14 +92,14 @@ def test_post_existing_source(client):
     )
     assert response.status_code == 200, response.text
     data = response.json()
-    assert data["source_id"] == 1
+    assert data["id"] == 1
     response = client.post(
         "/source/",
         json=source,
     )
     assert response.status_code == 200, response.text
     data = response.json()
-    assert data["source_id"] == 1
+    assert data["id"] == 1
 
 
 @pytest.mark.parametrize(

@@ -8,11 +8,10 @@ async def get_source_items(db: Session) -> list[Source]:
     return db.query(Source).all()
 
 
-async def create_source(db: Session, model: CreateSource) -> int | None:
+async def create_source(db: Session, model: CreateSource) -> Source:
     source = db.query(Source).filter(Source.site == model.site).first()
     if source:
-        return_id = source.id  # type: int
-        return return_id
+        return source
 
     source_type = db.query(SourceType).filter(SourceType.name == model.source_type).first()
     if source_type is None:
@@ -21,7 +20,7 @@ async def create_source(db: Session, model: CreateSource) -> int | None:
     db.add(source)
     db.commit()
     db.refresh(source)
-    return source.id
+    return source
 
 
 async def get_source_item_by_id(db: Session, source_id: int) -> Source | None:
