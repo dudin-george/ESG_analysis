@@ -11,39 +11,39 @@ services:
       - "5432:5432"
     #shm_size: 512mb
 
-  grafana:
-    depends_on:
-      - database
-    image: grafana/grafana:8.5.13
-    ports:
-      - 3000:3000
-    user: ":"
-    volumes:
-    - /grafana:/var/lib/grafana
-    - ./configs/provisioning:/etc/grafana/provisioning
-    - ./configs/provisioning/dashboards:/var/lib/grafana/dashboards
+#  grafana:
+#    depends_on:
+#      - database
+#    image: grafana/grafana:8.5.13
+#    ports:
+#      - 3000:3000
+#    user: ":"
+#    volumes:
+#    - /grafana:/var/lib/grafana
+#    - ./configs/provisioning:/etc/grafana/provisioning
+#    - ./configs/provisioning/dashboards:/var/lib/grafana/dashboards
+#
+#  selenium:
+#    image: selenium/standalone-firefox
+#    ports:
+#    - 4444:4444
 
-  selenium:
-    image: selenium/standalone-firefox
-    ports:
-    - 4444:4444
-
-  script:
+  api:
     depends_on:
       - database
     build: api
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/database"
+      ECHO: "False"
     ports:
       - 8000:8000
 
-  parsers:
+  sravni-reviews-parser:
     depends_on:
-      - script
-      - database
-      - selenium
+      - api
     build: parser
+    command: ["python", "sravni_main.py"]
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/parser"
       DOCKER: "true"
-      API_URL: "http://script:8000"
+      API_URL: "http://api:8000"
