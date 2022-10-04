@@ -30,17 +30,17 @@ class SravniRuItem(BaseModel):
         orm_mode = True
 
 
-class Source(BaseModel):
+class SourceRequest(BaseModel):
     site: str
     source_type: str
 
 
-class SourceResponse(BaseModel):
-    id: int
+class Source(BaseModel):
+    id: int | None = None
     site: str
     source_type_id: int
-    parser_state: str | None
-    last_update: datetime | None
+    parser_state: str | None = None
+    last_update: datetime | None = None
 
 
 class Text(BaseModel):
@@ -61,7 +61,17 @@ class Text(BaseModel):
 class TextRequest(BaseModel):
     items: list[Text]
     parsed_state: str | None = None
-    last_update: datetime
+    last_update: datetime | None = None
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+        }
+
+
+class PatchSource(BaseModel):
+    parser_state: str | None = None
+    last_update: datetime | None = None
 
     class Config:
         json_encoders = {

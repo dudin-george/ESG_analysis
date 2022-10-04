@@ -4,7 +4,7 @@ from database.reviews_site import SravniBankInfo
 
 def get_bank_list() -> list[SravniBankInfo]:
     with SessionLocal() as db:
-        bank_list = db.query(SravniBankInfo).all()
+        bank_list = db.query(SravniBankInfo).order_by(SravniBankInfo.bank_id).all()
     return bank_list
 
 
