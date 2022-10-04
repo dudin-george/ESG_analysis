@@ -11,7 +11,7 @@ from app.database.text_result import TextResult  # noqa: F401
 from app.database.text_sentence import TextSentence  # noqa: F401
 from app.settings import Settings
 
-engine = create_engine(Settings().database_url, echo=True)
+engine = create_engine(Settings().database_url, echo=Settings().echo)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
