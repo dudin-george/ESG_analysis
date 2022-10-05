@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 
-from utils.database import Base
 from sravni_reviews.shemes import SravniRuItem
+from utils.database import Base
 
 
 class SravniBankInfo(Base):

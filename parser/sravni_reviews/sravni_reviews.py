@@ -5,14 +5,14 @@ from math import ceil
 import requests
 from requests import Response
 
-from utils import api
-from utils.logger import get_logger
-from utils.settings import Settings
-from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks, get_bank_list
 from sravni_reviews.shemes import SravniRuItem
+from utils import api
 from utils.base_parser import BaseParser
+from utils.logger import get_logger
+from utils.settings import Settings
+from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
 
 
 # noinspection PyMethodMayBeStatic
@@ -154,7 +154,11 @@ class SravniReviews(BaseParser):
                 continue
             reviews = self.get_reviews(parsed_time, bank_info)
             time = datetime.now()
-            api.send_texts(TextRequest(items=reviews, parsed_state=json.dumps({"bank_id": bank_info.bank_id}), last_update=parsed_time))
+            api.send_texts(
+                TextRequest(
+                    items=reviews, parsed_state=json.dumps({"bank_id": bank_info.bank_id}), last_update=parsed_time
+                )
+            )
             self.logger.debug(f"Time for {bank_info.alias} send reviews: {datetime.now() - time}")
         patch_source = PatchSource(last_update=start_time)
         self.source = api.patch_source(self.source.id, patch_source)  # type: ignore

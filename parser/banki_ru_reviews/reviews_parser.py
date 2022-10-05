@@ -7,15 +7,14 @@ from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 from selenium import webdriver
 
-from utils import api
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
 from banki_ru_reviews.shemes import BankiRuItem
-from utils import get_browser
+from utils import api, get_browser
+from utils.base_parser import BaseParser
 from utils.logger import get_logger
 from utils.settings import Settings
 from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
-from utils.base_parser import BaseParser
 
 
 # noinspection PyMethodMayBeStatic
@@ -157,7 +156,11 @@ class BankiReviews(BaseParser):
 
                 reviews_list.extend(responses)
 
-            api.send_texts(TextRequest(items=reviews_list, parsed_state=json.dumps({"bank_id": bank.bank_id}), last_update=parsed_time))
+            api.send_texts(
+                TextRequest(
+                    items=reviews_list, parsed_state=json.dumps({"bank_id": bank.bank_id}), last_update=parsed_time
+                )
+            )
 
         browser.quit()
         self.logger.info("finish parse bank reviews")

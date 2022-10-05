@@ -1,6 +1,5 @@
 from logging import getLogger
 from time import sleep
-from typing import Type
 
 import schedule  # type: ignore
 from sqlalchemy_utils import create_database, database_exists  # type: ignore

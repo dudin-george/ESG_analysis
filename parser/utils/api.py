@@ -53,7 +53,7 @@ def send_texts(text: TextRequest) -> None:
         d["date"] = d["date"].isoformat()
         items.append(d)
     last_update = None
-    if text.parsed_state:
+    if text.last_update:
         last_update = text.last_update.isoformat()
     request = {"items": items, "date": last_update, "parser_state": text.parsed_state}
     url = URL + "/text"
