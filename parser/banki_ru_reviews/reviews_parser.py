@@ -7,7 +7,7 @@ import requests
 from bs4.element import ResultSet
 from fake_useragent import UserAgent
 from requests import Response
-from requests.exceptions import JSONDecodeError, SSLError
+from requests.exceptions import JSONDecodeError, SSLError, ConnectTimeout
 
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
@@ -31,6 +31,7 @@ class BankiReviews(BaseParser):
             self.get_bank_list()
             self.bank_list = get_bank_list()
 
+    # noinspection PyDefaultArgument
     def send_get_request(self, url: str, params: dict[str, Any] = {}) -> requests.Response:
         ua = UserAgent()
         response = Response()
@@ -38,8 +39,11 @@ class BankiReviews(BaseParser):
             headers = {"User-Agent": ua.random}
             try:
                 response = requests.get(url, headers=headers, params=params)
-            except SSLError as error:
-                self.logger.warning(f"SSLError when request {response.url} {error=}")
+            except (SSLError, ConnectTimeout) as error:
+                self.logger.warning(f"{type(error)} when request {response.url} {error=}")
+                sleep(30)
+            except Exception as error:
+                self.logger.warning(f"{type(error)} when request {response.url} {error=}")
                 sleep(30)
             if response.status_code == 200:
                 break
