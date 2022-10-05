@@ -8,28 +8,29 @@ repos:
       - id: trailing-whitespace
 
   # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
-  - repo: local
-    hooks:
-      - id: lint api files
-        name: lint api files
-        entry: cd api && make
-        types: [python]
-        language: system
-      - id: export-api-requirements
-        name: Export api requirements.txt
-        language: system
-        entry: cd api && make export-dependencies
-        files: ^(pyproject.toml|poetry.lock)$
-      - id: lint parser files
-        name: lint parser files
-        entry: cd parser && make
-        types: [ python ]
-        language: system
-      - id: export-parser-requirements
-        name: Export parser requirements.txt
-        language: system
-        entry: cd parser && make export-dependencies
-        files: ^(pyproject.toml|poetry.lock)$
+#  TODO change to local make
+#  - repo: local
+#    hooks:
+#      - id: lint api files
+#        name: lint api files
+#        entry: cd api && make
+#        types: [python]
+#        language: system
+#      - id: export-api-requirements
+#        name: Export api requirements.txt
+#        language: system
+#        entry: cd api && make export-dependencies
+#        files: ^(pyproject.toml|poetry.lock)$
+#      - id: lint parser files
+#        name: lint parser files
+#        entry: cd parser && make
+#        types: [ python ]
+#        language: system
+#      - id: export-parser-requirements
+#        name: Export parser requirements.txt
+#        language: system
+#        entry: cd parser && make export-dependencies
+#        files: ^(pyproject.toml|poetry.lock)$
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.37.3
