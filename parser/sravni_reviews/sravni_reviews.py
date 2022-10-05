@@ -5,10 +5,10 @@ from math import ceil
 import requests
 from requests import Response
 
-import api
-from misc.logger import get_logger
-from settings import Settings
-from shemes import PatchSource, SourceRequest, Text, TextRequest
+from utils import api
+from utils.logger import get_logger
+from utils.settings import Settings
+from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks, get_bank_list
 from sravni_reviews.shemes import SravniRuItem

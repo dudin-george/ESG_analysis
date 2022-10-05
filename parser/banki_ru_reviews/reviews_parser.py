@@ -7,14 +7,14 @@ from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 from selenium import webdriver
 
-import api
+from utils import api
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
 from banki_ru_reviews.shemes import BankiRuItem
-from misc import get_browser
-from misc.logger import get_logger
-from settings import Settings
-from shemes import PatchSource, SourceRequest, Text, TextRequest
+from utils import get_browser
+from utils.logger import get_logger
+from utils.settings import Settings
+from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
 
 
 # noinspection PyMethodMayBeStatic

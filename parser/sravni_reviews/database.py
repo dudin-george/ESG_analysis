@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from database import Base
+from utils.database import Base
 from sravni_reviews.shemes import SravniRuItem
 
 

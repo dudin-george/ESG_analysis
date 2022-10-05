@@ -4,9 +4,9 @@ from time import sleep
 import schedule  # type: ignore
 from sqlalchemy_utils import create_database, database_exists  # type: ignore
 
-from database import Base, engine
-from misc.logger import get_logger
-from settings import Settings
+from utils.database import Base, engine
+from utils.logger import get_logger
+from utils.settings import Settings
 from sravni_reviews.sravni_reviews import SravniReviews
 
 

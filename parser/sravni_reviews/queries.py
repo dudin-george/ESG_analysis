@@ -1,4 +1,4 @@
-from database import SessionLocal
+from utils.database import SessionLocal
 from sravni_reviews.database import SravniBankInfo
 
 

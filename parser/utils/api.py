@@ -1,8 +1,8 @@
 import requests
 
-from misc.logger import get_logger
-from settings import Settings
-from shemes import Bank, PatchSource, Source, SourceRequest, TextRequest
+from utils.logger import get_logger
+from utils.settings import Settings
+from utils.shemes import Bank, PatchSource, Source, SourceRequest, TextRequest
 
 URL = Settings().api_url
 logger = get_logger(__name__)
