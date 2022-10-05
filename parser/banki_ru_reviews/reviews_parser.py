@@ -1,19 +1,21 @@
 import json
 from datetime import datetime
-from math import ceil
-
-from bs4 import BeautifulSoup
 from bs4.element import ResultSet
-from selenium import webdriver
 
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
 from banki_ru_reviews.shemes import BankiRuItem
-from utils import api, get_browser
+from utils import api
 from utils.base_parser import BaseParser
 from utils.logger import get_logger
 from utils.settings import Settings
 from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
+from fake_useragent import UserAgent
+import requests
+from requests.exceptions import SSLError, JSONDecodeError
+from requests import Response
+from typing import Any
+from time import sleep
 
 
 # noinspection PyMethodMayBeStatic
@@ -28,57 +30,50 @@ class BankiReviews(BaseParser):
             self.get_bank_list()
             self.bank_list = get_bank_list()
 
-    def get_page_num(self, page: BeautifulSoup, per_page: int = 50) -> int:
-        page_num_text = page.find("div", class_="ui-pagination__description")
-        if page_num_text is None:
-            return -1
-        page_num = ceil(int(page_num_text.text.strip().split()[-1]) / per_page)
-        return page_num
-
-    def get_page(self, browser: webdriver.Firefox | webdriver.Remote, url: str) -> BeautifulSoup:
-        browser.get(url)
-        self.logger.debug(f"Send request to {url}")
-        page = BeautifulSoup(browser.page_source, "html.parser")
-        return page
-
-    def get_bank(self, page: BeautifulSoup) -> BankiRuItem | None:
-        bank_link = page.find("a", class_="widget__link")
-        bank_address = page.find("div", {"data-test": "banks-item-address"})
-        if bank_link is None or bank_address is None:
-            return None
-        license_text = bank_address.find_all("span")[-1].text  # type: ignore
-        if license_text.find("№") == -1:
-            return None
-        license_id_text = license_text.split("№")[-1].split()[0]
-        if license_id_text.isnumeric():
-            license_id = int(license_id_text)
-        else:
-            license_id = int(license_id_text.split("-")[0])
-        bank_url = bank_link["href"].replace("/banks/", "https://www.banki.ru/services/responses/")  # type: ignore
-        return BankiRuItem(bank_id=license_id, bank_name=bank_link.text, reviews_url=bank_url)
+    def send_get_request(self, url: str, params: dict[str, Any] = {}) -> requests.Response:
+        ua = UserAgent()
+        response = Response()
+        for _ in range(5):
+            headers = {"User-Agent": ua.random}
+            try:
+                response = requests.get(url, headers=headers, params=params)
+            except SSLError as error:
+                self.logger.warning(f"SSLError when request {response.url} {error=}")
+                sleep(30)
+            if response.status_code == 200:
+                break
+        return response
 
     def get_bank_list(self) -> None:
-        browser = get_browser()
         self.logger.info("start download bank list")
-        page = self.get_page(browser, "https://www.banki.ru/banks/")
-        page_num = self.get_page_num(page)
-        banks = []
         existing_banks = api.get_bank_list()
         banks_id = [bank.id for bank in existing_banks]
-        for i in range(1, page_num + 1):
-            if i != 1:
-                page = self.get_page(browser, f"https://www.banki.ru/banks/?PAGEN_1={i}")
-            for bank_page_item in page.find_all("tr", {"data-test": "banks-list-item"}):
-                bank = self.get_bank(bank_page_item)
-                if bank is None or bank.bank_id not in banks_id:
-                    continue
-                banks.append(bank)
+        response = self.send_get_request("https://www.banki.ru/widget/ajax/bank_list.json")
+        banks_json = response.json()["data"]
+        banks = []
+        for bank in banks_json:
+            if bank["licence"] == "—" or bank["licence"] == "" or bank["licence"] == '-':
+                continue
+            license_id_str = bank["licence"].split("-")[0]
+            if license_id_str.isnumeric():
+                license_id = int(license_id_str)
+            else:
+                license_id = int(license_id_str.split()[0])
+            if license_id not in banks_id:
+                continue
+
+            banks.append(
+                BankiRuItem(
+                    bank_id=license_id,
+                    bank_name=bank["name"],
+                    reviews_url=f"https://www.banki.ru/services/responses/bank/{bank['code']}",
+                )
+            )
         self.logger.info("finish download bank list")
         banks_db = []
         for bank in banks:
             banks_db.append(BankiRu.from_pydantic(bank))
         create_banks(banks_db)
-        browser.quit()
 
     def get_reviews(
         self, reviews: ResultSet, parsed_time: datetime, bank_id: int  # type: ignore
@@ -113,6 +108,51 @@ class BankiReviews(BaseParser):
             times.append(time)
         return reviews_list, times
 
+    def get_json(self, response: Response) -> dict | None:
+        try:
+            resp_json = response.json()
+        except JSONDecodeError as error:
+            self.logger.warning(f"Bad json on {response.url} {error=}")
+            return None
+        except Exception as error:
+            self.logger.warning(f"Bad json on {response.url} {error=}")
+            return None
+        return resp_json
+
+    def get_page_bank_reviews(self, bank: BankiRuItem, page_num: int, parsed_time: datetime) -> list[Text] | None:
+        params = {"page": page_num, "bank": bank.bank_id}
+        response = self.send_get_request("https://www.banki.ru/services/responses/list/ajax/", params)
+        if response.status_code != 200:
+            return None
+        resp_json = self.get_json(response)
+        if resp_json is None:
+            return None
+        texts = []
+        for item in resp_json["data"]:
+            text = Text(
+                link=f"https://www.banki.ru/services/responses/bank/response/{item['id']}",
+                date=item["dateCreate"],
+                title=item["title"],
+                text=item["text"],
+                comments_num=item["commentCount"],
+                source_id=self.source.id,
+                bank_id=bank.bank_id,
+            )
+            if text.date < parsed_time:
+                continue
+            texts.append(text)
+        return texts
+
+    def get_page_num(self, bank: BankiRuItem) -> int | None:
+        params = {"page": 1, "bank": bank.bank_id}
+        response = self.send_get_request("https://www.banki.ru/services/responses/list/ajax/", params)
+        if response.status_code != 200:
+            return None
+        response_json = self.get_json(response)
+        if response_json is None:
+            return None
+        return response_json["total"] // 24 + 1
+
     def parse(self) -> None:
         self.logger.info("start parse banki.ru reviews")
         start_time = datetime.now()
@@ -123,45 +163,40 @@ class BankiReviews(BaseParser):
         parsed_state = {}
         if current_source.parser_state is not None:
             parsed_state = json.loads(current_source.parser_state)
-        parsed_bank_id = parsed_state.get("bank_id", "0")
-        browser = get_browser()
+        parsed_bank_id = int(parsed_state.get("bank_id", "0"))
+        parsed_bank_page = int(parsed_state.get("page_num", "0"))
         for bank_index, bank_pydantic in enumerate(self.bank_list):
             bank = BankiRuItem.from_orm(bank_pydantic)
-            if bank.bank_id <= parsed_bank_id:
-                continue
-            reviews_list = []
             self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
-            page = self.get_page(browser, bank.reviews_url)
-            page_num = self.get_page_num(page, 25)
-            if page_num == -1:
+            if bank.bank_id < parsed_bank_id:
                 continue
-
-            for i in range(1, page_num + 1):
-                self.logger.info(f"[{i}/{page_num}] start parse {bank.bank_name} reviews page {i}")
-                if i != 1:
-                    page = self.get_page(browser, f"{bank.reviews_url}?page={i}")
-
-                responses_list = page.find("div", class_="responses-list")
+            start = 1
+            if bank.bank_id == parsed_bank_id:
+                start = parsed_bank_page + 1
+            reviews_list = []
+            total_page = None
+            for _ in range(5):
+                total_page = self.get_page_num(bank)
+                if total_page is not None:
+                    break
+            if total_page is None:
+                break
+            for i in range(start, total_page):
+                self.logger.debug(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
+                responses_list = self.get_page_bank_reviews(bank, i, parsed_time)
                 if responses_list is None:
-                    continue
-                response_array = responses_list.find_all("article")  # type: ignore
-                responses, times = self.get_reviews(response_array, parsed_time, bank.bank_id)
-
-                if len(times) == 0:
+                    break
+                if len(responses_list) == 0:
                     break
 
-                if max(times) < parsed_time:
-                    break
-
-                reviews_list.extend(responses)
-
-            api.send_texts(
-                TextRequest(
-                    items=reviews_list, parsed_state=json.dumps({"bank_id": bank.bank_id}), last_update=parsed_time
+                api.send_texts(
+                    TextRequest(
+                        items=reviews_list,
+                        parsed_state=json.dumps({"bank_id": bank.bank_id, "page_num": i}),
+                        last_update=parsed_time,
+                    )
                 )
-            )
 
-        browser.quit()
         self.logger.info("finish parse bank reviews")
         patch_source = PatchSource(last_update=start_time)
         self.source = api.patch_source(self.source.id, patch_source)  # type: ignore
