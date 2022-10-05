@@ -42,7 +42,7 @@ services:
     depends_on:
       - api
     build: parser
-    command: ["python", "sravni_main.py"]
+    command: ["python", "main.py", "--site", "sravni_reviews"]
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/parser"
       DOCKER: "true"
