@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from math import ceil
+from time import sleep
 
 import requests
 from requests import Response
@@ -103,20 +104,37 @@ class SravniReviews(BaseParser):
             reviews.append(parsed_review)
         return reviews
 
-    def get_bank_info(self, bank_info: SravniBankInfo, page_num: int = 0, page_size: int = 1000) -> Response:
+    def get_bank_reviews(self, bank_info: SravniBankInfo, page_num: int = 0, page_size: int = 1000) -> Response:
         response = Response()
+        params = {
+            "filterBy": "withRates",
+            "isClient": False,
+            "locationRoute": None,
+            "newIds": True,
+            "orderBy": "byDate",
+            "pageIndex": page_num,
+            "pageSize": page_size,
+            "reviewObjectId": bank_info.sravni_id,
+            "reviewObjectType": "bank",
+            "specificProductId": None,
+            "tag": None,
+            "withVotes": True,
+        }
         for _ in range(3):
             response = requests.get(
-                f"https://www.sravni.ru/proxy-reviews/reviews/?filterBy=withRates&isClient=false&locationRoute=&newIds=true&orderBy=byDate&pageIndex={page_num}&pageSize={page_size}&reviewObjectId={bank_info.sravni_id}&reviewObjectType=bank&specificProductId=&tag=&withVotes=true"
-            )  # todo params to dict
+                f"https://www.sravni.ru/proxy-reviews/reviews/", params=params
+            )
             if response.status_code != 500:
                 return response
+            sleep(1)
+        if response.status_code != 200:
+            self.logger.warning(f"error {response.status_code} for {bank_info.alias}")
         return response
 
     def get_num_reviews(self, bank_info: SravniBankInfo) -> int:
-        response = self.get_bank_info(bank_info, page_size=1)
+        response = self.get_bank_reviews(bank_info, page_size=1)
         if response.status_code != 200:
-            self.logger.error(f"error {response.status_code} for {bank_info.alias}")
+            self.logger.warning(f"error {response.status_code} for {bank_info.alias} url {response.url}")
             return 0
         reviews_total = int(response.json()["total"])
         return ceil(reviews_total / 1000)
@@ -125,8 +143,8 @@ class SravniReviews(BaseParser):
         reviews_array = []
         page_num = self.get_num_reviews(bank_info)
         for i in range(page_num):
-            self.logger.debug(f"download page {i} for {bank_info.alias}")
-            response = self.get_bank_info(bank_info, i)
+            self.logger.debug(f"[{i+1}]/[{page_num}] download page {i+1} for {bank_info.alias}")
+            response = self.get_bank_reviews(bank_info, i)
 
             if response.status_code == 500 or response.status_code is None:
                 break
@@ -149,7 +167,7 @@ class SravniReviews(BaseParser):
             parsed_state = json.loads(current_source.parser_state)
         parsed_bank_id = int(parsed_state.get("bank_id", "0"))
         for i, bank_info in enumerate(self.bank_list):
-            self.logger.info(f"[{i+1}/{len(self.bank_list)}] download reviews for {bank_info.alias}")
+            self.logger.info(f"[{i + 1}/{len(self.bank_list)}] download reviews for {bank_info.alias}")
             if bank_info.bank_id <= parsed_bank_id:
                 continue
             reviews = self.get_reviews(parsed_time, bank_info)
