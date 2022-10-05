@@ -15,10 +15,11 @@ from utils import get_browser
 from utils.logger import get_logger
 from utils.settings import Settings
 from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
+from utils.base_parser import BaseParser
 
 
 # noinspection PyMethodMayBeStatic
-class BankiReviews:
+class BankiReviews(BaseParser):
     logger = get_logger(__name__, Settings().logger_level)
 
     def __init__(self) -> None:

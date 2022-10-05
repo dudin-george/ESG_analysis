@@ -12,10 +12,11 @@ from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks, get_bank_list
 from sravni_reviews.shemes import SravniRuItem
+from utils.base_parser import BaseParser
 
 
 # noinspection PyMethodMayBeStatic
-class SravniReviews:
+class SravniReviews(BaseParser):
     logger = get_logger(__name__, Settings().logger_level)
 
     def __init__(self) -> None:
