@@ -84,7 +84,7 @@ class SravniReviews(BaseParser):
         self.logger.info("create table for sravni banks")
 
     def parse_reviews(
-        self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
+            self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
     ) -> list[Text]:
         reviews = []
         for review in reviews_array:
@@ -120,8 +120,13 @@ class SravniReviews(BaseParser):
             "tag": None,
             "withVotes": True,
         }
-        for _ in range(3):
-            response = requests.get("https://www.sravni.ru/proxy-reviews/reviews/", params=params)  # type: ignore
+        for _ in range(5):
+            try:
+                response = requests.get("https://www.sravni.ru/proxy-reviews/reviews/", params=params)  # type: ignore
+            except Exception as e:
+                self.logger.warning(f"error {e} for {bank_info.alias} url {response.url}")
+                sleep(30)
+                continue
             if response.status_code != 500:
                 return response
             sleep(1)
@@ -141,18 +146,21 @@ class SravniReviews(BaseParser):
         reviews_array = []
         page_num = self.get_num_reviews(bank_info)
         for i in range(page_num):
-            self.logger.debug(f"[{i+1}/{page_num}] download page {i+1} for {bank_info.alias}")
+            self.logger.debug(f"[{i + 1}/{page_num}] download page {i + 1} for {bank_info.alias}")
             response = self.get_bank_reviews(bank_info, i)
 
             if response.status_code == 500 or response.status_code is None:
                 break
             reviews_json = response.json()
-            reviews = reviews_json.get("items", [])
-            if len(reviews) == 0:
+            reviews_json_items = reviews_json.get("items", [])
+            if len(reviews_json_items) == 0:
                 break
-            reviews_array.extend(reviews)
-
-        return self.parse_reviews(reviews_array, parsed_time, bank_info)
+            parsed_reviews = self.parse_reviews(reviews_json_items, parsed_time, bank_info)
+            reviews_array.extend(parsed_reviews)
+            times = [review.date for review in parsed_reviews]
+            if len(times) == 0 or min(times).replace(tzinfo=None) <= parsed_time:
+                break
+        return reviews_array
 
     def parse(self) -> None:
         start_time = datetime.now()
