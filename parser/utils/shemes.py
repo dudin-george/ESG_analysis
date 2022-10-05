@@ -33,9 +33,11 @@ class Text(BaseModel):
 
     @validator("date")
     def date_validator(cls, v: str | datetime) -> datetime:
-        if type(v) == str:
+        if type(v) is datetime:
+            return v
+        if type(v) is str:
             return datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
-        return v
+        return v  # type: ignore
 
     class Config:
         json_encoders = {

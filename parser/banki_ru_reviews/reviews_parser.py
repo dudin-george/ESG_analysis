@@ -1,6 +1,13 @@
 import json
 from datetime import datetime
+from time import sleep
+from typing import Any
+
+import requests
 from bs4.element import ResultSet
+from fake_useragent import UserAgent
+from requests import Response
+from requests.exceptions import JSONDecodeError, SSLError
 
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
@@ -10,12 +17,6 @@ from utils.base_parser import BaseParser
 from utils.logger import get_logger
 from utils.settings import Settings
 from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
-from fake_useragent import UserAgent
-import requests
-from requests.exceptions import SSLError, JSONDecodeError
-from requests import Response
-from typing import Any
-from time import sleep
 
 
 # noinspection PyMethodMayBeStatic
@@ -52,7 +53,7 @@ class BankiReviews(BaseParser):
         banks_json = response.json()["data"]
         banks = []
         for bank in banks_json:
-            if bank["licence"] == "—" or bank["licence"] == "" or bank["licence"] == '-':
+            if bank["licence"] == "—" or bank["licence"] == "" or bank["licence"] == "-":
                 continue
             license_id_str = bank["licence"].split("-")[0]
             if license_id_str.isnumeric():
@@ -108,9 +109,9 @@ class BankiReviews(BaseParser):
             times.append(time)
         return reviews_list, times
 
-    def get_json(self, response: Response) -> dict | None:
+    def get_json(self, response: Response) -> dict[str, Any] | None:
         try:
-            resp_json = response.json()
+            resp_json = response.json()  # type: dict[str, Any]
         except JSONDecodeError as error:
             self.logger.warning(f"Bad json on {response.url} {error=}")
             return None
@@ -151,7 +152,7 @@ class BankiReviews(BaseParser):
         response_json = self.get_json(response)
         if response_json is None:
             return None
-        return response_json["total"] // 24 + 1
+        return int(response_json["total"]) // 24 + 1
 
     def parse(self) -> None:
         self.logger.info("start parse banki.ru reviews")
@@ -173,7 +174,6 @@ class BankiReviews(BaseParser):
             start = 1
             if bank.bank_id == parsed_bank_id:
                 start = parsed_bank_page + 1
-            reviews_list = []
             total_page = None
             for _ in range(5):
                 total_page = self.get_page_num(bank)
@@ -183,10 +183,10 @@ class BankiReviews(BaseParser):
                 break
             for i in range(start, total_page):
                 self.logger.debug(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
-                responses_list = self.get_page_bank_reviews(bank, i, parsed_time)
-                if responses_list is None:
+                reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
+                if reviews_list is None:
                     break
-                if len(responses_list) == 0:
+                if len(reviews_list) == 0:
                     break
 
                 api.send_texts(

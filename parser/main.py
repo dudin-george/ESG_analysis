@@ -1,8 +1,8 @@
 from logging import getLogger
 from time import sleep
 
-import schedule  # type: ignore
-from sqlalchemy_utils import create_database, database_exists  # type: ignore
+import schedule
+from sqlalchemy_utils import create_database, database_exists
 
 from utils.arg_parser import parse_args
 from utils.base_parser import BaseParser

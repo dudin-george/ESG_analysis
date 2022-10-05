@@ -121,9 +121,7 @@ class SravniReviews(BaseParser):
             "withVotes": True,
         }
         for _ in range(3):
-            response = requests.get(
-                f"https://www.sravni.ru/proxy-reviews/reviews/", params=params
-            )
+            response = requests.get("https://www.sravni.ru/proxy-reviews/reviews/", params=params)  # type: ignore
             if response.status_code != 500:
                 return response
             sleep(1)
@@ -143,7 +141,7 @@ class SravniReviews(BaseParser):
         reviews_array = []
         page_num = self.get_num_reviews(bank_info)
         for i in range(page_num):
-            self.logger.debug(f"[{i+1}]/[{page_num}] download page {i+1} for {bank_info.alias}")
+            self.logger.debug(f"[{i+1}/{page_num}] download page {i+1} for {bank_info.alias}")
             response = self.get_bank_reviews(bank_info, i)
 
             if response.status_code == 500 or response.status_code is None:
