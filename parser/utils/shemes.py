@@ -1,6 +1,7 @@
+import re
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 class Bank(BaseModel):
@@ -24,6 +25,16 @@ class Text(BaseModel):
     bank_id: int
     link: str
     comments_num: int | None
+
+    @validator("text")
+    def text_validator(cls, v: str) -> str:
+        return re.sub("[\xa0\n\t]", " ", v)
+
+    @validator("date")
+    def date_validator(cls, v: str | datetime) -> datetime:
+        if type(v) == str:
+            return datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
+        return v
 
     class Config:
         json_encoders = {

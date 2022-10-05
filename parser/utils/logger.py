@@ -16,6 +16,8 @@ class Logger(logging.Formatter):
         logging.DEBUG: white + _format + reset,
         logging.WARNING: yellow + _format + reset,
         logging.INFO: blue + _format + reset,
+        logging.ERROR: red + _format + reset,
+        logging.CRITICAL: red + _format + reset,
     }
 
     def format(self, record: logging.LogRecord) -> str:

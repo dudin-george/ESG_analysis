@@ -1,5 +1,4 @@
 import json
-import re
 from datetime import datetime
 from math import ceil
 
@@ -105,7 +104,7 @@ class BankiReviews(BaseParser):
                     link=link,
                     date=time,
                     title=title,
-                    text=re.sub("[\xa0\n\t]", " ", text),  # TODO validator
+                    text=text,
                     comments_num=comments_num,
                     bank_id=bank_id,
                     source_id=self.source.id,
