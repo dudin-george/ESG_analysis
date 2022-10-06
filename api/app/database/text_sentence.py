@@ -19,3 +19,14 @@ class TextSentence(Base):
     sentence = Column(String)
     sentence_num = Column(Integer)
     text_results: Mapped[list["TextResult"]] = relationship("TextResult", back_populates="text_sentence")
+    temp_sentences = relationship("TempSentence", back_populates="text_sentence")
+
+
+class TempSentence(Base):
+    __tablename__ = "temp_sentences"
+
+    id = Column(Integer, primary_key=True)
+    sentence_id = Column(Integer, ForeignKey("text_sentence.id"), index=True)
+    sentence = Column(String, nullable=True)
+    text_sentence: Mapped["TextSentence"] = relationship("TextSentence", back_populates="temp_sentences")
+    query = Column(String, index=True)

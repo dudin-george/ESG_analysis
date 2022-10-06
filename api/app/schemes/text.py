@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TextItem(BaseModel):
@@ -53,8 +53,14 @@ class PostTextItem(BaseModel):
     date: datetime | None
 
 
+class GetTextSentencesItem(BaseModel):
+    id: int = Field(..., alias="sentence_id")
+    sentence: str
+
+
 class GetTextSentences(BaseModel):
-    items: list[TextSentence]
+    items: list[GetTextSentencesItem]
+    table_name: str
 
 
 class GetTextResultItem(BaseModel):
@@ -68,7 +74,12 @@ class GetTextResult(BaseModel):
     items: list[GetTextResultItem]
 
 
-class PostTextResult(BaseModel):
+class PostTextResultItem(BaseModel):
     text_result: list[float]
     model_id: int
     text_sentence_id: int
+
+
+class PostTextResult(BaseModel):
+    items: list[PostTextResultItem]
+    table_name: str

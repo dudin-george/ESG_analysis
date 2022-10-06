@@ -10,15 +10,17 @@ from app.schemes.text import GetTextSentences, PostTextItem
 router = APIRouter(prefix="/text", tags=["text"])
 
 
-@router.get("/sentences", response_model=GetTextSentences)
+@router.get("/sentences", response_model=GetTextSentences, response_model_by_alias=False)
 async def get_sentences(
-    sources: list[str] = Query(default=["new"]),
+    sources: list[str] = Query(default=[""]),
     model_id: int = Query(),
     limit: int = 100,
     db: Session = Depends(get_db),
-) -> GetTextSentences:
-    sentences = await get_text_sentences(db, model_id, sources, limit)
-    return GetTextSentences(items=sentences)
+) -> GetTextSentences | JSONResponse:
+    if len(sources) == 0 or sources[0] == "":
+        return JSONResponse(status_code=400, content={"message": "sources not found"})
+    sentences, table_name = await get_text_sentences(db, model_id, sources, limit)
+    return GetTextSentences(items=sentences, table_name=table_name)
 
 
 @router.post("/")

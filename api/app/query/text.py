@@ -3,9 +3,9 @@ from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.database import Bank, Source, Text, TextResult, TextSentence
+from app.database import Bank, Source, Text, TextResult, TextSentence, TempSentence
 from app.exceptions import IdNotFoundError
-from app.schemes.text import PostTextItem
+from app.schemes.text import GetTextSentencesItem, PostTextItem
 from app.tasks.transform_texts import transform_texts
 
 
@@ -47,14 +47,39 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
     transform_texts(ids, texts, db)  # type: ignore
     print(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
+table_names = {}
 
-async def get_text_sentences(db: Session, model_id: int, sources: list[str], limit: int) -> list[TextSentence]:
+
+def _generate_table_name(model_id: int, sources: list[str]) -> str:
+    return f"table_model_{model_id}_" + "_".join(sources)
+
+
+async def insert_data(db: Session, model_id: int, sources: list[str], table_name: str) -> None:
+    text_result_subq = db.query(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
-        db.query(TextSentence)
+        db.query(TextSentence.id, TextSentence.sentence)
         .join(TextSentence.text)
         .join(Text.source)
-        .join(TextSentence.text_results, isouter=True)
+        .join(text_result_subq, TextSentence.id == text_result_subq.c.text_sentence_id, isouter=True)
         .filter(Source.site.in_(sources))
-        .filter(TextSentence.id.not_in(db.query(TextResult.text_sentence_id).filter(TextResult.model_id == model_id)))
+        .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
     )
-    return query.limit(limit).all()
+    items = []
+    for sentence_item in query.all():
+        items.append(TempSentence(sentence_id=sentence_item['id'], sentence=sentence_item['sentence'], query=table_name))
+    db.add_all(items)
+    db.commit()
+
+
+async def get_text_sentences(
+    db: Session, model_id: int, sources: list[str], limit: int
+) -> tuple[list[GetTextSentencesItem], str]:
+    table_name = _generate_table_name(model_id, sources)
+    table_exists = table_names.get(table_name, False)
+    if table_exists is False:
+        await insert_data(db, model_id, sources, table_name)
+    query = db.query(TempSentence.sentence_id, TextSentence.sentence).join(TextSentence).filter(TempSentence.query == table_name).limit(limit)
+    sentences = query.all()
+    if len(sentences) <= limit:
+        table_names[table_name] = False
+    return sentences, table_name

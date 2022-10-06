@@ -164,19 +164,15 @@ def test_get_text(client, post_text):
     sentences = [
         {
             "id": 1,
-            "text_id": 1,
             "sentence": "string",
-            "sentence_num": 1,
         },
         {
             "id": 2,
-            "text_id": 2,
             "sentence": "string",
-            "sentence_num": 1,
         },
     ]
     assert response.status_code == 200, response.text
-    assert response.json() == {"items": [sentences[0]]}
+    assert response.json() == {"items": [sentences[0]], "table_name": "table_model_1_example.com"}
     response = client.post("/source/", json={"site": "test", "source_type": "test"})
     assert response.status_code == 200, response.text
     response = client.post(
@@ -198,10 +194,10 @@ def test_get_text(client, post_text):
     assert response.status_code == 200, response.text
     response = client.get("/text/sentences?sources=example.com&sources=test&model_id=1")
     assert response.status_code == 200, response.text
-    assert response.json() == {"items": sentences}
+    assert response.json() == {"items": sentences, "table_name": "table_model_1_example.com_test"}
     response = client.get("/text/sentences?sources=example.com&sources=test&model_id=1&limit=1")
     assert response.status_code == 200, response.text
-    assert response.json() == {"items": [sentences[0]]}
+    assert response.json() == {"items": [sentences[0]], "table_name": "table_model_1_example.com_test"}
 
 
 def test_update_source(client, post_source):
