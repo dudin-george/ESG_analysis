@@ -179,11 +179,7 @@ class BankiReviews(BaseParser):
             start = 1
             if bank.bank_id == parsed_bank_id:
                 start = parsed_bank_page + 1
-            total_page = None
-            for _ in range(5):
-                total_page = self.get_page_num(bank)
-                if total_page is not None:
-                    break
+            total_page = self.get_page_num(bank)
             if total_page is None:
                 continue
             for i in range(start, total_page+1):
