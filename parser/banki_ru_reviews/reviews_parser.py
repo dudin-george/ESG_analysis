@@ -185,7 +185,7 @@ class BankiReviews(BaseParser):
                 if total_page is not None:
                     break
             if total_page is None:
-                break
+                continue
             for i in range(start, total_page+1):
                 self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
                 reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
