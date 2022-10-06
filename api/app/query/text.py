@@ -1,9 +1,10 @@
 from datetime import datetime
 
+from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.database import Bank, Source, Text, TextResult, TextSentence, TempSentence
+from app.database import Bank, Source, TempSentence, Text, TextResult, TextSentence
 from app.exceptions import IdNotFoundError
 from app.schemes.text import GetTextSentencesItem, PostTextItem
 from app.tasks.transform_texts import transform_texts
@@ -47,7 +48,8 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
     transform_texts(ids, texts, db)  # type: ignore
     print(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
-table_names = {}
+
+table_names: dict[str, bool] = {}
 
 
 def _generate_table_name(model_id: int, sources: list[str]) -> str:
@@ -66,20 +68,28 @@ async def insert_data(db: Session, model_id: int, sources: list[str], table_name
     )
     items = []
     for sentence_item in query.all():
-        items.append(TempSentence(sentence_id=sentence_item['id'], sentence=sentence_item['sentence'], query=table_name))
+        items.append(
+            TempSentence(sentence_id=sentence_item["id"], sentence=sentence_item["sentence"], query=table_name)
+        )
     db.add_all(items)
     db.commit()
 
 
-async def get_text_sentences(
-    db: Session, model_id: int, sources: list[str], limit: int
-) -> tuple[list[GetTextSentencesItem], str]:
+async def get_text_sentences(db: Session, model_id: int, sources: list[str], limit: int) -> list[GetTextSentencesItem]:
     table_name = _generate_table_name(model_id, sources)
     table_exists = table_names.get(table_name, False)
     if table_exists is False:
         await insert_data(db, model_id, sources, table_name)
-    query = db.query(TempSentence.sentence_id, TextSentence.sentence).join(TextSentence).filter(TempSentence.query == table_name).limit(limit)
-    sentences = query.all()
-    if len(sentences) <= limit:
+    # query = db.query(TempSentence.sentence_id, TextSentence.sentence).join(TextSentence).filter(TempSentence.query == table_name).limit(limit)
+    subq = db.query(TempSentence.id).filter(TempSentence.query == table_name).limit(limit).subquery()
+    query = (
+        delete(TempSentence)
+        .where(TempSentence.id == subq.c.id)
+        .returning(TempSentence.sentence_id, TempSentence.sentence)
+    )
+    sentences = db.execute(query).fetchall()
+    db.commit()
+    table_names[table_name] = True
+    if len(sentences) < limit:
         table_names[table_name] = False
-    return sentences, table_name
+    return sentences  # type: ignore

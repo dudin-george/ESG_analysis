@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.database.text_result import TextResult
-from app.database.text_sentence import TextSentence, TempSentence
+from app.database.text_sentence import TextSentence
 from app.schemes.text import PostTextResultItem
 
 
@@ -10,7 +10,7 @@ async def get_text_result_items(db: Session, text_id: int) -> list[TextResult]:
     return query.all()
 
 
-async def create_text_results(db: Session, texts: list[PostTextResultItem], table_name: str) -> None:
+async def create_text_results(db: Session, texts: list[PostTextResultItem]) -> None:
     text_results = []
     for text in texts:
         text_result = TextResult(
@@ -19,6 +19,5 @@ async def create_text_results(db: Session, texts: list[PostTextResultItem], tabl
             model_id=text.model_id,
         )
         text_results.append(text_result)
-        db.query(TempSentence).filter(TempSentence.id == text.text_sentence_id).filter(TempSentence.query == table_name).delete()
     db.add_all(text_results)
     db.commit()

@@ -19,8 +19,8 @@ async def get_sentences(
 ) -> GetTextSentences | JSONResponse:
     if len(sources) == 0 or sources[0] == "":
         return JSONResponse(status_code=400, content={"message": "sources not found"})
-    sentences, table_name = await get_text_sentences(db, model_id, sources, limit)
-    return GetTextSentences(items=sentences, table_name=table_name)
+    sentences = await get_text_sentences(db, model_id, sources, limit)
+    return GetTextSentences(items=sentences)
 
 
 @router.post("/")

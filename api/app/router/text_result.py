@@ -25,5 +25,5 @@ async def get_text_results(text_id: int, db: Session = Depends(get_db)) -> GetTe
 
 @router.post("/")
 async def post_text_result(texts: PostTextResult, db: Session = Depends(get_db)) -> dict[str, str]:
-    await create_text_results(db, texts.items, texts.table_name)
+    await create_text_results(db, texts.items)
     return {"message": "OK"}

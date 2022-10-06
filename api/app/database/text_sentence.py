@@ -19,7 +19,7 @@ class TextSentence(Base):
     sentence = Column(String)
     sentence_num = Column(Integer)
     text_results: Mapped[list["TextResult"]] = relationship("TextResult", back_populates="text_sentence")
-    temp_sentences = relationship("TempSentence", back_populates="text_sentence")
+    temp_sentences: "TempSentence" = relationship("TempSentence", back_populates="text_sentence")
 
 
 class TempSentence(Base):

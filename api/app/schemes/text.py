@@ -60,7 +60,7 @@ class GetTextSentencesItem(BaseModel):
 
 class GetTextSentences(BaseModel):
     items: list[GetTextSentencesItem]
-    table_name: str
+    # table_name: str
 
 
 class GetTextResultItem(BaseModel):
@@ -82,4 +82,3 @@ class PostTextResultItem(BaseModel):
 
 class PostTextResult(BaseModel):
     items: list[PostTextResultItem]
-    table_name: str

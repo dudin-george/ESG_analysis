@@ -8,7 +8,7 @@ from app.database.model import Model, ModelType  # noqa: F401
 from app.database.source import Source, SourceType  # noqa: F401
 from app.database.text import Text  # noqa: F401
 from app.database.text_result import TextResult  # noqa: F401
-from app.database.text_sentence import TextSentence, TempSentence  # noqa: F401
+from app.database.text_sentence import TempSentence, TextSentence  # noqa: F401
 from app.settings import Settings
 
 engine = create_engine(Settings().database_url, echo=Settings().echo)
