@@ -38,6 +38,7 @@ class BankiReviews(BaseParser):
         for _ in range(5):
             headers = {"User-Agent": ua.random}
             try:
+                self.logger.debug(f"send request to {url} with {params=}")
                 response = requests.get(url, headers=headers, params=params)
             except (SSLError, ConnectTimeout) as error:
                 self.logger.warning(f"{type(error)} when request {response.url} {error=}")
@@ -71,7 +72,7 @@ class BankiReviews(BaseParser):
                 BankiRuItem(
                     bank_id=license_id,
                     bank_name=bank["name"],
-                    reviews_url=f"https://www.banki.ru/services/responses/bank/{bank['code']}",
+                    bank_code=bank['code'],
                 )
             )
         self.logger.info("finish download bank list")
@@ -125,7 +126,7 @@ class BankiReviews(BaseParser):
         return resp_json
 
     def get_page_bank_reviews(self, bank: BankiRuItem, page_num: int, parsed_time: datetime) -> list[Text] | None:
-        params = {"page": page_num, "bank": bank.bank_id}
+        params = {"page": page_num, "bank": bank.bank_code}
         response = self.send_get_request("https://www.banki.ru/services/responses/list/ajax/", params)
         if response.status_code != 200:
             return None
@@ -149,7 +150,7 @@ class BankiReviews(BaseParser):
         return texts
 
     def get_page_num(self, bank: BankiRuItem) -> int | None:
-        params = {"page": 1, "bank": bank.bank_id}
+        params = {"page": 1, "bank": bank.bank_code}
         response = self.send_get_request("https://www.banki.ru/services/responses/list/ajax/", params)
         if response.status_code != 200:
             return None
@@ -185,8 +186,8 @@ class BankiReviews(BaseParser):
                     break
             if total_page is None:
                 break
-            for i in range(start, total_page):
-                self.logger.debug(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
+            for i in range(start, total_page+1):
+                self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
                 reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
                 if reviews_list is None:
                     break
