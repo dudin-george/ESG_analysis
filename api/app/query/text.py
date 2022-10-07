@@ -78,19 +78,19 @@ async def insert_data(db: Session, model_id: int, sources: list[str], table_name
 
 async def get_text_sentences(db: Session, model_id: int, sources: list[str], limit: int) -> list[GetTextSentencesItem]:
     table_name = _generate_table_name(model_id, sources)
-    table_exists = table_names.get(table_name, False)
-    if table_exists is False:
-        await insert_data(db, model_id, sources, table_name)
-    # query = db.query(TempSentence.sentence_id, TextSentence.sentence).join(TextSentence).filter(TempSentence.query == table_name).limit(limit)
-    subq = db.query(TempSentence.id).filter(TempSentence.query == table_name).limit(limit).subquery()
+    text_result_subq = db.query(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
-        delete(TempSentence)
-        .where(TempSentence.id == subq.c.id)
-        .returning(TempSentence.sentence_id, TempSentence.sentence)
+        db.query(TextSentence.id, TextSentence.sentence)
+        .join(TextSentence.text)
+        .join(Text.source)
+        .join(text_result_subq, TextSentence.id == text_result_subq.c.text_sentence_id, isouter=True)
+        .filter(Source.site.in_(sources))
+        .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
+        .limit(limit)
     )
-    sentences = db.execute(query).fetchall()
-    db.commit()
-    table_names[table_name] = True
-    if len(sentences) < limit:
-        table_names[table_name] = False
-    return sentences  # type: ignore
+    items = []
+    for sentence_item in query.all():
+        items.append(
+            GetTextSentencesItem(sentence_id=sentence_item["id"], sentence=sentence_item["sentence"])
+        )
+    return items  # type: ignore
