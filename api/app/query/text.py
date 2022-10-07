@@ -65,6 +65,7 @@ async def insert_data(db: Session, model_id: int, sources: list[str], table_name
         .join(text_result_subq, TextSentence.id == text_result_subq.c.text_sentence_id, isouter=True)
         .filter(Source.site.in_(sources))
         .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
+        .limit(100_000)
     )
     items = []
     for sentence_item in query.all():
