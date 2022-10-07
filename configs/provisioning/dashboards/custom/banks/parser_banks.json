@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 2,
-  "iteration": 1665081749379,
+  "iteration": 1665134120568,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -52,6 +52,9 @@
               "viz": false
             },
             "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
@@ -72,8 +75,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -98,7 +100,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -261,8 +263,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -277,17 +278,19 @@
               "id": "byName",
               "options": "text_result"
             },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 831
-              }
-            ]
+            "properties": []
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "name"
+            },
+            "properties": []
           }
         ]
       },
       "gridPos": {
-        "h": 3,
+        "h": 6,
         "w": 11,
         "x": 0,
         "y": 10
@@ -299,7 +302,7 @@
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true,
         "sortBy": []
@@ -307,6 +310,10 @@
       "pluginVersion": "8.5.13",
       "targets": [
         {
+          "datasource": {
+            "type": "postgres",
+            "uid": "PA942B37CCFAF5A81"
+          },
           "format": "table",
           "group": [
             {
@@ -319,7 +326,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  count(id) AS \"text_result\"\nFROM text_result",
+          "rawSql": "SELECT\n  model.name,\n  count(text_result.id) AS \"text_result\"\nFROM text_result\njoin\n  model on text_result.model_id = model.id\ngroup by model.name",
           "refId": "A",
           "select": [
             [
@@ -371,8 +378,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -384,7 +390,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 6,
         "w": 13,
         "x": 11,
         "y": 10
@@ -396,7 +402,7 @@
           "reducer": [
             "sum"
           ],
-          "show": false
+          "show": true
         },
         "showHeader": true,
         "sortBy": []
@@ -404,6 +410,10 @@
       "pluginVersion": "8.5.13",
       "targets": [
         {
+          "datasource": {
+            "type": "postgres",
+            "uid": "PA942B37CCFAF5A81"
+          },
           "format": "table",
           "group": [
             {
@@ -416,7 +426,7 @@
           ],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  count(id) AS \"text_sentence\"\nFROM text_sentence",
+          "rawSql": "SELECT\n  source.site,\n  count(text_sentence.id) AS \"text_sentence\"\nFROM text_sentence\njoin \n  text on text.id = text_sentence.text_id\njoin\n  source on text.source_id = source.id\ngroup by source.site",
           "refId": "A",
           "select": [
             [
@@ -468,8 +478,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -484,7 +493,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 16
       },
       "id": 12,
       "options": {
@@ -534,7 +543,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 20
       },
       "id": 10,
       "panels": [],
@@ -584,8 +593,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -600,7 +608,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 21
       },
       "id": 8,
       "options": {
@@ -610,7 +618,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -787,8 +795,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -803,7 +810,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 30
       },
       "id": 4,
       "options": {
@@ -813,7 +820,7 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
@@ -923,9 +930,9 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "АО «Тинькофф Банк»",
-          "value": "АО «Тинькофф Банк»"
+          "selected": false,
+          "text": "АО ЮниКредит Банк",
+          "value": "АО ЮниКредит Банк"
         },
         "datasource": {
           "type": "postgres",
@@ -971,10 +978,9 @@
       },
       {
         "current": {
-          "isNone": true,
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "ethics_model_sentiment_test",
+          "value": "ethics_model_sentiment_test"
         },
         "datasource": {
           "type": "postgres",
@@ -1004,6 +1010,6 @@
   "timezone": "",
   "title": "Parser banks",
   "uid": "7lOWMI44z",
-  "version": 8,
+  "version": 12,
   "weekStart": ""
 }
