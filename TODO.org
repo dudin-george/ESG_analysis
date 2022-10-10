@@ -11,11 +11,15 @@
 ** TODO add pytest command for parsers [[https://docs.pytest.org/en/7.1.x/example/simple.html#control-skipping-of-tests-according-to-command-line-option][link]]
 ** TODO integration test in different folder [[https://docs.pytest.org/en/7.1.x/reference/customize.html?highlight=pytest%20ini][link]]
 ** TODO add readme for subprojects
+** TODO add midelware with timings
+** TODO speed up tests
+** TODO add repr to database
 ** DONE Setup tox
 CLOSED: [2022-10-02 Вс 21:01]
 * Plans
 ** Must
 *** TODO [[https://github.com/zhanymkanov/fastapi-best-practices#11-sqlalchemy-set-db-keys-naming-convention][Sqlalchemy naming convention]]
+*** TODO alembic migrations
 *** TODO Nginx reverse proxy [[https://www.nginx.com/blog/deploying-nginx-plus-as-an-api-gateway-part-1/][(link)]]
 - [[https://serverfault.com/questions/152745/nginx-proxy-by-request-method][on method]]
 *** TODO different workers for read and write (cqrs)

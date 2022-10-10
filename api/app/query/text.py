@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -49,9 +48,6 @@ async def create_text_sentences(db: Session, post_texts: PostTextItem) -> None:
     print(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
 
-table_names: dict[str, bool] = {}
-
-
 def _generate_table_name(model_id: int, sources: list[str]) -> str:
     return f"table_model_{model_id}_" + "_".join(sources)
 
@@ -77,7 +73,6 @@ async def insert_data(db: Session, model_id: int, sources: list[str], table_name
 
 
 async def get_text_sentences(db: Session, model_id: int, sources: list[str], limit: int) -> list[GetTextSentencesItem]:
-    table_name = _generate_table_name(model_id, sources)
     text_result_subq = db.query(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
         db.query(TextSentence.id, TextSentence.sentence)
@@ -90,7 +85,5 @@ async def get_text_sentences(db: Session, model_id: int, sources: list[str], lim
     )
     items = []
     for sentence_item in query.all():
-        items.append(
-            GetTextSentencesItem(sentence_id=sentence_item["id"], sentence=sentence_item["sentence"])
-        )
-    return items  # type: ignore
+        items.append(GetTextSentencesItem(sentence_id=sentence_item["id"], sentence=sentence_item["sentence"]))
+    return items
