@@ -105,15 +105,15 @@ def test_several_sources_and_models(client):
             },
         )
         assert response.status_code == 200, response.text
-    response = client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1&limit=20")
+    response = client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1")
     assert response.status_code == 200, response.text
     data = response.json()
-    assert len(data["items"]) == 15
+    assert len(data["items"]) == 25
     post_text_result(client, data["items"])
     response = client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1&limit=20")
     assert response.status_code == 200, response.text
     data = response.json()
-    assert len(data["items"]) == 10
+    assert len(data["items"]) == 0
     post_text_result(client, data["items"])
     response = client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=2")
     assert response.status_code == 200, response.text
