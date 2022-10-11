@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, relationship
 
-from app.database.base import Base
+from app.database.models.base import Base
 
 if TYPE_CHECKING:
-    from app.database.text import Text
-    from app.database.text_result import TextResult
+    from app.database.models.text import Text
+    from app.database.models.text_result import TextResult
 
 
 class TextSentence(Base):

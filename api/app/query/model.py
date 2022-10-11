@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.database.model import Model, ModelType
+from app.database.models.model import Model, ModelType
 from app.schemes.model import PostModel
 
 

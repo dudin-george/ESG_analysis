@@ -1,7 +1,7 @@
 import nltk
 from sqlalchemy.orm import Session
 
-from ..database.text_sentence import TextSentence
+from app.database.models.text_sentence import TextSentence
 
 # from . import celery_app
 

@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from fastapi.logger import logger
 from sqlalchemy.orm import Session
 
-from app.database.bank import Bank
+from app.database.models.bank import Bank
 from app.query.bank import get_bank_count, load_bank
 
 

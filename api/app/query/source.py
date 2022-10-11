@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.database.source import Source, SourceType
+from app.database.models.source import Source, SourceType
 from app.schemes.source import CreateSource, PatchSource
 
 

@@ -10,7 +10,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.bank_parser import CBRParser
 from app.database import get_db
-from app.database.base import Base
+from app.database.models.base import Base
 from app.main import app
 from app.settings import Settings
 

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.database.text_result import TextResult
-from app.database.text_sentence import TextSentence
+from app.database.models.text_result import TextResult
+from app.database.models.text_sentence import TextSentence
 from app.schemes.text import PostTextResultItem
 
 
