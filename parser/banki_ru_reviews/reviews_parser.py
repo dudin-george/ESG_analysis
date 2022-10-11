@@ -12,11 +12,11 @@ from requests.exceptions import JSONDecodeError, SSLError, ConnectTimeout
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
 from banki_ru_reviews.shemes import BankiRuItem
-from utils import api
-from utils.base_parser import BaseParser
+from common import api
+from common.base_parser import BaseParser
 from utils.logger import get_logger
-from utils.settings import Settings
-from utils.shemes import PatchSource, SourceRequest, Text, TextRequest
+from common.settings import Settings
+from common.shemes import PatchSource, SourceRequest, Text, TextRequest
 
 
 # noinspection PyMethodMayBeStatic

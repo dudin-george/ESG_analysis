@@ -5,10 +5,10 @@ import schedule
 from sqlalchemy_utils import create_database, database_exists
 
 from utils.arg_parser import parse_args
-from utils.base_parser import BaseParser
+from common.base_parser import BaseParser
 from utils.database import Base, engine
 from utils.logger import get_logger
-from utils.settings import Settings
+from common.settings import Settings
 
 
 def parsers_setup(parser_class: type[BaseParser]) -> None:

@@ -1,6 +1,6 @@
 import argparse
 
-from utils.base_parser import BaseParser
+from common.base_parser import BaseParser
 
 
 def parse_args() -> type[BaseParser]:
