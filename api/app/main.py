@@ -28,7 +28,9 @@ def startup() -> None:
         create_database(engine.url)
     # Base.metadata.create_all(bind=engine)
     path = os.path.join(os.getcwd(), "app/database/alembic.ini")
-    upgrade(Config(path), "head")
+    config = Config(path)
+    config.attributes['configure_logger'] = False
+    upgrade(config, "head")
     CBRParser(SessionLocal()).load_banks()
 
 
