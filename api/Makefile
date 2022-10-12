@@ -43,5 +43,9 @@ database:
 test:
 	docker compose -f docker-compose.test.yaml up --build
 
+.PHONY: env
+env:
+	cp .env.example .env
+
 .PHONY: all
 all: format export-dependencies
