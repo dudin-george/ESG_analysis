@@ -57,3 +57,14 @@ services:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
       DOCKER: "true"
       API_URL: "http://api:8000"
+
+  vk-comments-parser:
+    depends_on:
+      - api
+    build: parser
+    command: ["python", "main.py", "--site", "vk_comments"]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/vk_comments"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+      TOKERN: ""
