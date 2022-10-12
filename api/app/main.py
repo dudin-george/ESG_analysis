@@ -14,7 +14,6 @@ app = fastapi.FastAPI(
     title="Texts API",
     version="0.1.0",
     description="API for DB",
-    debug=True,
 )
 app.include_router(text.router)
 app.include_router(model.router)

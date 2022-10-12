@@ -2,16 +2,18 @@ services:
   database:
     image: postgres:14.4
     restart: always
-    env_file:
-      - ./.env
+    environment:
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
     ports:
       - 5432:5432
 
   tests:
     depends_on:
       - database
-    env_file:
-      - ./.env
     build: .
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/database"
+      ECHO: False
     ports:
       - 8000:8000
