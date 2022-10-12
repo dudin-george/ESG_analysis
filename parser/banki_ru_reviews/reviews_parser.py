@@ -28,7 +28,7 @@ class BankiReviews(BaseParser):
         source_create = SourceRequest(site="banki.ru", source_type="reviews")
         self.source = api.send_source(source_create)
         if len(self.bank_list) == 0:
-            self.get_bank_list()
+            self.load_bank_list()
             self.bank_list = get_bank_list()
 
     # noinspection PyDefaultArgument
@@ -50,7 +50,7 @@ class BankiReviews(BaseParser):
                 break
         return response
 
-    def get_bank_list(self) -> None:
+    def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
         existing_banks = api.get_bank_list()
         banks_id = [bank.id for bank in existing_banks]

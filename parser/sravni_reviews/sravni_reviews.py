@@ -25,7 +25,7 @@ class SravniReviews(BaseParser):
         source_create = SourceRequest(site="sravni.ru", source_type="reviews")
         self.source = api.send_source(source_create)
         if len(self.bank_list) == 0:
-            self.get_bank_list()
+            self.load_bank_list()
             self.bank_list = get_bank_list()
 
     def request_bank_list(self) -> Response:
@@ -50,7 +50,7 @@ class SravniReviews(BaseParser):
         }
         return requests.post("https://www.sravni.ru/proxy-organizations/banks/list", data=data)
 
-    def get_bank_list(self) -> None:
+    def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
         self.logger.info("send request to https://www.sravni.ru/proxy-organizations/banks/list")
         request = self.request_bank_list()
