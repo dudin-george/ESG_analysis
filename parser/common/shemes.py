@@ -24,7 +24,7 @@ class Text(BaseModel):
     text: str
     bank_id: int
     link: str
-    comments_num: int | None
+    comments_num: int | None = None
 
     @validator("text")
     def text_validator(cls, v: str) -> str:

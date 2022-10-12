@@ -14,3 +14,7 @@ def get_browser() -> webdriver.Firefox | webdriver.Remote:
         gecko = Service(GeckoDriverManager().install())
         browser = webdriver.Firefox(service=gecko)  # type: ignore
     return browser
+
+
+def relative_path(cwd: str, path: str) -> str:
+    return os.path.join(cwd, path)

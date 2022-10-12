@@ -10,7 +10,7 @@ def parse_args() -> type[BaseParser]:
     parser = argparse.ArgumentParser(description="CLI for banks")
     parser.add_argument(
         "--site",
-        choices=["sravni_reviews", "banki_reviews"],
+        choices=["sravni_reviews", "banki_reviews", "vk_comments"],
         help="site arguments",
         required=True,
     )
@@ -28,5 +28,9 @@ def _get_class(args: argparse.Namespace) -> type[BaseParser]:
             from banki_ru_reviews.reviews_parser import BankiReviews
 
             return BankiReviews
+        case "vk_comments":
+            from vk_parser.comments_parser import VKParser
+
+            return VKParser
         case _:
             raise ValueError("Unknown site")
