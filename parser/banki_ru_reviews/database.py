@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 
 from banki_ru_reviews.shemes import BankiRuItem
-from utils.database import Base
+from common.database import Base
 
 
 class BankiRu(Base):

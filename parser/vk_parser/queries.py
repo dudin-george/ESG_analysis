@@ -1,4 +1,4 @@
-from utils.database import SessionLocal
+from common.database import SessionLocal
 from vk_parser.database import VkBank
 
 

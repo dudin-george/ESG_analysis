@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from utils.database import Base
+from common.database import Base
 
 
 class VkBank(Base):

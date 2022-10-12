@@ -1,5 +1,5 @@
 from sravni_reviews.database import SravniBankInfo
-from utils.database import SessionLocal
+from common.database import SessionLocal
 
 
 def get_bank_list() -> list[SravniBankInfo]:
