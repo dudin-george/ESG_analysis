@@ -1,15 +1,15 @@
 import requests
 
-from utils.logger import get_logger
 from common.settings import Settings
 from common.shemes import Bank, PatchSource, Source, SourceRequest, TextRequest
+from utils.logger import get_logger
 
 URL = Settings().api_url
 logger = get_logger(__name__)
 
 
 def get_bank_list() -> list[Bank]:
-    url = URL + "/bank"
+    url = URL + "/bank/"
     logger.debug(f"Get bank list from {url}")
     r = requests.get(url)
     banks = [Bank(**bank) for bank in r.json()["items"]]
@@ -17,7 +17,7 @@ def get_bank_list() -> list[Bank]:
 
 
 def send_source(source: SourceRequest) -> Source:
-    url = URL + "/source"
+    url = URL + "/source/"
     logger.debug(f"Send source to {url}")
     r = requests.post(url, json=source.dict())
     if r.status_code != 200:
@@ -27,7 +27,7 @@ def send_source(source: SourceRequest) -> Source:
 
 
 def get_source_by_id(source_id: int) -> Source:
-    url = URL + f"/source/item/{source_id}"
+    url = URL + f"/source/item/{source_id}/"
     logger.debug(f"Patch source {url}")
     r = requests.get(url)
     return Source(**r.json())
@@ -37,7 +37,7 @@ def patch_source(source_id: int, source: PatchSource) -> Source:
     data = source.dict()
     if data["last_update"]:
         data["last_update"] = data["last_update"].isoformat()
-    url = URL + f"/source/item/{source_id}"
+    url = URL + f"/source/item/{source_id}/"
     logger.debug(f"Patch source {url}")
     r = requests.patch(url, json=data)
     if r.status_code != 200:
@@ -47,6 +47,8 @@ def patch_source(source_id: int, source: PatchSource) -> Source:
 
 
 def send_texts(text: TextRequest) -> None:
+    if len(text.items) == 0:
+        return None
     items = []
     for item in text.items:
         d = item.dict()
@@ -56,7 +58,7 @@ def send_texts(text: TextRequest) -> None:
     if text.last_update:
         last_update = text.last_update.isoformat()
     request = {"items": items, "date": last_update, "parser_state": text.parsed_state}
-    url = URL + "/text"
+    url = URL + "/text/"
     logger.debug(f"Send texts to {url}")
     r = requests.post(url, json=request)
     if r.status_code != 200:
