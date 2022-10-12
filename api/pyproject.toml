@@ -9,7 +9,7 @@ python = "^3.10"
 requests = "^2.28.0"
 psycopg2 = "^2.9.3"
 fastapi = "^0.85.0"
-pydantic = "^1.10.2"
+pydantic = {extras = ["dotenv"], version = "^1.10.2"}
 SQLAlchemy = "^1.4.41"
 uvicorn = "^0.18.3"
 SQLAlchemy-Utils = "^0.38.3"

@@ -29,7 +29,7 @@ def startup() -> None:
     # Base.metadata.create_all(bind=engine)
     path = os.path.join(os.getcwd(), "app/database/alembic.ini")
     config = Config(path)
-    config.attributes['configure_logger'] = False
+    config.attributes["configure_logger"] = False
     upgrade(config, "head")
     CBRParser(SessionLocal()).load_banks()
 
