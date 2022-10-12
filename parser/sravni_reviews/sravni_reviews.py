@@ -105,7 +105,6 @@ class SravniReviews(BaseParser):
         return reviews
 
     def get_bank_reviews(self, bank_info: SravniBankInfo, page_num: int = 0, page_size: int = 1000) -> Response:
-        response = Response()
         params = {
             "filterBy": "withRates",
             "isClient": False,
@@ -120,16 +119,7 @@ class SravniReviews(BaseParser):
             "tag": None,
             "withVotes": True,
         }
-        for _ in range(5):
-            try:
-                response = requests.get("https://www.sravni.ru/proxy-reviews/reviews/", params=params)  # type: ignore
-            except Exception as e:
-                self.logger.warning(f"error {e} for {bank_info.alias} url {response.url}")
-                sleep(30)
-                continue
-            if response.status_code != 500:
-                return response
-            sleep(1)
+        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews/" , params=params)
         if response.status_code != 200:
             self.logger.warning(f"error {response.status_code} for {bank_info.alias}")
         return response
@@ -151,7 +141,9 @@ class SravniReviews(BaseParser):
 
             if response.status_code == 500 or response.status_code is None:
                 break
-            reviews_json = response.json()
+            reviews_json = self.get_json(response)
+            if reviews_json is None:
+                break
             reviews_json_items = reviews_json.get("items", [])
             if len(reviews_json_items) == 0:
                 break

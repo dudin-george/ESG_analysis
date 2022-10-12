@@ -1,28 +1,21 @@
 import json
 from datetime import datetime
-from time import sleep
 from typing import Any
 
-import requests
 from bs4.element import ResultSet
-from fake_useragent import UserAgent
 from requests import Response
-from requests.exceptions import JSONDecodeError, SSLError, ConnectTimeout
+from requests.exceptions import JSONDecodeError
 
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
 from banki_ru_reviews.shemes import BankiRuItem
 from common import api
 from common.base_parser import BaseParser
-from utils.logger import get_logger
-from common.settings import Settings
 from common.shemes import PatchSource, SourceRequest, Text, TextRequest
 
 
 # noinspection PyMethodMayBeStatic
 class BankiReviews(BaseParser):
-    logger = get_logger(__name__, Settings().logger_level)
-
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
         source_create = SourceRequest(site="banki.ru", source_type="reviews")
@@ -30,25 +23,6 @@ class BankiReviews(BaseParser):
         if len(self.bank_list) == 0:
             self.load_bank_list()
             self.bank_list = get_bank_list()
-
-    # noinspection PyDefaultArgument
-    def send_get_request(self, url: str, params: dict[str, Any] = {}) -> requests.Response:
-        ua = UserAgent()
-        response = Response()
-        for _ in range(5):
-            headers = {"User-Agent": ua.random}
-            try:
-                self.logger.debug(f"send request to {url} with {params=}")
-                response = requests.get(url, headers=headers, params=params)
-            except (SSLError, ConnectTimeout) as error:
-                self.logger.warning(f"{type(error)} when request {response.url} {error=}")
-                sleep(30)
-            except Exception as error:
-                self.logger.warning(f"{type(error)} when request {response.url} {error=}")
-                sleep(30)
-            if response.status_code == 200:
-                break
-        return response
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -113,17 +87,6 @@ class BankiReviews(BaseParser):
             )
             times.append(time)
         return reviews_list, times
-
-    def get_json(self, response: Response) -> dict[str, Any] | None:
-        try:
-            resp_json = response.json()  # type: dict[str, Any]
-        except JSONDecodeError as error:
-            self.logger.warning(f"Bad json on {response.url} {error=}")
-            return None
-        except Exception as error:
-            self.logger.warning(f"Bad json on {response.url} {error=}")
-            return None
-        return resp_json
 
     def get_page_bank_reviews(self, bank: BankiRuItem, page_num: int, parsed_time: datetime) -> list[Text] | None:
         params = {"page": page_num, "bank": bank.bank_code}
