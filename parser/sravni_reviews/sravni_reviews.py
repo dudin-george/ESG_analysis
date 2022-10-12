@@ -15,7 +15,6 @@ from sravni_reviews.shemes import SravniRuItem
 
 # noinspection PyMethodMayBeStatic
 class SravniReviews(BaseParser):
-
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
         source_create = SourceRequest(site="sravni.ru", source_type="reviews")
@@ -80,7 +79,7 @@ class SravniReviews(BaseParser):
         self.logger.info("create table for sravni banks")
 
     def parse_reviews(
-            self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
+        self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
     ) -> list[Text]:
         reviews = []
         for review in reviews_array:
@@ -153,13 +152,7 @@ class SravniReviews(BaseParser):
     def parse(self) -> None:
         start_time = datetime.now()
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
-        parsed_time = current_source.last_update
-        if parsed_time is None:
-            parsed_time = datetime.min
-        parsed_state = {}
-        if current_source.parser_state is not None:
-            parsed_state = json.loads(current_source.parser_state)
-        parsed_bank_id = int(parsed_state.get("bank_id", "0"))
+        _, parsed_bank_id, parsed_time = self.get_source_params(current_source)
         for i, bank_info in enumerate(self.bank_list):
             self.logger.info(f"[{i + 1}/{len(self.bank_list)}] download reviews for {bank_info.alias}")
             if bank_info.bank_id <= parsed_bank_id:

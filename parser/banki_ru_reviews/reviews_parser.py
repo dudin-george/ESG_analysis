@@ -43,7 +43,7 @@ class BankiReviews(BaseParser):
                 BankiRuItem(
                     bank_id=license_id,
                     bank_name=bank["name"],
-                    bank_code=bank['code'],
+                    bank_code=bank["code"],
                 )
             )
         self.logger.info("finish download bank list")
@@ -123,14 +123,7 @@ class BankiReviews(BaseParser):
         self.logger.info("start parse banki.ru reviews")
         start_time = datetime.now()
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
-        parsed_time = current_source.last_update
-        if parsed_time is None:
-            parsed_time = datetime.min
-        parsed_state = {}
-        if current_source.parser_state is not None:
-            parsed_state = json.loads(current_source.parser_state)
-        parsed_bank_id = int(parsed_state.get("bank_id", "0"))
-        parsed_bank_page = int(parsed_state.get("page_num", "0"))
+        parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
         for bank_index, bank_pydantic in enumerate(self.bank_list):
             bank = BankiRuItem.from_orm(bank_pydantic)
             self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
@@ -142,7 +135,7 @@ class BankiReviews(BaseParser):
             total_page = self.get_page_num(bank)
             if total_page is None:
                 continue
-            for i in range(start, total_page+1):
+            for i in range(start, total_page + 1):
                 self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
                 reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
                 if reviews_list is None:
