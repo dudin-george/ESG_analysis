@@ -1,14 +1,13 @@
 from logging import getLogger
-from time import sleep
 
 import schedule
 from sqlalchemy_utils import create_database, database_exists
 
-from utils.arg_parser import parse_args
 from common.base_parser import BaseParser
+from common.settings import get_settings
+from utils.arg_parser import parse_args
 from utils.database import Base, engine
 from utils.logger import get_logger
-from common.settings import get_settings
 
 
 def parsers_setup(parser_class: type[BaseParser]) -> None:
@@ -21,7 +20,7 @@ def parsers_setup(parser_class: type[BaseParser]) -> None:
 
 
 def main() -> None:
-    sleep(5)
+    # sleep(5)
     settings = get_settings()
     logger = get_logger(__name__, settings.logger_level)
     logger.info("start app")

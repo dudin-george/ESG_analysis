@@ -15,6 +15,7 @@
 ** TODO speed up tests
 ** TODO add repr to database
 ** TODO rename parser utils to common
+** TODO change psycopg2 to asyncpg
 ** DONE Setup tox
 CLOSED: [2022-10-02 Вс 21:01]
 * Plans
