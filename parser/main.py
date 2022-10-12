@@ -8,7 +8,7 @@ from utils.arg_parser import parse_args
 from common.base_parser import BaseParser
 from utils.database import Base, engine
 from utils.logger import get_logger
-from common.settings import Settings
+from common.settings import get_settings
 
 
 def parsers_setup(parser_class: type[BaseParser]) -> None:
@@ -22,7 +22,8 @@ def parsers_setup(parser_class: type[BaseParser]) -> None:
 
 def main() -> None:
     sleep(5)
-    logger = get_logger(__name__, Settings().logger_level)
+    settings = get_settings()
+    logger = get_logger(__name__, settings.logger_level)
     logger.info("start app")
     parser_class = parse_args()
     if not database_exists(engine.url):

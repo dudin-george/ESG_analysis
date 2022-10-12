@@ -5,12 +5,13 @@ from fake_useragent import UserAgent
 from time import sleep
 from requests import Response
 
-from common.settings import Settings
+from common.settings import get_settings
 from utils.logger import get_logger
 
 
 class BaseParser:
-    logger = get_logger(__name__, Settings().logger_level)
+    settings = get_settings()
+    logger = get_logger(__name__, settings.logger_level)
 
     def parse(self) -> None:
         pass

@@ -1,24 +1,20 @@
 import json
 from datetime import datetime
 from math import ceil
-from time import sleep
 
 import requests
 from requests import Response
 
+from common import api
+from common.base_parser import BaseParser
+from common.shemes import PatchSource, SourceRequest, Text, TextRequest
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks, get_bank_list
 from sravni_reviews.shemes import SravniRuItem
-from common import api
-from common.base_parser import BaseParser
-from utils.logger import get_logger
-from common.settings import Settings
-from common.shemes import PatchSource, SourceRequest, Text, TextRequest
 
 
 # noinspection PyMethodMayBeStatic
 class SravniReviews(BaseParser):
-    logger = get_logger(__name__, Settings().logger_level)
 
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
@@ -119,7 +115,7 @@ class SravniReviews(BaseParser):
             "tag": None,
             "withVotes": True,
         }
-        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews/" , params=params)
+        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews/", params=params)
         if response.status_code != 200:
             self.logger.warning(f"error {response.status_code} for {bank_info.alias}")
         return response

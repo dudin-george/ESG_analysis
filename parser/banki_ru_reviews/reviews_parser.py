@@ -1,10 +1,7 @@
 import json
 from datetime import datetime
-from typing import Any
 
 from bs4.element import ResultSet
-from requests import Response
-from requests.exceptions import JSONDecodeError
 
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
