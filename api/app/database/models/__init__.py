@@ -1,7 +1,7 @@
-from app.database.models.base import Base
-from app.database.models.bank import Bank
-from app.database.models.model import Model, ModelType
-from app.database.models.source import Source, SourceType
-from app.database.models.text import Text
-from app.database.models.text_result import TextResult
-from app.database.models.text_sentence import TextSentence
+from app.database.models.bank import Bank  # noqa
+from app.database.models.base import Base  # noqa
+from app.database.models.model import Model, ModelType  # noqa
+from app.database.models.source import Source, SourceType  # noqa
+from app.database.models.text import Text  # noqa
+from app.database.models.text_result import TextResult  # noqa
+from app.database.models.text_sentence import TextSentence  # noqa

@@ -1,11 +1,13 @@
-import fastapi
-from sqlalchemy_utils import create_database, database_exists
-from alembic.config import Config
-from alembic.command import upgrade
-from app.bank_parser import CBRParser
-from app.database import SessionLocal, engine
 # from app.database.models.base import Base
 import os
+
+import fastapi
+from alembic.command import upgrade
+from alembic.config import Config
+from sqlalchemy_utils import create_database, database_exists
+
+from app.bank_parser import CBRParser
+from app.database import SessionLocal, engine
 from app.router import bank, model, source, text, text_result
 
 app = fastapi.FastAPI(

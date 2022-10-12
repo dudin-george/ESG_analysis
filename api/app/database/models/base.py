@@ -1,5 +1,5 @@
-from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy import MetaData
+from sqlalchemy.ext.declarative import as_declarative
 
 metadata = MetaData()
 
