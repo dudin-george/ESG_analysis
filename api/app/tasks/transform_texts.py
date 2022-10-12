@@ -14,6 +14,9 @@ def transform_texts(texts_ids: list[int], texts: list[str], db: Session) -> None
     for text_id, text in zip(texts_ids, texts):
         sentences = tokenizer.tokenize(text)
         for i, sentence in enumerate(sentences, 1):
+            if len(sentence) < 5:
+                # sometimes triple symbols reconstructed as two sentences
+                continue
             text_sentences.append(
                 TextSentence(
                     text_id=text_id,
