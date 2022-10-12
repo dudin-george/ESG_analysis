@@ -1,9 +1,11 @@
 import fastapi
 from sqlalchemy_utils import create_database, database_exists
-
+from alembic.config import Config
+from alembic.command import upgrade
 from app.bank_parser import CBRParser
 from app.database import SessionLocal, engine
-from app.database.models.base import Base
+# from app.database.models.base import Base
+import os
 from app.router import bank, model, source, text, text_result
 
 app = fastapi.FastAPI(
@@ -22,7 +24,9 @@ app.include_router(bank.router)
 def startup() -> None:
     if not database_exists(engine.url):
         create_database(engine.url)
-    Base.metadata.create_all(bind=engine)
+    # Base.metadata.create_all(bind=engine)
+    path = os.path.join(os.getcwd(), "app/database/alembic.ini")
+    upgrade(Config(path), "head")
     CBRParser(SessionLocal()).load_banks()
 
 
