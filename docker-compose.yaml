@@ -67,4 +67,4 @@ services:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/vk_comments"
       DOCKER: "true"
       API_URL: "http://api:8000"
-      TOKERN: "vk1.a.TsmhVWPwV_WT5ZNNuoFtvBszYgO2xxSV9STIhvE4fGMR1jhf2TWytxSfBodHBqvn_3ozIRxbO0R3oRSox9bJ43f9h2EKtSkPBLu_ArLMn3Wxtqd1BSH1tX72RJ7n4CDt3MPxGBzpvJoceYJZUhS_OZuR5H8xfMJOHa0NYXY59mmeCDlbeEUE8PNinTrwJw_p"
+      VK_TOKEN: ""
