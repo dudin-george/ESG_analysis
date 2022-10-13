@@ -7,6 +7,7 @@ from time import sleep
 from typing import Any
 
 import numpy as np
+from datetime import timedelta
 
 from common import api
 from common.base_parser import BaseParser
@@ -104,31 +105,29 @@ class VKParser(BaseParser):
             for comment in comments_json["response"]["items"]:
                 if comment["text"] != "":
                     json_comment = self.json_to_comment_text(domain, comment, bank_id)
-                    if len(json_comment.text) > 100 and json_comment.date > parsed_time:
-                        comments.append(json_comment)
+                    comments.append(json_comment)
                 for thread_comment in comment["thread"]["items"]:
                     if thread_comment["text"] != "":
                         json_comment = self.json_to_comment_text(domain, thread_comment, bank_id)
-                        if len(json_comment.text) > 100 and json_comment.date > parsed_time:
-                            comments.append(json_comment)
+                        comments.append(json_comment)
         return comments
 
-    def get_source_params(self, source: Source) -> tuple[int, int, datetime]:
-        _, parsed_bank_id, parsed_time = super().get_source_params(source)
+    def get_source_params(self, source: Source) -> tuple[int, int, int, datetime]:
+        page_num, parsed_bank_id, parsed_time = super().get_source_params(source)
         parsed_state = {}
         if source.parser_state is not None:
             parsed_state = json.loads(source.parser_state)
         post_id = int(parsed_state.get("post_id", "0"))
-        return parsed_bank_id, post_id, parsed_time
+        return page_num, parsed_bank_id, post_id, parsed_time
 
     def parse(self) -> None:
         self.logger.info("start parse VK")
         start_time = datetime.now()
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
-        parsed_bank_id, post_id, parsed_time = self.get_source_params(current_source)
+        page_num, parsed_bank_id, post_id, parsed_time = self.get_source_params(current_source)
         for bank_iter, bank in enumerate(self.bank_list):
             self.logger.info(f"[{bank_iter}/{len(self.bank_list)}] start parse {bank.name}")
-            if bank.id <= parsed_bank_id:  # type: ignore
+            if bank.id < parsed_bank_id:  # type: ignore
                 continue
             params_wall_get = {
                 "access_token": self.settings.vk_token,
@@ -147,32 +146,41 @@ class VKParser(BaseParser):
             params_wall_get["count"] = 100
             for i in range(num_page):
                 self.logger.info(f"Start parse {bank.name} page [{i}/{num_page}]")
+                if i <= page_num:
+                    continue
                 params_wall_get["offset"] = i * 100
                 response = self.send_get_request("https://api.vk.com/method/wall.get", params=params_wall_get)
                 response_json = self.get_json(response)
                 if response_json is None:
                     continue
                 posts_dates = [post["date"] for post in response_json["response"]["items"]]
-                if max(posts_dates) < parsed_time.timestamp():
+                look_up_date = max((parsed_time-timedelta(days=7)).timestamp(), 0)
+                if max(posts_dates) < look_up_date:  # if all posts are older than 7 days
                     break
                 for post in response_json["response"]["items"]:
                     if (
-                        post.get("owner_id", False)
-                        or post.get("id", False)
-                        or post.get("comments")
-                        or post["comments"].get("count", False)
+                        post.get("owner_id", None) is None
+                        or post.get("id", None) is None
+                        or post.get("comments", None) is None
+                        or post["comments"].get("count", None) is None
                     ):
                         continue
                     comments = self.get_post_comments(
                         bank.domain, post["owner_id"], post["id"], post["comments"]["count"], bank.id, parsed_time  # type: ignore
                     )
+                    if len(comments) == 0:
+                        continue
                     comments_date = [comment.date for comment in comments]
-                    if max(comments_date) < parsed_time:
+                    if max(comments_date).replace(tzinfo=None) < parsed_time:
                         break
+                    long_comments = []
+                    for comment in comments:
+                        if len(comment.text) > 100 and comment.date.replace(tzinfo=None) > parsed_time:
+                            long_comments.append(comment)
                     api.send_texts(
                         TextRequest(
-                            items=comments,
-                            parsed_state=json.dumps({"bank_id": bank.id, "post_id": post["id"]}),
+                            items=long_comments,
+                            parsed_state=json.dumps({"bank_id": bank.id, "page_num": i, "post_id": post["id"]}),
                             last_update=parsed_time,
                         )
                     )
