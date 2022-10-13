@@ -66,5 +66,6 @@ class BaseParser:
             return None
         if "error" in json_response.keys():
             self.logger.warning(f"Error in json {json_response}")
+            sleep(5)
             return None
         return json_response
