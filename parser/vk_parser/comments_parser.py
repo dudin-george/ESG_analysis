@@ -96,11 +96,11 @@ class VKParser(BaseParser):
         }
         for i in range(comments_pages):
             params["offset"] = i * 100
+            sleep(0.4)  # https://vk.com/dev/api_requests
             response = self.send_get_request("https://api.vk.com/method/wall.getComments", params=params)
             comments_json = self.get_json(response)
             if comments_json is None:
                 continue
-            sleep(0.3)  # https://vk.com/dev/api_requests
             for comment in comments_json["response"]["items"]:
                 if comment["text"] != "":
                     json_comment = self.json_to_comment_text(domain, comment, bank_id)
