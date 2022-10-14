@@ -1,7 +1,13 @@
 import json
 from datetime import datetime
+from time import sleep
+from typing import Any
 
 from bs4.element import ResultSet
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.ui import WebDriverWait
 
 from banki_ru_reviews.database import BankiRu
 from banki_ru_reviews.queries import create_banks, get_bank_list
@@ -9,13 +15,7 @@ from banki_ru_reviews.shemes import BankiRuItem
 from common import api
 from common.base_parser import BaseParser
 from common.shemes import PatchSource, SourceRequest, Text, TextRequest
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions
 from utils import get_browser, path_params_to_url
-from selenium import webdriver
-from typing import Any
-from selenium.webdriver.common.by import By
-from time import sleep
 
 
 # noinspection PyMethodMayBeStatic
@@ -97,7 +97,9 @@ class BankiReviews(BaseParser):
             times.append(time)
         return reviews_list, times
 
-    def get_page_bank_reviews(self, bank: BankiRuItem, page_num: int, parsed_time: datetime, browser: webdriver.Firefox | webdriver.Remote) -> list[Text] | None:
+    def get_page_bank_reviews(
+        self, bank: BankiRuItem, page_num: int, parsed_time: datetime, browser: webdriver.Firefox | webdriver.Remote
+    ) -> list[Text] | None:
         params = {"page": page_num, "bank": bank.bank_code}
         browser.get(f"https://www.banki.ru/services/responses/list/ajax/{path_params_to_url(params)}")
         resp_json = self.get_json_from_page_source(browser)
@@ -123,9 +125,11 @@ class BankiReviews(BaseParser):
         delay = 10
         sleep(1)
         try:
-            raw_data_button = WebDriverWait(browser, delay).until(expected_conditions.presence_of_element_located((By.XPATH, '//*[@id="rawdata-tab"]')))
+            raw_data_button = WebDriverWait(browser, delay).until(
+                expected_conditions.presence_of_element_located((By.XPATH, '//*[@id="rawdata-tab"]'))  # type: ignore
+            )
             raw_data_button.click()
-            response_json = json.loads(browser.find_element(By.CLASS_NAME, "data").text)
+            response_json: dict[str, Any] = json.loads(browser.find_element(By.CLASS_NAME, "data").text)
         except json.JSONDecodeError as e:
             self.logger.warning("error parse json", e)
             return None

@@ -1,13 +1,12 @@
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from math import ceil
 from time import sleep
 from typing import Any
 
 import numpy as np
-from datetime import timedelta
 
 from common import api
 from common.base_parser import BaseParser
@@ -81,7 +80,7 @@ class VKParser(BaseParser):
         )
 
     def get_post_comments(
-        self, domain: str, owner_id: str, post_id: str, comments_num: int, bank_id: int, parsed_time: datetime
+        self, domain: str, owner_id: str, post_id: str, comments_num: int, bank_id: int
     ) -> list[Text]:
         comments_pages = ceil(comments_num / 100)
         comments = []
@@ -112,7 +111,7 @@ class VKParser(BaseParser):
                         comments.append(json_comment)
         return comments
 
-    def get_source_params(self, source: Source) -> tuple[int, int, int, datetime]:
+    def get_vk_source_params(self, source: Source) -> tuple[int, int, int, datetime]:
         page_num, parsed_bank_id, parsed_time = super().get_source_params(source)
         parsed_state = {}
         if source.parser_state is not None:
@@ -124,7 +123,7 @@ class VKParser(BaseParser):
         self.logger.info("start parse VK")
         start_time = datetime.now()
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
-        page_num, parsed_bank_id, post_id, parsed_time = self.get_source_params(current_source)
+        page_num, parsed_bank_id, post_id, parsed_time = self.get_vk_source_params(current_source)
         for bank_iter, bank in enumerate(self.bank_list):
             self.logger.info(f"[{bank_iter}/{len(self.bank_list)}] start parse {bank.name}")
             if bank.id < parsed_bank_id:  # type: ignore
@@ -154,7 +153,7 @@ class VKParser(BaseParser):
                 if response_json is None:
                     continue
                 posts_dates = [post["date"] for post in response_json["response"]["items"]]
-                look_up_date = max((parsed_time-timedelta(days=7)).timestamp(), 0)
+                look_up_date = max((parsed_time - timedelta(days=7)).timestamp(), 0)
                 if max(posts_dates) < look_up_date:  # if all posts are older than 7 days
                     break
                 for post in response_json["response"]["items"]:
@@ -166,7 +165,7 @@ class VKParser(BaseParser):
                     ):
                         continue
                     comments = self.get_post_comments(
-                        bank.domain, post["owner_id"], post["id"], post["comments"]["count"], bank.id, parsed_time  # type: ignore
+                        bank.domain, post["owner_id"], post["id"], post["comments"]["count"], bank.id  # type: ignore
                     )
                     if len(comments) == 0:
                         continue
