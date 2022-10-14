@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 
-from banki_ru_reviews.shemes import BankiRuItem
+from banki_ru.shemes import BankiRuItem
 from common.database import Base
 
 

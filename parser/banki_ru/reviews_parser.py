@@ -3,18 +3,17 @@ from datetime import datetime
 from time import sleep
 from typing import Any
 
-from bs4.element import ResultSet
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 
-from banki_ru_reviews.database import BankiRu
-from banki_ru_reviews.queries import create_banks, get_bank_list
-from banki_ru_reviews.shemes import BankiRuItem
+from banki_ru.database import BankiRu
+from banki_ru.queries import create_banks, get_bank_list
+from banki_ru.shemes import BankiRuItem
 from common import api
 from common.base_parser import BaseParser
-from common.shemes import PatchSource, SourceRequest, Text, TextRequest
+from common.shemes import PatchSource, SourceRequest, Text, TextRequest, Source
 from utils import get_browser, path_params_to_url
 
 
@@ -22,11 +21,14 @@ from utils import get_browser, path_params_to_url
 class BankiReviews(BaseParser):
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
-        source_create = SourceRequest(site="banki.ru", source_type="reviews")
-        self.source = api.send_source(source_create)
+        self.source = self.create_source()
         if len(self.bank_list) == 0:
             self.load_bank_list()
             self.bank_list = get_bank_list()
+
+    def create_source(self) -> Source:
+        source_create = SourceRequest(site="banki.ru", source_type="reviews")
+        return api.send_source(source_create)
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -63,39 +65,6 @@ class BankiReviews(BaseParser):
         for bank in banks:
             banks_db.append(BankiRu.from_pydantic(bank))
         create_banks(banks_db)
-
-    def get_reviews_from_page(
-        self, reviews: ResultSet, parsed_time: datetime, bank_id: int  # type: ignore
-    ) -> tuple[list[Text], list[datetime]]:
-        reviews_list = []
-        times = []
-        for review in reviews:
-            header = review.find("a", {"class": "header-h3"})
-            link = "https://www.banki.ru" + header["href"]
-            title = header.text
-            text = review.find("div", class_="markup-inside-small").text
-            time = datetime.strptime(
-                review.find("time", class_="display-inline-block").text,
-                "%d.%m.%Y %H:%M",
-            )
-            comments_num_elem = review.find("span", class_="responses__item__comment-count")
-            comments_num = int(comments_num_elem.text) if comments_num_elem is not None else 0
-            if time < parsed_time:
-                continue
-
-            reviews_list.append(
-                Text(
-                    link=link,
-                    date=time,
-                    title=title,
-                    text=text,
-                    comments_num=comments_num,
-                    bank_id=bank_id,
-                    source_id=self.source.id,
-                )
-            )
-            times.append(time)
-        return reviews_list, times
 
     def get_page_bank_reviews(
         self, bank: BankiRuItem, page_num: int, parsed_time: datetime, browser: webdriver.Firefox | webdriver.Remote

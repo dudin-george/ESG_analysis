@@ -1,4 +1,4 @@
-from banki_ru_reviews.database import BankiRu
+from banki_ru.database import BankiRu
 from common.database import SessionLocal
 
 

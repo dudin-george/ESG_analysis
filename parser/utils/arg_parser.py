@@ -25,7 +25,7 @@ def _get_class(args: argparse.Namespace) -> type[BaseParser]:
 
             return SravniReviews
         case "banki_reviews":
-            from banki_ru_reviews.reviews_parser import BankiReviews
+            from banki_ru.reviews_parser import BankiReviews
 
             return BankiReviews
         case "vk_comments":
