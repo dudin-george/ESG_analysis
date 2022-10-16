@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, WebDriverException
 
+from banki_ru.queries import get_bank_list
 from banki_ru.reviews_parser import BankiReviews
 from banki_ru.shemes import BankiRuItem
 from common import api
@@ -20,10 +21,10 @@ class BankiNews(BankiReviews):
     def __init__(self) -> None:
         sleep(2)  # if started with reviews parser, then load banks in reviews
         super().__init__()
-        self.source = self.create_source()
 
     def create_source(self) -> Source:
-        create_source = SourceRequest(site="banki.ru", source_type="news")
+        create_source = SourceRequest(site="banki.ru/news", source_type="news")
+        self.logger.debug(f"Creating source {create_source}")
         return api.send_source(create_source)
 
     def get_page_bank_reviews(

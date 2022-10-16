@@ -9,11 +9,11 @@ async def get_source_items(db: Session) -> list[Source]:
 
 
 async def create_source(db: Session, model: CreateSource) -> Source:
-    source = db.query(Source).filter(Source.site == model.site).first()
+    source = db.query(Source).join(Source.source_type).filter(SourceType.name == model.source_type).filter(Source.site == model.site).scalar()
     if source:
         return source  # type: ignore
 
-    source_type = db.query(SourceType).filter(SourceType.name == model.source_type).first()
+    source_type = db.query(SourceType).filter(SourceType.name == model.source_type).scalar()
     if source_type is None:
         source_type = SourceType(name=model.source_type)
     source = Source(site=model.site, source_type=source_type)
@@ -24,7 +24,7 @@ async def create_source(db: Session, model: CreateSource) -> Source:
 
 
 async def get_source_item_by_id(db: Session, source_id: int) -> Source | None:
-    return db.query(Source).filter(Source.id == source_id).first()
+    return db.query(Source).filter(Source.id == source_id).scalar()
 
 
 async def get_source_types_items(db: Session) -> list[SourceType]:
