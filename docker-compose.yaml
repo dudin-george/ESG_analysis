@@ -23,10 +23,25 @@ services:
     - ./configs/provisioning:/etc/grafana/provisioning
     - ./configs/provisioning/dashboards:/var/lib/grafana/dashboards
 
-  selenium:
-    image: selenium/standalone-firefox
+  selenium-hub:
+    image: selenium/hub:4.5
+    container_name: selenium-hub
     ports:
-    - 4444:4444
+      - 4442:4442
+      - 4443:4443
+      - 4444:4444
+      - 7900:7900  # to view browsers
+
+  firefox:
+    image: selenium/node-firefox:105.0
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=2
+      - NODE_MAX_SESSIONS=2
 
   api:
     depends_on:
@@ -51,24 +66,26 @@ services:
   banki-reviews-parser:
     depends_on:
       - api
-      - selenium
+      - selenium-hub
     build: parser
     command: ["python", "main.py", "--site", "banki_reviews"]
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
       DOCKER: "true"
       API_URL: "http://api:8000"
+      SELENIUM_HUB: "http://selenium-hub:4444/wd/hub"
 
   banki-news-parser:
     depends_on:
       - api
-      - selenium
+      - selenium-hub
     build: parser
     command: [ "python", "main.py", "--site", "banki_news" ]
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
       DOCKER: "true"
       API_URL: "http://api:8000"
+      SELENIUM_HUB: "http://selenium-hub:4444/wd/hub"
 
   vk-comments-parser:
     depends_on:

@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     api_url: AnyHttpUrl = Field(env="API_URL")
     logger_level: int = Field(env="LOGGER_LEVEL", default=10)
     vk_token: str | None = Field(env="VK_TOKEN")
+    selenium_hub: AnyHttpUrl | None = Field(env="SELENIUM_HUB")
 
     class Config:
         env_file = ".env"
