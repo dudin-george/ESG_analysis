@@ -125,7 +125,7 @@ class VKParser(BaseParser):
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
         page_num, parsed_bank_id, post_id, parsed_time = self.get_vk_source_params(current_source)
         for bank_iter, bank in enumerate(self.bank_list):
-            self.logger.info(f"[{bank_iter}/{len(self.bank_list)}] start parse {bank.name}")
+            self.logger.info(f"[{bank_iter+1}/{len(self.bank_list)}] start parse {bank.name}")
             if bank.id < parsed_bank_id:  # type: ignore
                 continue
             params_wall_get = {
@@ -144,7 +144,7 @@ class VKParser(BaseParser):
             num_page = ceil(response_json["response"]["count"] / 100)
             params_wall_get["count"] = 100
             for i in range(num_page):
-                self.logger.info(f"Start parse {bank.name} page [{i}/{num_page}]")
+                self.logger.info(f"Start parse {bank.name} page [{i+1}/{num_page}]")
                 if i <= page_num:
                     continue
                 params_wall_get["offset"] = i * 100

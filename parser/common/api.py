@@ -27,7 +27,7 @@ def send_source(source: SourceRequest) -> Source:
 
 
 def get_source_by_id(source_id: int) -> Source:
-    url = URL + f"/source/item/{source_id}/"
+    url = URL + f"/source/item/{source_id}"
     logger.debug(f"Patch source {url}")
     r = requests.get(url)
     return Source(**r.json())
@@ -37,7 +37,7 @@ def patch_source(source_id: int, source: PatchSource) -> Source:
     data = source.dict()
     if data["last_update"]:
         data["last_update"] = data["last_update"].isoformat()
-    url = URL + f"/source/item/{source_id}/"
+    url = URL + f"/source/item/{source_id}"
     logger.debug(f"Patch source {url}")
     r = requests.patch(url, json=data)
     if r.status_code != 200:

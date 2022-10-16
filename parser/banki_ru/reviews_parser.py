@@ -104,7 +104,7 @@ class BankiReviews(BaseParser):
             return None
         return response_json
 
-    def get_page_num(self, bank: BankiRuItem, browser: webdriver.Firefox | webdriver.Remote) -> int | None:
+    def get_pages_num(self, bank: BankiRuItem, browser: webdriver.Firefox | webdriver.Remote) -> int | None:
         params = {"page": 1, "bank": bank.bank_code}
         browser.get(f"https://www.banki.ru/services/responses/list/ajax/{path_params_to_url(params)}")
         response_json = self.get_json_from_page_source(browser)
@@ -126,7 +126,7 @@ class BankiReviews(BaseParser):
             start = 1
             if bank.bank_id == parsed_bank_id:
                 start = parsed_bank_page + 1
-            total_page = self.get_page_num(bank, browser)
+            total_page = self.get_pages_num(bank, browser)
             if total_page is None:
                 continue
             for i in range(start, total_page + 1):
