@@ -10,7 +10,7 @@ def parse_args() -> type[BaseParser]:
     parser = argparse.ArgumentParser(description="CLI for banks")
     parser.add_argument(
         "--site",
-        choices=["sravni_reviews", "banki_reviews", "vk_comments"],
+        choices=["sravni_reviews", "banki_reviews", "banki_news", "vk_comments"],
         help="site arguments",
         required=True,
     )
@@ -28,6 +28,10 @@ def _get_class(args: argparse.Namespace) -> type[BaseParser]:
             from banki_ru.reviews_parser import BankiReviews
 
             return BankiReviews
+        case "banki_news":
+            from banki_ru.news_parser import BankiNews
+
+            return BankiNews
         case "vk_comments":
             from vk_parser.comments_parser import VKParser
 
