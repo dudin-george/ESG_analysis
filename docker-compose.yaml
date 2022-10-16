@@ -51,8 +51,20 @@ services:
   banki-reviews-parser:
     depends_on:
       - api
+      - selenium
     build: parser
     command: ["python", "main.py", "--site", "banki_reviews"]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+
+  banki-news-parser:
+    depends_on:
+      - api
+      - selenium
+    build: parser
+    command: [ "python", "main.py", "--site", "banki_news" ]
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
       DOCKER: "true"
