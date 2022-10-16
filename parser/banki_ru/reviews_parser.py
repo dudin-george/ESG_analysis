@@ -13,7 +13,7 @@ from banki_ru.queries import create_banks, get_bank_list
 from banki_ru.shemes import BankiRuItem
 from common import api
 from common.base_parser import BaseParser
-from common.shemes import PatchSource, SourceRequest, Text, TextRequest, Source
+from common.shemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from utils import get_browser, path_params_to_url
 
 
