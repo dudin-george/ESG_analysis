@@ -20,6 +20,7 @@ class BankiNews(BankiReviews):
     def __init__(self) -> None:
         sleep(2)  # if started with reviews parser, then load banks in reviews
         super().__init__()
+        self.source = self.create_source()
 
     def create_source(self) -> Source:
         create_source = SourceRequest(site="banki.ru", source_type="news")
