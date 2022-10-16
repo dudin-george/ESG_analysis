@@ -148,6 +148,7 @@ class VKParser(BaseParser):
                 if i <= page_num:
                     continue
                 params_wall_get["offset"] = i * 100
+                sleep(0.4)  # https://vk.com/dev/api_requests
                 response = self.send_get_request("https://api.vk.com/method/wall.get", params=params_wall_get)
                 response_json = self.get_json(response)
                 if response_json is None:
