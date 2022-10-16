@@ -27,30 +27,6 @@ class BankiNews(BankiReviews):
         self.logger.debug(f"Creating source {create_source}")
         return api.send_source(create_source)
 
-    def get_page_bank_reviews(
-        self, bank: BankiRuItem, page_num: int, parsed_time: datetime, browser: webdriver.Firefox | webdriver.Remote
-    ) -> list[Text] | None:
-        params = {"page": page_num, "bank": bank.bank_code}
-        browser.get(f"https://www.banki.ru/services/responses/list/ajax/{path_params_to_url(params)}")
-        resp_json = self.get_json_from_page_source(browser)
-        if resp_json is None:
-            return None
-        texts = []
-        for item in resp_json["data"]:
-            text = Text(
-                link=f"https://www.banki.ru/services/responses/bank/response/{item['id']}",
-                date=item["dateCreate"],
-                title=item["title"],
-                text=item["text"],
-                comments_num=item["commentCount"],
-                source_id=self.source.id,
-                bank_id=bank.bank_id,
-            )
-            if text.date < parsed_time:
-                continue
-            texts.append(text)
-        return texts
-
     def get_pages_num(self, bank: BankiRuItem, browser: webdriver.Firefox | webdriver.Remote) -> int | None:
         page = self.bank_news_page(browser, bank)
         paginator = page.find("div", {"data-module": "ui.pagination"})
@@ -67,7 +43,14 @@ class BankiNews(BankiReviews):
         self, browser: webdriver.Firefox | webdriver.Remote, bank: BankiRuItem, page: int = 1
     ) -> BeautifulSoup:
         self.logger.debug(f"Getting news page {page} for {bank.bank_name}")
-        browser.get(f"https://www.banki.ru/banks/bank/{bank.bank_code}/news/?PAGEN_2={page}")
+        for _ in range(5):
+            try:
+                browser.get(f"https://www.banki.ru/banks/bank/{bank.bank_code}/news/?PAGEN_2={page}")
+            except TimeoutException:
+                self.logger.warning(f"Timeout on {browser.current_url}")
+                sleep(5)
+                continue
+            break
         page_html = BeautifulSoup(browser.page_source, "html.parser")
         return page_html
 
