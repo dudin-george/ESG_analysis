@@ -12,7 +12,7 @@ router = APIRouter(prefix="/text", tags=["text"])
 
 @router.get("/sentences", response_model=GetTextSentences, response_model_by_alias=False)
 async def get_sentences(
-    sources: list[str] = Query(default=[""]),
+    sources: list[str] = Query(example=["example.com"]),
     model_id: int = Query(),
     limit: int = 100,
     db: Session = Depends(get_db),

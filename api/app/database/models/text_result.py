@@ -19,3 +19,6 @@ class TextResult(Base):
     model_id = Column(Integer, ForeignKey("model.id"), index=True)
     model: Mapped["Model"] = relationship("Model", back_populates="text_results")
     result: list[float] = Column(ARRAY(Float))  # type: ignore
+
+    def __repr__(self) -> str:
+        return f"TextResult(id={self.id}, text_sentence_id={self.text_sentence_id}, model_id={self.model_id}, result={self.result})"

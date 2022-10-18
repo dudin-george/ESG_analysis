@@ -16,3 +16,6 @@ class Bank(Base):
     bank_name = Column(String)
     description = Column(String, nullable=True)
     texts: Mapped[list["Text"]] = relationship("Text", back_populates="bank")
+
+    def __repr__(self) -> str:
+        return f"Bank(id={self.id}, bank_name={self.bank_name}, description={self.description})"
