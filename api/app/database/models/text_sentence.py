@@ -22,7 +22,10 @@ class TextSentence(Base):
     temp_sentences: "TempSentence" = relationship("TempSentence", back_populates="text_sentence")
 
     def __repr__(self) -> str:
-        return f"TextSentence(id={self.id}, text_id={self.text_id}, sentence={self.sentence}, sentence_num={self.sentence_num})"
+        return (
+            f"TextSentence(id={self.id}, text_id={self.text_id}, sentence={self.sentence},"
+            f" sentence_num={self.sentence_num})"
+        )
 
 
 class TempSentence(Base):
@@ -35,4 +38,6 @@ class TempSentence(Base):
     query = Column(String, index=True)
 
     def __repr__(self) -> str:
-        return f"TempSentence(id={self.id}, sentence_id={self.sentence_id}, sentence={self.sentence}, query={self.query})"
+        return (
+            f"TempSentence(id={self.id}, sentence_id={self.sentence_id}, sentence={self.sentence}, query={self.query})"
+        )

@@ -26,4 +26,7 @@ class Text(Base):
     text_sentences: Mapped[list["TextSentence"]] = relationship("TextSentence", back_populates="text")
 
     def __repr__(self) -> str:
-        return f"Text(id={self.id}, link={self.link}, source_id={self.source_id}, date={self.date}, title={self.title}, bank_id={self.bank_id}, comment_num={self.comment_num})"
+        return (
+            f"Text(id={self.id}, link={self.link}, source_id={self.source_id}, date={self.date}, title={self.title},"
+            f" bank_id={self.bank_id}, comment_num={self.comment_num})"
+        )

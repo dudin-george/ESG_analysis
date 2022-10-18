@@ -31,6 +31,8 @@ class Source(Base):
     last_update = Column(DateTime, nullable=True)
     texts: Mapped[list["Text"]] = relationship("Text", back_populates="source")
 
-
     def __repr__(self) -> str:
-        return f"Source(id={self.id}, site={self.site}, source_type_id={self.source_type_id}, parser_state={self.parser_state}, last_update={self.last_update})"
+        return (
+            f"Source(id={self.id}, site={self.site}, source_type_id={self.source_type_id},"
+            f" parser_state={self.parser_state}, last_update={self.last_update})"
+        )
