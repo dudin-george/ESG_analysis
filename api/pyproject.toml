@@ -10,13 +10,14 @@ requests = "^2.28.0"
 psycopg2 = "^2.9.3"
 fastapi = "^0.85.0"
 pydantic = {extras = ["dotenv"], version = "^1.10.2"}
-SQLAlchemy = "^1.4.41"
+SQLAlchemy = {extras = ["asyncio"], version = "^1.4.42"}
 uvicorn = "^0.18.3"
 SQLAlchemy-Utils = "^0.38.3"
 beautifulsoup4 = "^4.11.1"
 #  celery = "^5.2.7"
 nltk = "^3.7"
 alembic = "^1.8.1"
+asyncpg = "^0.26.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -36,6 +37,9 @@ pytest-mock = "^3.9.0"
 coverage = "^6.5.0"
 tox = "^3.26.0"
 pytest-cov = "^4.0.0"
+ConfigArgParse = "^1.5.3"
+pytest-aiohttp = "^1.0.4"
+httpx = "^0.23.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -91,3 +95,7 @@ exclude = '''
 
 [tool.coverage.run]
 source = ["app"]
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
