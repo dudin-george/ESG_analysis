@@ -1,21 +1,32 @@
 #+title:Esganalysis
 
 * Fixes
-** TODO update parser state last
+** DONE update parser state last
+CLOSED: [2022-10-18 Вт 12:43]
 ** TODO check if model id exists in =text/sentences=
 ** TODO change fastapi logger ([[https://medium.com/1mgofficial/how-to-override-uvicorn-logger-in-fastapi-using-loguru-124133cdcd4e][link]])
-** TODO browser only for one bank
-** TODO Run tox command before startup (for parsers)
+** DONE browser only for one bank
+CLOSED: [2022-10-18 Вт 12:43]
+** NO Run tox command before startup (for parsers)
+CLOSED: [2022-10-18 Вт 12:44]
 - [[https://tox.wiki/en/3.26.0/example/general.html][commands]]
 ** TODO tesing parser ([[https://docs.pytest.org/en/latest/how-to/fixtures.html#safe-fixture-structure][link]])
 ** TODO add pytest command for parsers [[https://docs.pytest.org/en/7.1.x/example/simple.html#control-skipping-of-tests-according-to-command-line-option][link]]
 ** TODO integration test in different folder [[https://docs.pytest.org/en/7.1.x/reference/customize.html?highlight=pytest%20ini][link]]
 ** TODO add readme for subprojects
-** TODO add midelware with timings
-** TODO speed up tests
-** TODO add repr to database
-** TODO rename parser utils to common
-** TODO change psycopg2 to asyncpg
+** NO add midelware with timings
+CLOSED: [2022-10-18 Вт 22:33]
+** DONE speed up tests
+CLOSED: [2022-10-19 Ср 00:40]
+** DONE [#A] add repr to database
+CLOSED: [2022-10-18 Вт 12:43]
+** DONE rename parser utils to common
+CLOSED: [2022-10-18 Вт 12:39]
+** DONE [#A] change psycopg2 to asyncpg
+CLOSED: [2022-10-19 Ср 00:40]
+** TODO vcr.py [[https://vcrpy.readthedocs.io/en/latest/][(link)]]
+** DONE pytest async
+CLOSED: [2022-10-18 Вт 18:18]
 ** DONE Setup tox
 CLOSED: [2022-10-02 Вс 21:01]
 * Plans
