@@ -16,6 +16,9 @@ class SourceType(Base):
     name = Column(String, index=True, unique=True)
     sources: Mapped[list["Source"]] = relationship("Source", back_populates="source_type")
 
+    def __repr__(self) -> str:
+        return f"SourceType(id={self.id}, name={self.name})"
+
 
 class Source(Base):
     __tablename__ = "source"
@@ -27,3 +30,9 @@ class Source(Base):
     parser_state = Column(String, nullable=True)
     last_update = Column(DateTime, nullable=True)
     texts: Mapped[list["Text"]] = relationship("Text", back_populates="source")
+
+    def __repr__(self) -> str:
+        return (
+            f"Source(id={self.id}, site={self.site}, source_type_id={self.source_type_id},"
+            f" parser_state={self.parser_state}, last_update={self.last_update})"
+        )

@@ -1,5 +1,5 @@
 import nltk
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.text_sentence import TextSentence
 
@@ -9,7 +9,7 @@ tokenizer = nltk.data.load("tokenizers/punkt/russian.pickle")
 
 
 # @celery_app.task
-def transform_texts(texts_ids: list[int], texts: list[str], db: Session) -> None:
+async def transform_texts(texts_ids: list[int], texts: list[str], db: AsyncSession) -> None:
     text_sentences = []
     for text_id, text in zip(texts_ids, texts):
         sentences = tokenizer.tokenize(text)
@@ -25,4 +25,4 @@ def transform_texts(texts_ids: list[int], texts: list[str], db: Session) -> None
                 )
             )
     db.add_all(text_sentences)
-    db.commit()
+    await db.commit()

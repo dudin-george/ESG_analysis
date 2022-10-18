@@ -1,42 +1,49 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.database.models.source import Source, SourceType
 from app.schemes.source import CreateSource, PatchSource
 
 
-async def get_source_items(db: Session) -> list[Source]:
-    return db.query(Source).all()
+async def get_source_items(db: AsyncSession) -> list[Source]:
+    return await db.scalars(select(Source).options(selectinload(Source.source_type)))  # type: ignore
 
 
-async def create_source(db: Session, model: CreateSource) -> Source:
-    source = db.query(Source).join(Source.source_type).filter(SourceType.name == model.source_type).filter(Source.site == model.site).scalar()
+async def create_source(db: AsyncSession, model: CreateSource) -> Source:
+    source = await db.scalar(
+        select(Source)
+        .join(Source.source_type)
+        .filter(SourceType.name == model.source_type)
+        .filter(Source.site == model.site)
+    )
     if source:
         return source  # type: ignore
 
-    source_type = db.query(SourceType).filter(SourceType.name == model.source_type).scalar()
+    source_type = await db.scalar(select(SourceType).filter(SourceType.name == model.source_type))
     if source_type is None:
         source_type = SourceType(name=model.source_type)
     source = Source(site=model.site, source_type=source_type)
     db.add(source)
-    db.commit()
-    db.refresh(source)
-    return source
+    await db.commit()
+    await db.refresh(source)
+    return source  # type: ignore
 
 
-async def get_source_item_by_id(db: Session, source_id: int) -> Source | None:
-    return db.query(Source).filter(Source.id == source_id).scalar()
+async def get_source_item_by_id(db: AsyncSession, source_id: int) -> Source | None:
+    return await db.get(Source, source_id)
 
 
-async def get_source_types_items(db: Session) -> list[SourceType]:
-    return db.query(SourceType).all()
+async def get_source_types_items(db: AsyncSession) -> list[SourceType]:
+    return await db.scalars(select(SourceType))  # type: ignore
 
 
-async def patch_source_by_id(db: Session, source_id: int, patch_source: PatchSource) -> Source | None:
+async def patch_source_by_id(db: AsyncSession, source_id: int, patch_source: PatchSource) -> Source | None:
     source = await get_source_item_by_id(db, source_id)
     if source is None:
         return None
     source.parser_state = patch_source.parser_state
     source.last_update = patch_source.last_update
-    db.commit()
-    db.refresh(source)
+    await db.commit()
+    await db.refresh(source)
     return source

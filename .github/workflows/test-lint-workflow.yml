@@ -59,5 +59,9 @@ jobs:
         run: |
           pytest --cov=app api/
         env:
-          DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres/test
           TEST_REAL_PAGE: False
+          POSTGRES_DB: test
+          POSTGRES_HOST: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres

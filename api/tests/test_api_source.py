@@ -9,8 +9,8 @@ import pytest
         {"site": "example.com", "source_type": "review"},
     ],
 )
-def test_post_source_200(client, data):
-    response = client.post(
+async def test_post_source_200(client, data):
+    response = await client.post(
         "/source/",
         json=data,
     )
@@ -27,16 +27,16 @@ def test_post_source_200(client, data):
         {"sitea": 1, "source_type": "review"},
     ],
 )
-def test_post_source_422(client, data):
-    response = client.post(
+async def test_post_source_422(client, data):
+    response = await client.post(
         "/source/",
         json=data,
     )
     assert response.status_code == 422, response.text
 
 
-def test_get_source_200(client, post_source):
-    response = client.get("/source")
+async def test_get_source_200(client, post_source):
+    response = await client.get("/source")
     assert response.status_code == 200, response.text
     data = response.json()
     assert data == {
@@ -44,8 +44,8 @@ def test_get_source_200(client, post_source):
     }
 
 
-def test_get_source_item_200(client, post_source):
-    response = client.get("/source/item/1")
+async def test_get_source_item_200(client, post_source):
+    response = await client.get("/source/item/1")
     assert response.status_code == 200, response.text
     data = response.json()
     assert data == {
@@ -57,24 +57,24 @@ def test_get_source_item_200(client, post_source):
     }
 
 
-def test_get_source_404(client):
-    response = client.get("/source")
+async def test_get_source_404(client):
+    response = await client.get("/source")
     assert response.status_code == 200, response.text
     assert response.json() == {"items": []}
 
 
-def test_get_source_item_404(client):
-    response = client.get("/source/item/1")
+async def test_get_source_item_404(client):
+    response = await client.get("/source/item/1")
     assert response.status_code == 404, response.text
 
 
-def test_get_source_type(client, post_source):
-    response = client.post(
+async def test_get_source_type(client, post_source):
+    response = await client.post(
         "/source/",
         json={"site": "example2.com", "source_type": "news"},
     )
     assert response.status_code == 200, response.text
-    response = client.get("/source/type")
+    response = await client.get("/source/type")
     assert response.status_code == 200, response.text
     assert response.json() == {
         "items": [
@@ -84,16 +84,16 @@ def test_get_source_type(client, post_source):
     }
 
 
-def test_post_existing_source(client):
+async def test_post_existing_source(client):
     source = {"site": "example.com", "source_type": "review"}
-    response = client.post(
+    response = await client.post(
         "/source/",
         json=source,
     )
     assert response.status_code == 200, response.text
     data = response.json()
     assert data["id"] == 1
-    response = client.post(
+    response = await client.post(
         "/source/",
         json=source,
     )
@@ -110,8 +110,8 @@ def test_post_existing_source(client):
         {"parser_state": "test", "last_update": datetime.now().isoformat()},
     ],
 )
-def test_patch_source_200(client, post_source, data):
-    response = client.patch(
+async def test_patch_source_200(client, post_source, data):
+    response = await client.patch(
         "/source/item/1",
         json=data,
     )
@@ -124,8 +124,8 @@ def test_patch_source_200(client, post_source, data):
     assert response_data["last_update"] == data.get("last_update", None)
 
 
-def test_patch_source_404(client, post_source):
-    response = client.patch(
+async def test_patch_source_404(client, post_source):
+    response = await client.patch(
         "/source/item/2",
         json={"parser_state": "test"},
     )
@@ -133,8 +133,8 @@ def test_patch_source_404(client, post_source):
 
 
 @pytest.mark.parametrize("data", [{"last_update": "test"}, {"last_update": "2021-01-01"}])
-def test_patch_source_422(client, post_source, data):
-    response = client.patch(
+async def test_patch_source_422(client, post_source, data):
+    response = await client.patch(
         "/source/item/1",
         json=data,
     )
@@ -148,8 +148,8 @@ def test_patch_source_422(client, post_source, data):
         {"parser_state": None, "last_update": None},
     ],
 )
-def test_patch_source_400(client, post_source, data):
-    response = client.patch(
+async def test_patch_source_400(client, post_source, data):
+    response = await client.patch(
         "/source/item/1",
         json=data,
     )

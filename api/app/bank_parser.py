@@ -3,7 +3,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from fastapi.logger import logger
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.bank import Bank
 from app.query.bank import get_bank_count, load_bank
@@ -12,14 +12,13 @@ from app.query.bank import get_bank_count, load_bank
 class CBRParser:
     logger = logger
 
-    def __init__(self, db: Session) -> None:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
 
-    def load_banks(self) -> None:
-        with self.db as session:
-            count = get_bank_count(session)
+    async def load_banks(self) -> None:
+        count = await get_bank_count(self.db)
         if count == 0:
-            self.parse()
+            await self.parse()
         self.logger.info("finish download bank list")
 
     def get_page(self) -> BeautifulSoup | None:
@@ -44,12 +43,11 @@ class CBRParser:
             cbr_banks.append(Bank(id=license_id, bank_name=name))
         return cbr_banks
 
-    def parse(self) -> None:
+    async def parse(self) -> None:
         self.logger.info("start download bank list")
         page = self.get_page()
         if page is None:
             self.logger.error("cbr.ru 403 error")
             raise Exception("cbr.ru 403 error")
         banks = self.get_bank_list(page)
-        with self.db as session:
-            load_bank(session, banks)
+        await load_bank(self.db, banks)

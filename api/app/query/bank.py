@@ -1,17 +1,17 @@
-from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import Bank
 
 
-def get_bank_count(db: Session) -> int:
-    return db.query(func.count(Bank.id)).scalar()  # type: ignore
+async def get_bank_count(db: AsyncSession) -> int:
+    return await db.scalar(select(func.count(Bank.id)))  # type: ignore
 
 
-async def get_bank_list(db: Session) -> list[Bank]:
-    return db.query(Bank).all()
+async def get_bank_list(db: AsyncSession) -> list[Bank]:
+    return await db.scalars(select(Bank))  # type: ignore
 
 
-def load_bank(db: Session, banks: list[Bank]) -> None:
+async def load_bank(db: AsyncSession, banks: list[Bank]) -> None:
     db.add_all(banks)
-    db.commit()
+    await db.commit()
