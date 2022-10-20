@@ -10,10 +10,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from banki_ru.database import BankiRu
 from banki_ru.queries import create_banks, get_bank_list
-from banki_ru.shemes import BankiRuItem
+from banki_ru.schemes import BankiRuItem
 from common import api
 from common.base_parser import BaseParser
-from common.shemes import PatchSource, Source, SourceRequest, Text, TextRequest
+from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from utils import get_browser, path_params_to_url
 
 

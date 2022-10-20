@@ -1,7 +1,7 @@
 import requests
 
 from common.settings import Settings
-from common.shemes import Bank, PatchSource, Source, SourceRequest, TextRequest
+from common.schemes import Bank, PatchSource, Source, SourceRequest, TextRequest
 from utils.logger import get_logger
 
 URL = Settings().api_url

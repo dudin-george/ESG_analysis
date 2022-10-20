@@ -9,7 +9,7 @@ from requests import Response
 from requests.exceptions import ConnectTimeout, JSONDecodeError, SSLError
 
 from common.settings import get_settings
-from common.shemes import Source
+from common.schemes import Source
 from utils.logger import get_logger
 
 
