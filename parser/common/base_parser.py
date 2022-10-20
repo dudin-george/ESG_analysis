@@ -24,6 +24,7 @@ class BaseParser:
         parsed_time = source.last_update
         if parsed_time is None:
             parsed_time = datetime.fromtimestamp(1)
+        parsed_time = parsed_time.replace(tzinfo=None)
         parsed_state = {}
         if source.parser_state is not None:
             parsed_state = json.loads(source.parser_state)

@@ -16,7 +16,7 @@ def get_browser() -> webdriver.Firefox | webdriver.Remote:
     else:
         gecko = Service(GeckoDriverManager().install())
         browser = webdriver.Firefox(service=gecko)  # type: ignore
-    browser.set_page_load_timeout(20)
+    browser.set_page_load_timeout(5)
     return browser
 
 
