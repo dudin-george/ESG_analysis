@@ -11,7 +11,7 @@ import numpy as np
 from common import api
 from common.base_parser import BaseParser
 from common.settings import Settings
-from common.shemes import PatchSource, Source, SourceRequest, Text, TextRequest
+from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from utils import relative_path
 from utils.logger import get_logger
 from vk_parser.database import VkBank

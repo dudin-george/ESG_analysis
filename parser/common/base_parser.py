@@ -9,7 +9,7 @@ from requests import Response
 from requests.exceptions import ConnectTimeout, JSONDecodeError, SSLError
 
 from common.settings import get_settings
-from common.shemes import Source
+from common.schemes import Source
 from utils.logger import get_logger
 
 
@@ -24,6 +24,7 @@ class BaseParser:
         parsed_time = source.last_update
         if parsed_time is None:
             parsed_time = datetime.fromtimestamp(1)
+        parsed_time = parsed_time.replace(tzinfo=None)
         parsed_state = {}
         if source.parser_state is not None:
             parsed_state = json.loads(source.parser_state)

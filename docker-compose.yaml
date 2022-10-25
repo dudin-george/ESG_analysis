@@ -40,16 +40,20 @@ services:
       - SE_EVENT_BUS_HOST=selenium-hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_MAX_SESSIONS=2
-      - NODE_MAX_SESSIONS=2
+      - SE_NODE_MAX_SESSIONS=4
+      - NODE_MAX_SESSIONS=4
 
   api:
     depends_on:
       - database
     build: api
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/database"
-      ECHO: "False"
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: database
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      ECHO: False
     ports:
       - 8000:8000
 
@@ -97,3 +101,14 @@ services:
       DOCKER: "true"
       API_URL: "http://api:8000"
       VK_TOKEN: ""
+  irecommend-reviews-parser:
+    depends_on:
+      - api
+      - selenium-hub
+    build: parser
+    command: [ "python", "main.py", "--site", "irecommend_reviews" ]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/irecommend_reviews"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+      SELENIUM_HUB: "http://selenium-hub:4444/wd/hub"

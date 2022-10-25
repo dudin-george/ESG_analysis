@@ -7,13 +7,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 
 from banki_ru.database import BankiRu
 from banki_ru.queries import create_banks, get_bank_list
-from banki_ru.shemes import BankiRuItem
+from banki_ru.schemes import BankiRuItem
 from common import api
 from common.base_parser import BaseParser
-from common.shemes import PatchSource, Source, SourceRequest, Text, TextRequest
+from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from utils import get_browser, path_params_to_url
 
 
@@ -70,7 +71,10 @@ class BankiReviews(BaseParser):
         self, bank: BankiRuItem, page_num: int, parsed_time: datetime, browser: webdriver.Firefox | webdriver.Remote
     ) -> list[Text] | None:
         params = {"page": page_num, "bank": bank.bank_code}
-        browser.get(f"https://www.banki.ru/services/responses/list/ajax/{path_params_to_url(params)}")
+        try:
+            browser.get(f"https://www.banki.ru/services/responses/list/ajax/{path_params_to_url(params)}")
+        except (TimeoutError, TimeoutException):
+            return None
         resp_json = self.get_json_from_page_source(browser)
         if resp_json is None:
             return None
@@ -99,7 +103,7 @@ class BankiReviews(BaseParser):
             )
             raw_data_button.click()
             response_json: dict[str, Any] = json.loads(browser.find_element(By.CLASS_NAME, "data").text)
-        except json.JSONDecodeError as e:
+        except (json.JSONDecodeError, TimeoutException) as e:
             self.logger.warning("error parse json", e)
             return None
         return response_json
@@ -116,6 +120,7 @@ class BankiReviews(BaseParser):
         self.logger.info("start parse banki.ru reviews")
         start_time = datetime.now()
         browser = get_browser()
+        browser.set_page_load_timeout(30)
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
         parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
         for bank_index, bank_pydantic in enumerate(self.bank_list):

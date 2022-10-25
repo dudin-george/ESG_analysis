@@ -7,10 +7,10 @@ from requests import Response
 
 from common import api
 from common.base_parser import BaseParser
-from common.shemes import PatchSource, SourceRequest, Text, TextRequest
+from common.schemes import PatchSource, SourceRequest, Text, TextRequest
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks, get_bank_list
-from sravni_reviews.shemes import SravniRuItem
+from sravni_reviews.schemes import SravniRuItem
 
 
 # noinspection PyMethodMayBeStatic

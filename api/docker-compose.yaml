@@ -13,7 +13,11 @@ services:
       - database
     build: .
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/database"
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: database
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
       ECHO: False
     ports:
       - 8000:8000

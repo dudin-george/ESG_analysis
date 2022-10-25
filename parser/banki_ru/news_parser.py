@@ -10,9 +10,9 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 
 from banki_ru.queries import get_bank_list
 from banki_ru.reviews_parser import BankiReviews
-from banki_ru.shemes import BankiRuItem
+from banki_ru.schemes import BankiRuItem
 from common import api
-from common.shemes import PatchSource, Source, SourceRequest, Text, TextRequest
+from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from utils import get_browser, path_params_to_url
 
 
