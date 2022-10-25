@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ARRAY, Column, Float, ForeignKey, Integer
+from sqlalchemy import ARRAY, Column, Float, ForeignKey, Integer, Boolean
 from sqlalchemy.orm import Mapped, relationship
 
 from app.database.models.base import Base
@@ -19,6 +19,7 @@ class TextResult(Base):
     model_id = Column(Integer, ForeignKey("model.id"), index=True)
     model: Mapped["Model"] = relationship("Model", back_populates="text_results")
     result: list[float] = Column(ARRAY(Float))  # type: ignore
+    is_processed = Column(Boolean, default=True)
 
     def __repr__(self) -> str:
         return (
