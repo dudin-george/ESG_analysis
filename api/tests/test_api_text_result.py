@@ -1,7 +1,6 @@
 import pytest
 
 
-@pytest.mark.asyncio
 async def test_post_text_result_200(client, post_model, post_text):
     response = await client.post(
         "/text_result/",
@@ -15,12 +14,42 @@ async def test_post_text_result_200(client, post_model, post_text):
     assert data == {"message": "OK"}
 
 
-@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"items": [{"text_result": "test", "text_sentence_id": 1, "model_id": 1}]},
+        {"items": [{"text_result": [0.1, 1, 3], "text_sentence_id": 1}]},
+        {"items": [{"text_result": [0.1, 1, 3], "model_id": 1}]},
+    ],
+)
+async def test_post_text_result_422(client, data, post_text, post_model):
+    response = await client.post(
+        "/text_result/",
+        json=data,
+    )
+    assert response.status_code == 422, response.text
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"items": [{"text_result": [0.1, 1, 3], "text_sentence_id": 1, "model_id": 2}]},
+        {"items": [{"text_result": [0.1, 1, 3], "text_sentence_id": 100, "model_id": 1}]},
+    ],
+)
+async def test_post_text_result_400(client, data, post_text, post_model):
+    response = await client.post(
+        "/text_result/",
+        json=data,
+    )
+    assert response.status_code == 400, response.text
+
+
 async def test_get_text_result_200(client, post_text, post_model):
     response = await client.get("/text/sentences?sources=example.com&model_id=1")
     assert response.status_code == 200, response.text
     data = response.json()
-    assert data == {"items": [{"id": 1, "sentence": "string"}]}
+    assert data == {"items": [{"id": 1, "sentence": "string"}, {"id": 2, "sentence": "some text"}]}
     for _ in range(2):
         response = await client.post(
             "/text_result/",
@@ -37,13 +66,7 @@ async def test_get_text_result_200(client, post_text, post_model):
             {
                 "id": 1,
                 "text_sentence_id": 1,
-                "result": [0.1, 1, 3],
-                "model_id": 1,
-            },
-            {
-                "id": 2,
-                "text_sentence_id": 1,
-                "result": [0.1, 1, 3],
+                "result": [0.1, 1.0, 3.0],
                 "model_id": 1,
             },
         ]
@@ -80,7 +103,7 @@ async def test_several_sources_and_models(client):
                             "date": "2022-10-02T10:12:01.154Z",
                             "title": "string",
                             "text": "string",
-                            "bank_id": "1000",
+                            "bank_id": 1000,
                             "link": "string",
                             "comments_num": 0,
                         }
@@ -102,7 +125,7 @@ async def test_several_sources_and_models(client):
                         "date": "2022-10-02T10:12:01.154Z",
                         "title": "string",
                         "text": "string",
-                        "bank_id": "1000",
+                        "bank_id": 1000,
                         "link": "string",
                         "comments_num": 0,
                     }
@@ -113,7 +136,12 @@ async def test_several_sources_and_models(client):
     response = await client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1")
     assert response.status_code == 200, response.text
     data = response.json()
-    assert len(data["items"]) == 25
+    assert len(data["items"]) == 15
+    await post_text_result(client, data["items"])
+    response = await client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1&limit=20")
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert len(data["items"]) == 10
     await post_text_result(client, data["items"])
     response = await client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1&limit=20")
     assert response.status_code == 200, response.text

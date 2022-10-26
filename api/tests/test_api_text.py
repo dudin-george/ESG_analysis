@@ -160,7 +160,7 @@ async def test_post_text_404(client, data, post_source):
 
 
 @pytest.mark.asyncio
-async def test_get_text(client, post_text, post_source):
+async def test_get_text(client, post_text, post_source, post_model):
     response = await client.get("/text/sentences?sources=example.com&model_id=1")
     sentences = [
         {
@@ -169,11 +169,11 @@ async def test_get_text(client, post_text, post_source):
         },
         {
             "id": 2,
-            "sentence": "string",
+            "sentence": "some text",
         },
     ]
     assert response.status_code == 200, response.text
-    assert response.json() == {"items": [sentences[0]]}
+    assert response.json() == {"items": sentences}
     response = await client.post("/source/", json={"site": "test", "source_type": "test"})
     assert response.status_code == 200, response.text
     response = await client.post(

@@ -202,6 +202,24 @@ async def post_text(client) -> None:
     )
     assert response.status_code == 200, response.text
 
+    response = await client.post(
+        "/text/",
+        json={
+            "items": [
+                {
+                    "source_id": 1,
+                    "date": "2022-10-02T10:12:01.154Z",
+                    "title": "string",
+                    "text": "some text",
+                    "bank_id": 1,
+                    "link": "string",
+                    "comments_num": 0,
+                }
+            ],
+        },
+    )
+    assert response.status_code == 200, response.text
+
 
 @pytest.mark.asyncio
 @pytest.fixture
