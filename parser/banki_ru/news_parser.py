@@ -29,6 +29,8 @@ class BankiNews(BankiReviews):
 
     def get_pages_num(self, bank: BankiRuItem, browser: webdriver.Firefox | webdriver.Remote) -> int | None:
         page = self.bank_news_page(browser, bank)
+        if page is None:
+            return None
         paginator = page.find("div", {"data-module": "ui.pagination"})
         if paginator is None:
             return None
@@ -41,7 +43,7 @@ class BankiNews(BankiReviews):
 
     def bank_news_page(
         self, browser: webdriver.Firefox | webdriver.Remote, bank: BankiRuItem, page: int = 1
-    ) -> BeautifulSoup:
+    ) -> BeautifulSoup | None:
         self.logger.debug(f"Getting news page {page} for {bank.bank_name}")
         for _ in range(5):
             try:
@@ -51,13 +53,19 @@ class BankiNews(BankiReviews):
                 sleep(5)
                 continue
             break
-        page_html = BeautifulSoup(browser.page_source, "html.parser")
+        try:
+            page_html = BeautifulSoup(browser.page_source, "html.parser")
+        except WebDriverException as e:
+            self.logger.warning(f"WebDriverException on {browser.current_url} {e}")
+            return None
         return page_html
 
     def get_news_links(
         self, browser: webdriver.Firefox | webdriver.Remote, bank: BankiRuItem, parsed_time: datetime, page_num: int = 1
     ) -> list[str]:
         page = self.bank_news_page(browser, bank, page_num)
+        if page is None:
+            return []
         news_dates = page.find_all("div", class_="widget__date")
         news_blocks = page.find_all("ul", class_="text-list text-list--date")
         news_links = []
