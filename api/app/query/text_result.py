@@ -1,8 +1,10 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.database import Model
 from app.database.models.text_result import TextResult
 from app.database.models.text_sentence import TextSentence
+from app.exceptions import IdNotFoundError
 from app.schemes.text import PostTextResultItem
 
 
@@ -12,13 +14,21 @@ async def get_text_result_items(db: AsyncSession, text_id: int) -> list[TextResu
 
 
 async def create_text_results(db: AsyncSession, texts: list[PostTextResultItem]) -> None:
-    text_results = []
     for text in texts:
+        text_sentence = await db.get(TextSentence, text.text_sentence_id)
+        model = await db.get(Model, text.model_id)
+        if text_sentence is None or model is None:
+            raise IdNotFoundError("Source or bank not found")
         text_result = TextResult(
             text_sentence_id=text.text_sentence_id,
             result=text.text_result,
             model_id=text.model_id,
+            is_processed=True,
         )
-        text_results.append(text_result)
-    db.add_all(text_results)
+        await db.execute(
+            update(TextResult)
+            .where(TextResult.text_sentence_id == text.text_sentence_id)
+            .filter(TextResult.model_id == text.model_id)
+            .values(text_result.dict())
+        )
     await db.commit()

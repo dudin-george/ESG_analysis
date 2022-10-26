@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
+from app.exceptions import IdNotFoundError
 from app.query.text_result import create_text_results, get_text_result_items
 from app.schemes.text import GetTextResult, GetTextResultItem, PostTextResult
 
@@ -25,5 +26,8 @@ async def get_text_results(text_id: int, db: AsyncSession = Depends(get_session)
 
 @router.post("/")
 async def post_text_result(texts: PostTextResult, db: AsyncSession = Depends(get_session)) -> dict[str, str]:
-    await create_text_results(db, texts.items)
+    try:
+        await create_text_results(db, texts.items)
+    except IdNotFoundError:
+        raise HTTPException(status_code=400, detail="Text sentence or model not found")
     return {"message": "OK"}
