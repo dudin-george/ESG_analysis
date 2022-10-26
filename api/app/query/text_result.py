@@ -27,7 +27,7 @@ async def create_text_results(db: AsyncSession, texts: list[PostTextResultItem])
         )
         await db.execute(
             update(TextResult)
-            .where(TextResult.text_sentence_id == text.text_sentence_id)
+            .filter(TextResult.text_sentence_id == text.text_sentence_id)
             .filter(TextResult.model_id == text.model_id)
             .values(text_result.dict())
         )

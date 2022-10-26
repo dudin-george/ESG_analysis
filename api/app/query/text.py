@@ -66,8 +66,10 @@ async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[st
         .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
     )
     sentence_ids = await db.execute(query)
+    text_results = []
     for sentence_id in sentence_ids:
-        db.add(TextResult(text_sentence_id=sentence_id.id, model_id=model_id, is_processed=False))
+        text_results.append(TextResult(text_sentence_id=sentence_id.id, model_id=model_id, is_processed=False))
+    db.add_all(text_results)
     await db.commit()
 
 
@@ -86,7 +88,6 @@ async def get_text_sentences(
         .filter(TextResult.model_id == model_id)
         .filter(TextResult.is_processed == False)  # noqa: E712
         .limit(limit)
-        .subquery()
     )
     query = select(TextSentence.id, TextSentence.sentence).filter(TextSentence.id.in_(select_unused_sentence_ids))
     items = []
