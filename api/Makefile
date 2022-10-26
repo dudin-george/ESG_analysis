@@ -43,5 +43,9 @@ database:
 test:
 	docker compose -f docker-compose.test.yaml up --build
 
+.PHONY: migragte
+migrate:
+	cd app/database/ && PYTHONPATH=../../ alembic revision --autogenerate
+
 .PHONY: all
 all: format export-dependencies
