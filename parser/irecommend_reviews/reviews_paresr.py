@@ -104,6 +104,8 @@ class IRecommendReviews(BaseParser):
     def get_page_bank_reviews(self, bank: IRecommendItem, i: int, parsed_time: datetime,
                               browser: webdriver.Firefox | webdriver.Remote) -> list[Text] | None:
         page = self.get_page(f"{bank.domain}?new=1&page={i}", browser)
+        if page is None:
+            return None
         reviews_urls = []
         if page.find("div", id="block-quicktabs-3") is not None:
             for elem in page.find("div", id="block-quicktabs-3").findAll("div", {"class": "reviewTextSnippet"}):
