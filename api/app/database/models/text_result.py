@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import ARRAY, Column, Float, ForeignKey, Integer, Boolean
+from sqlalchemy import ARRAY, Boolean, Column, Float, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, relationship
 
 from app.database.models.base import Base
@@ -26,3 +26,11 @@ class TextResult(Base):
             f"TextResult(id={self.id}, text_sentence_id={self.text_sentence_id}, model_id={self.model_id},"
             f" result={self.result})"
         )
+
+    def dict(self) -> dict[str, Any]:
+        return {
+            "text_sentence_id": self.text_sentence_id,
+            "model_id": self.model_id,
+            "result": self.result,
+            "is_processed": self.is_processed,
+        }
