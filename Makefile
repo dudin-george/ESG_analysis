@@ -27,5 +27,9 @@ format:
 	$(mypy)
 	$(flake8)
 
+.PHONY: up
+up:
+	docker compose up -d --build --remove-orphans
+
 .PHONY: all
 all: format
