@@ -31,5 +31,9 @@ format:
 up:
 	docker compose up -d --build --remove-orphans
 
+.PHONY: up-api
+up-api:
+	docker compose up -d --build api database --remove-orphans
+
 .PHONY: all
 all: format

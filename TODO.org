@@ -25,6 +25,7 @@ CLOSED: [2022-10-18 Вт 12:39]
 ** DONE [#A] change psycopg2 to asyncpg
 CLOSED: [2022-10-19 Ср 00:40]
 ** TODO vcr.py [[https://vcrpy.readthedocs.io/en/latest/][(link)]]
+** TODO change status code to request.status
 ** DONE pytest async
 CLOSED: [2022-10-18 Вт 18:18]
 ** DONE Setup tox
