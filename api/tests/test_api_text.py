@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytest
+from fastapi import status
 
 
 @pytest.mark.parametrize(
@@ -42,7 +43,7 @@ async def test_post_text_200(client, item, data, post_source):
         }
         | data,
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     assert response.json() == {"message": "OK"}
 
 
@@ -119,7 +120,7 @@ async def test_post_text_200(client, item, data, post_source):
 )
 async def test_post_text_422(client, data):
     response = await client.post("/text/", json=data)
-    assert response.status_code == 422, response.text
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
 @pytest.mark.parametrize(
@@ -155,7 +156,7 @@ async def test_post_text_422(client, data):
 )
 async def test_post_text_404(client, data, post_source):
     response = await client.post("/text/", json=data)
-    assert response.status_code == 404, response.text
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
     assert response.json() == {"message": "Source or bank not found"}
 
 
@@ -172,10 +173,10 @@ async def test_get_text(client, post_text, post_source, post_model):
             "sentence": "some text",
         },
     ]
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     assert response.json() == {"items": sentences}
     response = await client.post("/source/", json={"site": "test", "source_type": "test"})
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     response = await client.post(
         "/text/",
         json={
@@ -192,12 +193,12 @@ async def test_get_text(client, post_text, post_source, post_model):
             ]
         },
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     response = await client.get("/text/sentences?sources=example.com&sources=test&model_id=1")
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     assert response.json() == {"items": sentences}
     response = await client.get("/text/sentences?sources=example.com&sources=test&model_id=1&limit=1")
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     assert response.json() == {"items": [sentences[0]]}
 
 
@@ -223,9 +224,9 @@ async def test_update_source(client, post_source):
             "parser_state": parser_state,
         },
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     response = await client.get("/source/item/1")
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     assert data["last_update"] == date
     assert data["parser_state"] == parser_state
@@ -237,12 +238,12 @@ async def test_update_two_source_in_request(client):
         "/source/",
         json={"site": "example.com", "source_type": "review"},
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     response = await client.post(
         "/source/",
         json={"site": "test.com", "source_type": "test"},
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     date = datetime.now().isoformat()
     parser_state = "test"
     response = await client.post(
@@ -272,14 +273,14 @@ async def test_update_two_source_in_request(client):
             "parser_state": parser_state,
         },
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     response = await client.get("/source/item/1")
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     assert data["last_update"] == date
     assert data["parser_state"] == parser_state
     response = await client.get("/source/item/2")
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     data = response.json()
     assert data["last_update"] == date
     assert data["parser_state"] == parser_state
