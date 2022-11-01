@@ -19,6 +19,9 @@ CLOSED: [2022-10-18 Вт 18:18]
 CLOSED: [2022-11-01 Вт 16:44]
 *** DONE Setup tox
 CLOSED: [2022-10-02 Вс 21:01]
+*** Tests
+**** TODO faker + factoryboy
+**** TODO refactor to commit to db instead of api
 ** Parser
 *** DONE update parser state last
 CLOSED: [2022-10-18 Вт 12:43]

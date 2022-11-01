@@ -234,3 +234,11 @@ async def post_text_result(client, post_model, post_text) -> None:
         ],
     )
     assert response.status_code == 200, response.text
+
+
+class APITestMixin:
+    client: AsyncClient
+
+    @pytest.fixture(autouse=True, scope="function")
+    def use_api_client(self, client):
+        self.client = client
