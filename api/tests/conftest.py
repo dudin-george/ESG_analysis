@@ -221,7 +221,6 @@ async def post_text(client) -> None:
     assert response.status_code == 200, response.text
 
 
-@pytest.mark.asyncio
 @pytest.fixture
 async def post_text_result(client, post_model, post_text) -> None:
     response = await client.post(

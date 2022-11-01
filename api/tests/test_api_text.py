@@ -160,7 +160,6 @@ async def test_post_text_404(client, data, post_source):
     assert response.json() == {"message": "Source or bank not found"}
 
 
-@pytest.mark.asyncio
 async def test_get_text(client, post_text, post_source, post_model):
     response = await client.get("/text/sentences?sources=example.com&model_id=1")
     sentences = [
@@ -202,7 +201,6 @@ async def test_get_text(client, post_text, post_source, post_model):
     assert response.json() == {"items": [sentences[0]]}
 
 
-@pytest.mark.asyncio
 async def test_update_source(client, post_source):
     date = datetime.now().isoformat()
     parser_state = "test"
@@ -232,7 +230,6 @@ async def test_update_source(client, post_source):
     assert data["parser_state"] == parser_state
 
 
-@pytest.mark.asyncio
 async def test_update_two_source_in_request(client):
     response = await client.post(
         "/source/",

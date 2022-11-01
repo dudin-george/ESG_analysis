@@ -14,7 +14,7 @@ async def test_get_real_page(session):
     assert await get_bank_count(session) > 300
 
 
-@pytest.mark.asyncio
+""
 async def test_get_page(session, cbr_page, migrated_postgres):
     cbr = CBRParser(session)
     cbr.get_page = lambda: cbr_page
@@ -22,7 +22,7 @@ async def test_get_page(session, cbr_page, migrated_postgres):
     assert await get_bank_count(session) > 300
 
 
-@pytest.mark.asyncio
+""
 def test_bank_list(session, cbr_page, migrated_postgres):
     cbr = CBRParser(session)
     banks = cbr.get_bank_list(cbr_page)
