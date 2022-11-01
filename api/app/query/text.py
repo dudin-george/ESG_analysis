@@ -8,6 +8,7 @@ from app.database import Bank, Source, Text, TextResult, TextSentence
 from app.exceptions import IdNotFoundError
 from app.schemes.text import GetTextSentencesItem, PostTextItem
 from app.tasks.transform_texts import transform_texts
+from fastapi.logger import logger
 
 
 async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> None:
@@ -48,7 +49,7 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
         return None
     time = datetime.now()
     await transform_texts(ids, texts, db)  # type: ignore
-    print(f"time for transform {len(ids)} sentences: {datetime.now() - time}")  # todo logger
+    logger.info(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
 
 def _generate_table_name(model_id: int, sources: list[str]) -> str:
