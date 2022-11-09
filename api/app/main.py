@@ -37,7 +37,7 @@ async def startup() -> None:
     path = os.path.join(os.getcwd(), "app/database/alembic.ini")
     config = Config(file_=path)
     config.attributes["configure_logger"] = False
-
+    config.set_main_option("script_location", "app/database/alembic")
     upgrade(config, "head")
     session_local = sessionmaker(bind=SessionManager().engine, class_=AsyncSession, expire_on_commit=False)
     async with session_local() as conn:
