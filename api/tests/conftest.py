@@ -19,7 +19,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 from app.database import SessionManager
 from app.database.models.bank import Bank
 from app.main import app
-from app.query.bank import load_bank
+from app.query.bank import load_banks
 from app.settings import Settings
 
 PROJECT_PATH = Path(__file__).parent.parent.resolve()
@@ -155,7 +155,7 @@ async def client(migrated_postgres, load_bank_list, manager: SessionManager = Se
     # utils_module.check_website_exist = AsyncMock(return_value=(True, "Status code < 400"))
     manager.refresh()
     async with manager.get_session_maker()() as session:
-        await load_bank(session, [Bank(id=1, bank_name="unicredit"), Bank(id=1000, bank_name="vtb")])
+        await load_banks(session, [Bank(id=1, bank_name="unicredit"), Bank(id=1000, bank_name="vtb")])
         # await load_bank(session, load_bank_list)
     async with AsyncClient(app=app, base_url="http://test", follow_redirects=True) as client:
         yield client

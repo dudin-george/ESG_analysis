@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 
-from app.bank_parser import CBRParser
 from app.database import SessionManager
+from app.dataloader.bank_parser import CBRParser
 from app.router import bank, model, source, text, text_result
 from app.settings import Settings
 
