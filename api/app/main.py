@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 
 from app.database import SessionManager
-from app.dataloader.bank_parser import CBRParser
+from app.dataloader import load_data
 from app.router import bank, model, source, text, text_result
 from app.settings import Settings
 
@@ -41,7 +41,7 @@ async def startup() -> None:
     upgrade(config, "head")
     session_local = sessionmaker(bind=SessionManager().engine, class_=AsyncSession, expire_on_commit=False)
     async with session_local() as conn:
-        await CBRParser(conn).load_banks()
+        await load_data(conn)
 
 
 def main() -> None:
