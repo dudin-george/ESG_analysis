@@ -3,18 +3,18 @@ import re
 from bs4 import BeautifulSoup
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models.bank import Bank
+from app.database.models.bank import Bank, BankType
 from app.dataloader.base_parser import BaseParser
 from app.query.bank import create_bank_type
 
 
-class CBRParser(BaseParser):
+class BankParser(BaseParser):
     URL = "https://www.cbr.ru/banking_sector/credit/FullCoList/"
 
     def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
 
-    async def create_bank(self):
+    async def create_bank_type(self) -> BankType:
         return await create_bank_type(self.db)
 
     def get_bank_list(self, page: BeautifulSoup) -> list[Bank]:
