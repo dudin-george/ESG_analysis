@@ -9,20 +9,32 @@ from app.schemes.bank_types import BankTypeVal
 async def create_bank_element_type(db: AsyncSession, bank_type_name: BankTypeVal) -> BankType:
     bank_type = await db.scalar(select(BankType).filter(BankType.name == bank_type_name))
     if bank_type:
-        return bank_type
+        return bank_type  # type: ignore
     bank_type = BankType(name=bank_type_name)
     db.add(bank_type)
     await db.commit()
     await db.refresh(bank_type)
-    return bank_type
+    return bank_type  # type: ignore
 
 
 async def create_bank_type(db: AsyncSession) -> BankType:
     return await create_bank_element_type(db, BankTypeVal.bank)
 
 
-async def get_bank_count(db: AsyncSession) -> int:
-    return await db.scalar(select(func.count(Bank.id)))  # type: ignore
+async def create_broker_type(db: AsyncSession) -> BankType:
+    return await create_bank_element_type(db, BankTypeVal.broker)
+
+
+async def create_insurance_type(db: AsyncSession) -> BankType:
+    return await create_bank_element_type(db, BankTypeVal.insurance)
+
+
+async def create_mfo_type(db: AsyncSession) -> BankType:
+    return await create_bank_element_type(db, BankTypeVal.mfo)
+
+
+async def get_bank_count(db: AsyncSession, bank_type_id: int) -> int:
+    return await db.scalar(select(func.count(Bank.id)).filter(Bank.bank_type_id == bank_type_id))  # type: ignore
 
 
 async def get_bank_list(db: AsyncSession) -> list[Bank]:
