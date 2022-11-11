@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, relationship
 
 from app.database.models.base import Base
@@ -23,7 +23,7 @@ class BankType(Base):
 class Bank(Base):
     __tablename__ = "bank"
 
-    id = Column(BigInteger, primary_key=True, index=True, unique=False)
+    id = Column(Integer, primary_key=True, index=True)
     bank_type_id = Column(Integer, ForeignKey("bank_type.id"), index=True, nullable=True, primary_key=True)
     bank_type: Mapped["BankType"] = relationship("BankType", back_populates="banks")
     bank_name = Column(String)
