@@ -47,5 +47,13 @@ test:
 migrate:
 	cd app/database/ && PYTHONPATH=../../ alembic revision --autogenerate
 
+.PHONY: downgrade
+downgrade:
+	cd app/database/ && PYTHONPATH=../../ alembic downgrade -1
+
+.PHONY: upgrade
+upgrade:
+	cd app/database/ && PYTHONPATH=../../ alembic upgrade +1
+
 .PHONY: all
 all: format export-dependencies

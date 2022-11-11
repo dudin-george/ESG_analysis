@@ -28,5 +28,7 @@ class BankParser(BaseParser):
                 license_id = int(license_id_text)
             else:
                 license_id = int(license_id_text.split("-")[0])  # if license id with *-K, *-M, remove suffix
-            cbr_banks.append(Bank(id=license_id, bank_name=name, bank_type_id=self.bank_type.id))
+            cbr_banks.append(
+                Bank(id=license_id, licence=str(license_id), bank_name=name, bank_type_id=self.bank_type.id)
+            )
         return cbr_banks

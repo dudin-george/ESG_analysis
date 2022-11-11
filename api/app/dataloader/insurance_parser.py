@@ -26,7 +26,7 @@ class InsuranceParser(BaseParser):
         for index, row in df.iterrows():
             license_id = row["Лицензия"]
             name = row["Наименование субъекта страхового дела"]
-            cbr_brokers.append(Bank(id=license_id, bank_name=name, bank_type_id=self.bank_type.id))
+            cbr_brokers.append(Bank(licence=str(license_id), bank_name=name, bank_type_id=self.bank_type.id))
         return cbr_brokers
 
     async def parse(self) -> None:
