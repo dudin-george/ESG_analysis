@@ -14,6 +14,6 @@ async def load_data(db: AsyncSession) -> None:
     mfo = MFOParser(db)
     await bank.load_banks()
     await broker.load_banks()
-    # await insurance.load_banks()
+    await insurance.load_banks()
     await mfo.load_banks()
     # await asyncio.gather(bank.load_banks(), broker.load_banks(), insurance.load_banks(), mfo.load_banks())

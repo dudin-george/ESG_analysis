@@ -23,7 +23,8 @@ class BankType(Base):
 class Bank(Base):
     __tablename__ = "bank"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    licence = Column(String, index=True)
     bank_type_id = Column(Integer, ForeignKey("bank_type.id"), index=True, nullable=True, primary_key=True)
     bank_type: Mapped["BankType"] = relationship("BankType", back_populates="banks")
     bank_name = Column(String)

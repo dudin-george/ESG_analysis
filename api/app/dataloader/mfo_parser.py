@@ -23,7 +23,7 @@ class MFOParser(BaseParser):
     def get_bank_list(self, items: list[dict[str, Any]]) -> list[Bank]:  # type: ignore[override]
         self.logger.info("start parse broker list")
         unique_mfos = list({(company["mfo"]["name"], company["mfo"]["ogrn"]) for company in items})
-        return [Bank(id=int(ogrn), bank_name=name, bank_type_id=self.bank_type.id) for name, ogrn in unique_mfos]
+        return [Bank(licence=ogrn, bank_name=name, bank_type_id=self.bank_type.id) for name, ogrn in unique_mfos]
 
     async def get_banki_mfo(self, page: int = 1) -> dict[str, Any] | None:
         header = {
@@ -47,7 +47,7 @@ class MFOParser(BaseParser):
         if response is None:
             self.logger.error("banki.ru 403 error")
             raise Exception("banki.ru 403 error")
-        return response  # type: ignore
+        return response
 
     async def parse(self) -> None:
         self.logger.info("start download bank list")
@@ -57,6 +57,6 @@ class MFOParser(BaseParser):
         results = await asyncio.gather(*[self.get_mfo_json(i) for i in range(2, total_pages + 1)])
         microfin.extend(first_page["data"])
         for arr in results:
-            microfin.extend(arr['data'])
+            microfin.extend(arr["data"])
         banks = self.get_bank_list(microfin)
         await query.load_banks(self.db, banks)
