@@ -10,7 +10,7 @@ async def load_data(db: AsyncSession) -> None:
     # TODO change sessions for each class
     bank = BankParser(db)
     broker = BrokerParser(db)
-    insurance = InsuranceParser(db)  # noqa: F841
+    insurance = InsuranceParser(db)
     mfo = MFOParser(db)
     await bank.load_banks()
     await broker.load_banks()

@@ -38,7 +38,23 @@ async def get_bank_count(db: AsyncSession, bank_type_id: int) -> int:
 
 
 async def get_bank_list(db: AsyncSession) -> list[Bank]:
-    return await db.scalars(select(Bank))  # type: ignore
+    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.bank))
+    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+
+
+async def get_broker_list(db: AsyncSession) -> list[Bank]:
+    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.broker))
+    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+
+
+async def get_insurance_list(db: AsyncSession) -> list[Bank]:
+    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.insurance))
+    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+
+
+async def get_mfo_list(db: AsyncSession) -> list[Bank]:
+    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.mfo))
+    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
 
 
 async def load_banks(db: AsyncSession, banks: list[Bank]) -> None:

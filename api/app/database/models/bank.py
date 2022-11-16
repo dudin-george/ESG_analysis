@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class BankType(Base):
     __tablename__ = "bank_type"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, index=True)
     banks: Mapped["Bank"] = relationship("Bank", back_populates="bank_type")
 
