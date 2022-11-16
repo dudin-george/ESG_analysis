@@ -22,6 +22,8 @@ CLOSED: [2022-10-02 Вс 21:01]
 *** Tests
 **** TODO faker + factoryboy
 **** TODO refactor to commit to db instead of api
+**** TODO add different types of type_bank_id
+**** TODO logic tests
 ** Parser
 *** DONE update parser state last
 CLOSED: [2022-10-18 Вт 12:43]
