@@ -2,7 +2,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
-from app.query.bank import get_bank_list, get_broker_list, get_insurance_list, get_mfo_list
+from app.query.bank import (
+    get_bank_list,
+    get_broker_list,
+    get_insurance_list,
+    get_mfo_list,
+)
 from app.schemes.bank import Bank, GetBankList
 
 router = APIRouter(prefix="/bank", tags=["bank"])
@@ -27,6 +32,6 @@ async def get_insurance(db: AsyncSession = Depends(get_session)) -> GetBankList:
 
 
 @router.get("/mfo", response_model=GetBankList)
-async def get_banks(db: AsyncSession = Depends(get_session)) -> GetBankList:
+async def get_mfo(db: AsyncSession = Depends(get_session)) -> GetBankList:
     banks_db = await get_mfo_list(db)
     return GetBankList(items=[Bank.from_orm(bank) for bank in banks_db])
