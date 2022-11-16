@@ -20,6 +20,7 @@ asyncpg = "^0.26.0"
 psycopg2 = "^2.9.4"
 pandas = "^1.5.1"
 openpyxl = "^3.0.10"
+aiohttp = "^3.8.3"
 
 
 [tool.poetry.group.dev.dependencies]

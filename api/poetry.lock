@@ -2,7 +2,7 @@
 name = "aiohttp"
 version = "3.8.3"
 description = "Async http client/server framework (asyncio)"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -22,7 +22,7 @@ speedups = ["Brotli", "aiodns", "cchardet"]
 name = "aiosignal"
 version = "1.2.0"
 description = "aiosignal: a list of registered asynchronous callbacks"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -65,7 +65,7 @@ trio = ["trio (>=0.16)"]
 name = "async-timeout"
 version = "4.0.2"
 description = "Timeout context manager for asyncio programs"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -86,7 +86,7 @@ test = ["flake8 (>=3.9.2,<3.10.0)", "pycodestyle (>=2.7.0,<2.8.0)", "uvloop (>=0
 name = "attrs"
 version = "22.1.0"
 description = "Classes Without Boilerplate"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.5"
 
@@ -259,7 +259,7 @@ pyflakes = ">=2.4.0,<2.5.0"
 name = "frozenlist"
 version = "1.3.1"
 description = "A list-like structure which implements collections.abc.MutableSequence"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -394,7 +394,7 @@ python-versions = "*"
 name = "multidict"
 version = "6.0.2"
 description = "multidict implementation"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -976,7 +976,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 name = "yarl"
 version = "1.8.1"
 description = "Yet another URL library"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -987,7 +987,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "67a4ad807522bb177f950ee3ccf93777b2d3da8de9640f98d4ebcd1942c5e236"
+content-hash = "ee26efa58cfd5df680e408e151ebd6616b9accdbf0ce2ea0e278f597ab41d9f5"
 
 [metadata.files]
 aiohttp = [
@@ -1527,16 +1527,16 @@ mypy = [
     {file = "mypy-0.961-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:0e9f70df36405c25cc530a86eeda1e0867863d9471fe76d1273c783df3d35c2e"},
     {file = "mypy-0.961-cp37-cp37m-win_amd64.whl", hash = "sha256:b88f784e9e35dcaa075519096dc947a388319cb86811b6af621e3523980f1c8a"},
     {file = "mypy-0.961-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:d5aaf1edaa7692490f72bdb9fbd941fbf2e201713523bdb3f4038be0af8846c6"},
-    {file = "mypy-0.961-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9f5f5a74085d9a81a1f9c78081d60a0040c3efb3f28e5c9912b900adf59a16e6"},
-    {file = "mypy-0.961-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:f4b794db44168a4fc886e3450201365c9526a522c46ba089b55e1f11c163750d"},
-    {file = "mypy-0.961-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:64759a273d590040a592e0f4186539858c948302c653c2eac840c7a3cd29e51b"},
-    {file = "mypy-0.961-cp38-cp38-win_amd64.whl", hash = "sha256:63e85a03770ebf403291ec50097954cc5caf2a9205c888ce3a61bd3f82e17569"},
-    {file = "mypy-0.961-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:5f1332964963d4832a94bebc10f13d3279be3ce8f6c64da563d6ee6e2eeda932"},
-    {file = "mypy-0.961-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:006be38474216b833eca29ff6b73e143386f352e10e9c2fbe76aa8549e5554f5"},
-    {file = "mypy-0.961-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9940e6916ed9371809b35b2154baf1f684acba935cd09928952310fbddaba648"},
-    {file = "mypy-0.961-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a5ea0875a049de1b63b972456542f04643daf320d27dc592d7c3d9cd5d9bf950"},
-    {file = "mypy-0.961-cp39-cp39-win_amd64.whl", hash = "sha256:1ece702f29270ec6af25db8cf6185c04c02311c6bb21a69f423d40e527b75c56"},
-    {file = "mypy-0.961-py3-none-any.whl", hash = "sha256:03c6cc893e7563e7b2949b969e63f02c000b32502a1b4d1314cabe391aa87d66"},
+    { file = "mypy-0.961-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:9f5f5a74085d9a81a1f9c78081d60a0040c3efb3f28e5c9912b900adf59a16e6" },
+    { file = "mypy-0.961-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:f4b794db44168a4fc886e3450201365c9526a522c46ba089b55e1f11c163750d" },
+    { file = "mypy-0.961-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:64759a273d590040a592e0f4186539858c948302c653c2eac840c7a3cd29e51b" },
+    { file = "mypy-0.961-cp38-cp38-win_amd64.whl", hash = "sha256:63e85a03770ebf403291ec50097954cc5caf2a9205c888ce3a61bd3f82e17569" },
+    { file = "mypy-0.961-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:5f1332964963d4832a94bebc10f13d3279be3ce8f6c64da563d6ee6e2eeda932" },
+    { file = "mypy-0.961-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:006be38474216b833eca29ff6b73e143386f352e10e9c2fbe76aa8549e5554f5" },
+    { file = "mypy-0.961-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9940e6916ed9371809b35b2154baf1f684acba935cd09928952310fbddaba648" },
+    { file = "mypy-0.961-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:a5ea0875a049de1b63b972456542f04643daf320d27dc592d7c3d9cd5d9bf950" },
+    { file = "mypy-0.961-cp39-cp39-win_amd64.whl", hash = "sha256:1ece702f29270ec6af25db8cf6185c04c02311c6bb21a69f423d40e527b75c56" },
+    { file = "mypy-0.961-py3-none-any.whl", hash = "sha256:03c6cc893e7563e7b2949b969e63f02c000b32502a1b4d1314cabe391aa87d66" },
     { file = "mypy-0.961.tar.gz", hash = "sha256:f730d56cb924d371c26b8eaddeea3cc07d78ff51c521c6d04899ac6904b75492" },
 ]
 mypy-extensions = [
