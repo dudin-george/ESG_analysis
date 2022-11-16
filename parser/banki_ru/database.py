@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String
 
-from banki_ru.schemes import BankiRuItem
+from banki_ru import schemes
 from common.database import Base
 
 
-class BankiRu(Base):
+class BankiRuBank(Base):
     __tablename__ = "banki_ru"
 
     id: int = Column(Integer, primary_key=True, index=True)
@@ -13,8 +13,8 @@ class BankiRu(Base):
     bank_code: str = Column(String)
 
     @staticmethod
-    def from_pydantic(bank: BankiRuItem) -> "BankiRu":
-        return BankiRu(
+    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuBank":
+        return BankiRuBank(
             bank_name=bank.bank_name,
             bank_code=bank.bank_code,
             bank_id=bank.bank_id,

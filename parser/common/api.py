@@ -1,18 +1,18 @@
 import requests
 
+from common.schemes import ApiBank, PatchSource, Source, SourceRequest, TextRequest
 from common.settings import Settings
-from common.schemes import Bank, PatchSource, Source, SourceRequest, TextRequest
 from utils.logger import get_logger
 
 URL = Settings().api_url
 logger = get_logger(__name__)
 
 
-def get_bank_list() -> list[Bank]:
+def get_bank_list() -> list[ApiBank]:
     url = URL + "/bank/"
     logger.debug(f"Get bank list from {url}")
     r = requests.get(url)
-    banks = [Bank(**bank) for bank in r.json()["items"]]
+    banks = [ApiBank(**bank) for bank in r.json()["items"]]
     return banks
 
 

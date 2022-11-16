@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class BankiRuItem(BaseModel):
+class BankiRuBankScheme(BaseModel):
     bank_id: int
     bank_name: str
     bank_code: str

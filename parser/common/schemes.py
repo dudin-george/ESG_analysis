@@ -4,9 +4,16 @@ from datetime import datetime
 from pydantic import BaseModel, validator
 
 
+class ApiBank(BaseModel):
+    id: int
+    bank_name: str
+    licence: int
+
+
 class Bank(BaseModel):
     id: int
     bank_name: str
+    licence: int
 
 
 class Source(BaseModel):
