@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, BigInteger
 
 from banki_ru import schemes
 from common.database import Base
@@ -19,3 +19,19 @@ class BankiRuBank(Base):
             bank_code=bank.bank_code,
             bank_id=bank.bank_id,
         )
+
+
+class BankiRuInsurance(BankiRuBank):
+    __tablename__ = "banki_ru_insurance"
+
+
+class BankiRuMfo(BankiRuBank):
+    __tablename__ = "banki_ru_mfo"
+
+    bank_id = Column(BigInteger, index=True)
+
+
+class BankiRuBroker(BankiRuBank):
+    __tablename__ = "banki_ru_broker"
+
+    bank_id = Column(BigInteger, index=True)

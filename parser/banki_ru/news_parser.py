@@ -7,20 +7,18 @@ from time import sleep
 from bs4 import BeautifulSoup
 
 from banki_ru.reviews_parser import BankiReviews
-from banki_ru.schemes import BankiRuBankScheme
+from banki_ru.schemes import BankiRuBankScheme, BankTypes
 from common import api
-from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
+from common.schemes import PatchSource, Text, TextRequest, SourceTypes
 
 
 class BankiNews(BankiReviews):
+    site = BankTypes.news
+    type = SourceTypes.news
+
     def __init__(self) -> None:
         sleep(2)  # if started with reviews parser, then load banks in reviews
         super().__init__()
-
-    def create_source(self) -> Source:
-        create_source = SourceRequest(site="banki.ru/news", source_type="news")
-        self.logger.debug(f"Creating source {create_source}")
-        return api.send_source(create_source)
 
     def get_pages_num(self, bank: BankiRuBankScheme) -> int | None:
         page = self.bank_news_page(bank)

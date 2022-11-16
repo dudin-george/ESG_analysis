@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel, validator
 
@@ -76,3 +77,8 @@ class PatchSource(BaseModel):
 class SourceRequest(BaseModel):
     site: str
     source_type: str
+
+
+class SourceTypes(str, Enum):
+    reviews = "reviews"
+    news = "news"

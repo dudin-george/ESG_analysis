@@ -12,6 +12,7 @@ from requests.exceptions import ConnectTimeout, JSONDecodeError, SSLError
 from common.schemes import Source
 from common.settings import get_settings
 from utils.logger import get_logger
+from bs4 import BeautifulSoup
 
 
 class BaseParser(ABC):
@@ -22,6 +23,7 @@ class BaseParser(ABC):
         raise NotImplementedError
 
     def get_source_params(self, source: Source) -> tuple[int, int, datetime]:
+        self.logger.debug(f"get source params {source=}")
         parsed_time = source.last_update
         if parsed_time is None:
             parsed_time = datetime.fromtimestamp(1)
@@ -83,3 +85,10 @@ class BaseParser(ABC):
     ) -> dict[str, Any] | None:
         response = self.send_get_request(url, params, header)
         return self.get_json(response)
+
+    def get_page_from_url(
+        self, url: str, params: dict[str, Any] | None = None, header: dict[str, Any] | None = None
+    ) -> BeautifulSoup | None:
+        response = self.send_get_request(url, params, header)
+        page = BeautifulSoup(response.text, "html.parser")
+        return page

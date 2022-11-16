@@ -4,19 +4,14 @@ from datetime import datetime
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBank
 from banki_ru.queries import create_banks
-from banki_ru.schemes import BankiRuBankScheme
+from banki_ru.schemes import BankiRuBankScheme, BankTypes
 from common import api
-from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
+from common.schemes import PatchSource, Text, TextRequest, SourceTypes
 
 
 class BankiReviews(BankiBase):
-    def __init__(self) -> None:
-        super().__init__()
-
-    def create_source(self) -> Source:
-        create_source = SourceRequest(site="banki.ru", source_type="reviews")
-        self.logger.debug(f"Creating source {create_source}")
-        return api.send_source(create_source)
+    site = BankTypes.bank
+    type = SourceTypes.reviews
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -75,7 +70,7 @@ class BankiReviews(BankiBase):
         response_json = self.get_json_from_url("https://www.banki.ru/services/responses/list/ajax/", params=params)
         if response_json is None:
             return None
-        return int(response_json["total"]) // 24 + 1
+        return int(response_json["total"]) // 25 + 1
 
     def parse(self) -> None:
         self.logger.info("start parse banki.ru reviews")
@@ -83,7 +78,7 @@ class BankiReviews(BankiBase):
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
         parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
         for bank_index, bank_pydantic in enumerate(self.bank_list):
-            bank = BankiRuBankScheme.from_orm(bank_pydantic)
+            bank = BankiRuBankScheme.from_orm(bank_pydantic)  # todo try remove
             self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
             if bank.bank_id < parsed_bank_id:
                 continue
