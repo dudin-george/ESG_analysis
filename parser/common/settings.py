@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     logger_level: int = Field(env="LOGGER_LEVEL", default=10)
     vk_token: str | None = Field(env="VK_TOKEN")
     selenium_hub: AnyHttpUrl | None = Field(env="SELENIUM_HUB")
+    sleep: int = Field(env="SLEEP", default=60)
 
     class Config:
         env_file = ".env"
