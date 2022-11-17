@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 
 from banki_ru.banki_base_parser import BankiBase
-from banki_ru.database import BankiRuBank, BankiRuBroker
+from banki_ru.database import BankiRuBase, BankiRuBroker
 from banki_ru.queries import create_banks
 from banki_ru.schemes import BankiRuBankScheme, BankTypes
 from common import api
@@ -17,7 +17,7 @@ class BankiBroker(BankiBase):
         broker_json = self.get_json_from_url(url)
         if broker_json is None:
             return None
-        broker_license_str = broker_json["data"]["broker"]["licence"]
+        broker_license_str: str = broker_json["data"]["broker"]["licence"]
         return broker_license_str
 
     def load_bank_list(self) -> None:
@@ -55,15 +55,17 @@ class BankiBroker(BankiBase):
                 )
             )
         self.logger.info("finish download broker list")
-        banks_db = [BankiRuBroker.from_pydantic(bank) for bank in brokers]
+        banks_db: list[BankiRuBase] = [BankiRuBroker.from_pydantic(bank) for bank in brokers]
         create_banks(banks_db)
 
-    def get_page_bank_reviews(self, bank: BankiRuBank, page_num: int, parsed_time: datetime) -> list[Text] | None:
+    def get_page_bank_reviews(self, bank: BankiRuBase, page_num: int, parsed_time: datetime) -> list[Text] | None:
         url = f"https://www.banki.ru/investment/responses/company/broker/{bank.bank_code}/"
         texts = self.get_reviews_from_url(url, bank, parsed_time, params={"page": page_num, "isMobile": 0})
         return texts
 
-    def get_pages_num(self, bank: BankiRuBank) -> int | None:
+    def get_pages_num(self, bank: BankiRuBase) -> int | None:
         params = {"page": 1, "isMobile": 0}
-        total_pages = self.get_pages_num_html(f"https://www.banki.ru/investment/responses/company/broker/{bank.bank_code}/", params=params)
+        total_pages = self.get_pages_num_html(
+            f"https://www.banki.ru/investment/responses/company/broker/{bank.bank_code}/", params=params
+        )
         return total_pages

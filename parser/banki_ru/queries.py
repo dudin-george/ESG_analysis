@@ -1,9 +1,15 @@
-from banki_ru.database import BankiRuBank, BankiRuBroker, BankiRuInsurance, BankiRuMfo
+from banki_ru.database import (
+    BankiRuBank,
+    BankiRuBase,
+    BankiRuBroker,
+    BankiRuInsurance,
+    BankiRuMfo,
+)
 from banki_ru.schemes import BankTypes
 from common.database import SessionLocal
 
 
-def get_bank_list(bank_site: BankTypes) -> list[BankiRuBank]:
+def get_bank_list(bank_site: BankTypes) -> list[BankiRuBase]:
     with SessionLocal() as db:
         match bank_site:
             case BankTypes.bank | BankTypes.news:
@@ -19,7 +25,7 @@ def get_bank_list(bank_site: BankTypes) -> list[BankiRuBank]:
     return bank_list
 
 
-def create_banks(bank_list: list[BankiRuBank]) -> None:
+def create_banks(bank_list: list[BankiRuBase]) -> None:
     with SessionLocal() as db:
         db.add_all(bank_list)
         db.commit()

@@ -6,7 +6,7 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup
 
-from banki_ru.database import BankiRuBank
+from banki_ru.database import BankiRuBase
 from banki_ru.queries import get_bank_list
 from banki_ru.schemes import BankTypes
 from common import api
@@ -119,13 +119,15 @@ class BankiBase(BaseParser):
         patch_source = PatchSource(last_update=start_time)
         self.source = api.patch_source(self.source.id, patch_source)  # type: ignore
 
-    def get_pages_num(self, bank: BankiRuBank) -> int | None:
+    def get_pages_num(self, bank: BankiRuBase) -> int | None:
         raise NotImplementedError
 
-    def get_page_bank_reviews(self, bank: BankiRuBank, page_num: int, parsed_time: datetime) -> list[Text] | None:
+    def get_page_bank_reviews(self, bank: BankiRuBase, page_num: int, parsed_time: datetime) -> list[Text] | None:
         raise NotImplementedError
 
-    def get_reviews_from_url(self, url: str, bank: BankiRuBank, parsed_time: datetime, params: dict[str, Any] | None = None) -> list[Text]:
+    def get_reviews_from_url(
+        self, url: str, bank: BankiRuBase, parsed_time: datetime, params: dict[str, Any] | None = None
+    ) -> list[Text]:
         if params is None:
             params = {}
         soup = self.get_page_from_url(url, params=params)

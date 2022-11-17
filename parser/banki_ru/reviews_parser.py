@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from banki_ru.banki_base_parser import BankiBase
-from banki_ru.database import BankiRuBank
+from banki_ru.database import BankiRuBank, BankiRuBase
 from banki_ru.queries import create_banks
 from banki_ru.schemes import BankiRuBankScheme, BankTypes
 from common import api
@@ -44,10 +44,10 @@ class BankiReviews(BankiBase):
                 )
             )
         self.logger.info("finish download bank list")
-        banks_db = [BankiRuBank.from_pydantic(bank) for bank in banks]
+        banks_db: list[BankiRuBase] = [BankiRuBank.from_pydantic(bank) for bank in banks]
         create_banks(banks_db)
 
-    def get_page_bank_reviews(self, bank: BankiRuBank, page_num: int, parsed_time: datetime) -> list[Text] | None:
+    def get_page_bank_reviews(self, bank: BankiRuBase, page_num: int, parsed_time: datetime) -> list[Text] | None:
         params = {"page": page_num, "bank": bank.bank_code}
         response_json = self.get_json_from_url("https://www.banki.ru/services/responses/list/ajax/", params=params)
         if response_json is None:
@@ -68,7 +68,7 @@ class BankiReviews(BankiBase):
             texts.append(text)
         return texts
 
-    def get_pages_num(self, bank: BankiRuBank) -> int | None:
+    def get_pages_num(self, bank: BankiRuBase) -> int | None:
         params = {"page": 1, "bank": bank.bank_code}
         response_json = self.get_json_from_url("https://www.banki.ru/services/responses/list/ajax/", params=params)
         if response_json is None:

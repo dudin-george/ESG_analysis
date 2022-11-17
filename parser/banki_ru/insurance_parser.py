@@ -3,7 +3,7 @@ from datetime import datetime
 from time import sleep
 
 from banki_ru.banki_base_parser import BankiBase
-from banki_ru.database import BankiRuInsurance
+from banki_ru.database import BankiRuBase, BankiRuInsurance
 from banki_ru.queries import create_banks
 from banki_ru.schemes import BankTypes
 from common import api
@@ -67,11 +67,11 @@ class BankiInsurance(BankiBase):
         self.logger.info("finish download bank list")
         create_banks(insurances)  # type: ignore[arg-type]
 
-    def get_pages_num(self, bank: BankiRuInsurance) -> int | None:  # type: ignore[override]
+    def get_pages_num(self, bank: BankiRuBase) -> int | None:
         url = f"{self.url}{bank.bank_code}"
         return self.get_pages_num_html(url)
 
-    def get_page_bank_reviews(self, bank: BankiRuInsurance, page_num: int, parsed_time: datetime) -> list[Text] | None:  # type: ignore[override]
+    def get_page_bank_reviews(self, bank: BankiRuBase, page_num: int, parsed_time: datetime) -> list[Text] | None:
         url = f"{self.url}{bank.bank_code}"
         texts = self.get_reviews_from_url(url, bank, parsed_time, params={"page": page_num, "isMobile": 0})
         return texts

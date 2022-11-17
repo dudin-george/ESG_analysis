@@ -5,7 +5,7 @@ from time import sleep
 
 from bs4 import BeautifulSoup
 
-from banki_ru.database import BankiRuBank
+from banki_ru.database import BankiRuBase
 from banki_ru.reviews_parser import BankiReviews
 from banki_ru.schemes import BankTypes
 from common.schemes import SourceTypes, Text
@@ -19,7 +19,7 @@ class BankiNews(BankiReviews):
         sleep(2)  # if started with reviews parser, then load banks in reviews
         super().__init__()
 
-    def get_pages_num(self, bank: BankiRuBank) -> int | None:
+    def get_pages_num(self, bank: BankiRuBase) -> int | None:
         page = self.bank_news_page(bank)
         if page is None:
             return None
@@ -33,7 +33,7 @@ class BankiNews(BankiReviews):
             params[key.strip()] = value.strip()
         return ceil(int(params["totalItems"]) / int(params["itemsPerPage"]))
 
-    def bank_news_page(self, bank: BankiRuBank, page: int = 1) -> BeautifulSoup | None:
+    def bank_news_page(self, bank: BankiRuBase, page: int = 1) -> BeautifulSoup | None:
         self.logger.debug(f"Getting news page {page} for {bank.bank_name}")
         url = f"https://www.banki.ru/banks/bank/{bank.bank_code}/news/?PAGEN_2={page}"
         response = self.send_get_request(url)
@@ -44,7 +44,7 @@ class BankiNews(BankiReviews):
             return None
         return page_html
 
-    def get_news_links(self, bank: BankiRuBank, parsed_time: datetime, page_num: int = 1) -> list[str]:
+    def get_news_links(self, bank: BankiRuBase, parsed_time: datetime, page_num: int = 1) -> list[str]:
         page = self.bank_news_page(bank, page_num)
         if page is None:
             return []
@@ -68,7 +68,7 @@ class BankiNews(BankiReviews):
                     self.logger.warning(f"News link {url} is not valid bank {bank.bank_name} {page_num=}")
         return news_links
 
-    def news_from_links(self, bank: BankiRuBank, news_urls: list[str]) -> list[Text]:
+    def news_from_links(self, bank: BankiRuBase, news_urls: list[str]) -> list[Text]:
         texts = []
         for num_news, url in enumerate(news_urls):
             self.logger.debug(f"[{num_news+1}/{len(news_urls)}] Getting news for {bank.bank_name} from {url}")
@@ -100,7 +100,7 @@ class BankiNews(BankiReviews):
             )
         return texts
 
-    def get_page_bank_reviews(self, bank: BankiRuBank, page_num: int, parsed_time: datetime) -> list[Text]:
+    def get_page_bank_reviews(self, bank: BankiRuBase, page_num: int, parsed_time: datetime) -> list[Text]:
         links = self.get_news_links(bank, parsed_time, page_num)
         news = self.news_from_links(bank, links)
         return news
