@@ -6,6 +6,7 @@ from time import sleep
 
 from bs4 import BeautifulSoup
 
+from banki_ru.database import BankiRuBank
 from banki_ru.reviews_parser import BankiReviews
 from banki_ru.schemes import BankiRuBankScheme, BankTypes
 from common import api
@@ -13,8 +14,8 @@ from common.schemes import PatchSource, Text, TextRequest, SourceTypes
 
 
 class BankiNews(BankiReviews):
-    site = BankTypes.news
-    type = SourceTypes.news
+    bank_site = BankTypes.news
+    source_type = SourceTypes.news
 
     def __init__(self) -> None:
         sleep(2)  # if started with reviews parser, then load banks in reviews
@@ -69,7 +70,7 @@ class BankiNews(BankiReviews):
                     self.logger.warning(f"News link {url} is not valid bank {bank.bank_name} {page_num=}")
         return news_links
 
-    def news_from_links(self, bank: BankiRuBankScheme, news_urls: list[str]) -> list[Text]:
+    def news_from_links(self, bank: BankiRuBank, news_urls: list[str]) -> list[Text]:
         texts = []
         for num_news, url in enumerate(news_urls):
             self.logger.debug(f"[{num_news+1}/{len(news_urls)}] Getting news for {bank.bank_name} from {url}")
@@ -96,40 +97,46 @@ class BankiNews(BankiReviews):
                     title=title.text,
                     text=news_text,
                     source_id=self.source.id,
-                    bank_id=bank.bank_id,
+                    bank_id=bank.id,
                 )
             )
         return texts
+
+    def get_page_bank_reviews(self, bank: BankiRuBank, page_num: int, parsed_time: datetime) -> list[Text]:
+        links = self.get_news_links(bank, parsed_time, page_num)
+        news = self.news_from_links(bank, links)
+        return news
 
     def parse(self) -> None:
         self.logger.info("start parse banki.ru news")
         start_time = datetime.now()
         current_source = api.get_source_by_id(self.source.id)  # type: ignore
         parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
-        for bank_index, bank_pydantic in enumerate(self.bank_list):
-            bank = BankiRuBankScheme.from_orm(bank_pydantic)
+        for bank_index, bank in enumerate(self.bank_list):
             self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
-            if bank.bank_id < parsed_bank_id:
+            if bank.id < parsed_bank_id:
                 continue
             start = 1
-            if bank.bank_id == parsed_bank_id:
+            if bank.id == parsed_bank_id:
                 start = parsed_bank_page + 1
             total_page = self.get_pages_num(bank)
             if total_page is None:
                 continue
             for i in range(start, total_page + 1):
                 self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
-                links = self.get_news_links(bank, parsed_time, i)
-                news = self.news_from_links(bank, links)
+                reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
+                if reviews_list is None:
+                    break
+                if len(reviews_list) == 0:
+                    break
+
                 api.send_texts(
                     TextRequest(
-                        items=news,
-                        parsed_state=json.dumps({"bank_id": bank.bank_id, "page_num": i}),
+                        items=reviews_list,
+                        parsed_state=json.dumps({"bank_id": bank.id, "page_num": i}),
                         last_update=parsed_time,
                     )
                 )
-                if len(news) == 0:
-                    break
         self.logger.info("finish parse bank reviews")
         patch_source = PatchSource(last_update=start_time)
         self.source = api.patch_source(self.source.id, patch_source)  # type: ignore

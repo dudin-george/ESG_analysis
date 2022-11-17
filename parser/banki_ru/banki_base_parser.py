@@ -38,7 +38,7 @@ class BankiBase(BaseParser):
         if response.status_code != 200:
             return None
         page = BeautifulSoup(response.text, "html.parser")
-        items_num_text = page.find("span", class_="ui-pagination__description")
+        items_num_text = page.find("div", class_="ui-pagination__description")
         if items_num_text is None:
             return 1
         items_num = [int(num) for num in re.findall("\\d+", items_num_text.text)]

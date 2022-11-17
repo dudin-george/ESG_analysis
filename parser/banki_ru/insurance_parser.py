@@ -20,13 +20,19 @@ class BankiInsurance(BankiBase):
         sleep(2)
         super().__init__()
 
+    def get_pages_num_insurance_list(self, url: str) -> int:
+        page = self.get_page_from_url(url)
+        total_page_elem = page.find("div", {"data-module": "ui.pagination"})  # currentPageNumber: 1; itemsPerPage: 15; totalItems: 157; title: Страховых компаний
+        total_page = int(re.findall("(?<=totalItems:\\s)\\d+(?=;)", total_page_elem["data-options"])[0])
+        per_page = int(re.findall("(?<=itemsPerPage:\\s)\\d+(?=;)", total_page_elem["data-options"])[0])
+        return total_page // per_page + 1
+
     def load_bank_list(self) -> None:
         insurances = []
         existing_insurances = api.get_insurance_list()
-        insurances_id = [bank.licence for bank in existing_insurances]
         url = "https://www.banki.ru/insurance/companies/"
-        total_pages = self.get_pages_num_html(url)
-        for pages in range(1, total_pages):
+        total_pages = self.get_pages_num_insurance_list(url)
+        for pages in range(1, total_pages + 1):
             soup = self.get_page_from_url(url, params={"page": pages})
             for row in soup.find_all("tr", {"data-test": "list-row"}):
                 bank_text_url = row.find("a", class_="widget__link")  # todo to validator
@@ -38,10 +44,15 @@ class BankiInsurance(BankiBase):
                 insurance_license = None
                 if len(license_arr) == 1:
                     insurance_license = int(license_arr[0])
-                if insurance_license not in insurances_id:
+                bank_db = None
+                for bank in existing_insurances:
+                    if bank.licence == insurance_license:
+                        bank_db = bank
+                        break
+                if bank_db is None:
                     continue
                 insurances.append(
-                    BankiRuInsurance(bank_id=insurance_license, bank_name=bank_text_url.text, bank_url=bank_text_url['href'])
+                    BankiRuInsurance(id=bank_db.id, bank_id=bank_db.licence, bank_name=bank_text_url.text, bank_code=bank_text_url['href'].split('/')[-2])
                 )
         self.logger.info("finish download bank list")
         # banks_db = [BankiRuBank.from_pydantic(bank) for bank in banks]
@@ -57,21 +68,21 @@ class BankiInsurance(BankiBase):
         if soup is None:
             return None
         texts = []
-        for review in soup.find_all("div", {"data-test": "responses__item"}):
-            title_elem = review.find("div", {"data-test": "responses-header"})
+        for review in soup.find_all("article"):
+            title_elem = review.find("a", class_="header-h3")
             title = title_elem.text
             link = "https://www.banki.ru"+title_elem["href"]
             text = review.find("div", {"class": "responses__item__message markup-inside-small markup-inside-small--bullet", "data-full": ""}).text.strip()
-            date_elem = review.find("time")
-            comment_count = review.find("span", class_="responses__item__comments-count")
+            date_elem = review.find("time", {"data-test": "responses-datetime", "pubdate": ""})
+            comment_count = review.find("span", class_="responses__item__comment-count")
             text = Text(
                 date=date_elem["datetime"],
                 title=title,
                 text=text,
                 link=link,
-                comment_count=comment_count.text,
+                comment_count=comment_count.text if comment_count else None,
                 source_id=self.source.id,
-                bank_id=bank.bank_id,
+                bank_id=bank.id,
             )
             if text.date < parsed_time:
                 continue
@@ -85,10 +96,10 @@ class BankiInsurance(BankiBase):
         parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
         for bank_index, bank in enumerate(self.bank_list):
             self.logger.info(f"[{bank_index + 1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
-            if bank.bank_id < parsed_bank_id:
+            if bank.id < parsed_bank_id:
                 continue
             start = 1
-            if bank.bank_id == parsed_bank_id:
+            if bank.id == parsed_bank_id:
                 start = parsed_bank_page + 1
             total_page = self.get_pages_num(bank)
             if total_page is None:
@@ -104,7 +115,7 @@ class BankiInsurance(BankiBase):
                 api.send_texts(
                     TextRequest(
                         items=reviews_list,
-                        parsed_state=json.dumps({"bank_id": bank.bank_id, "page_num": i}),
+                        parsed_state=json.dumps({"bank_id": bank.id, "page_num": i}),
                         last_update=parsed_time,
                     )
                 )
