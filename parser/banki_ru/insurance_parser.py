@@ -73,30 +73,5 @@ class BankiInsurance(BankiBase):
 
     def get_page_bank_reviews(self, bank: BankiRuInsurance, page_num: int, parsed_time: datetime) -> list[Text] | None:  # type: ignore[override]
         url = f"{self.url}{bank.bank_code}"
-        soup = self.get_page_from_url(url, params={"page": page_num, "isMobile": 0})
-        if soup is None:
-            return None
-        texts = []
-        for review in soup.find_all("article"):
-            title_elem = review.find("a", class_="header-h3")
-            title = title_elem.text
-            link = "https://www.banki.ru" + title_elem["href"]
-            text = review.find(
-                "div",
-                {"class": "responses__item__message markup-inside-small markup-inside-small--bullet", "data-full": ""},
-            ).text.strip()
-            date_elem = review.find("time", {"data-test": "responses-datetime", "pubdate": ""})
-            comment_count = review.find("span", class_="responses__item__comment-count")
-            text = Text(
-                date=date_elem["datetime"],
-                title=title,
-                text=text,
-                link=link,
-                comment_count=comment_count.text if comment_count else None,
-                source_id=self.source.id,
-                bank_id=bank.bank_id,
-            )
-            if text.date < parsed_time:
-                continue
-            texts.append(text)
+        texts = self.get_reviews_from_url(url, bank, parsed_time, params={"page": page_num, "isMobile": 0})
         return texts
