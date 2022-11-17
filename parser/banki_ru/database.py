@@ -50,6 +50,14 @@ class BankiRuInsurance(BankiRuBase):
             f" bank_code={self.bank_code})>"
         )
 
+    @staticmethod
+    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuInsurance":
+        return BankiRuInsurance(
+            bank_name=bank.bank_name,
+            bank_code=bank.bank_code,
+            bank_id=bank.bank_id,
+        )
+
 
 class BankiRuMfo(BankiRuBase):
     __tablename__ = "banki_ru_mfo"
@@ -61,7 +69,13 @@ class BankiRuMfo(BankiRuBase):
             f"<BankiRuMfo(id={self.id}, bank_id={self.bank_id}, bank_name={self.bank_name},"
             f" bank_code={self.bank_code})>"
         )
-
+    @staticmethod
+    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuMfo":
+        return BankiRuMfo(
+            bank_name=bank.bank_name,
+            bank_code=bank.bank_code,
+            bank_id=bank.bank_id,
+        )
 
 class BankiRuBroker(BankiRuBase):
     __tablename__ = "banki_ru_broker"

@@ -39,7 +39,7 @@ class Text(BaseModel):
         s = re.sub("[\xa0\n\t]", " ", v)
         return re.sub("<[^>]*>", "", s).strip()
 
-    @validator("date", pre=True)
+    @validator("date")
     def date_validator(cls, v: str | datetime) -> datetime:
         if type(v) is datetime:
             return v

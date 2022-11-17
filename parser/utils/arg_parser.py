@@ -52,6 +52,10 @@ def _get_class(args: argparse.Namespace) -> type[BaseParser]:
             from banki_ru.broker_parser import BankiBroker
 
             return BankiBroker
+        case ParserType.banki_mfo:
+            from banki_ru.mfo_parser import BankiMfo
+
+            return BankiMfo
         case ParserType.vk_comments:
             from vk_parser.comments_parser import VKParser
 
