@@ -1,20 +1,28 @@
+import json
 import re
+from datetime import datetime
 from typing import Any
 
 import requests
+from bs4 import BeautifulSoup
 
+from banki_ru.database import BankiRuBank
 from banki_ru.queries import get_bank_list
 from banki_ru.schemes import BankTypes
 from common import api
 from common.base_parser import BaseParser
-from common.schemes import Source, SourceRequest, SourceTypes
-from bs4 import BeautifulSoup
+from common.schemes import (
+    PatchSource,
+    Source,
+    SourceRequest,
+    SourceTypes,
+    Text,
+    TextRequest,
+)
 
 
 class BankiBase(BaseParser):
-    headers = {
-        "X-Requested-With": "XMLHttpRequest"
-    }
+    headers = {"X-Requested-With": "XMLHttpRequest"}
     bank_site: BankTypes
     source_type: SourceTypes
 
@@ -33,7 +41,7 @@ class BankiBase(BaseParser):
     def load_bank_list(self) -> None:
         raise NotImplementedError
 
-    def get_pages_num_html(self, url: str) -> int | None:  # todo from html page?
+    def get_pages_num_html(self, url: str) -> int | None:
         response = self.send_get_request(url)
         if response.status_code != 200:
             return None
@@ -64,9 +72,6 @@ class BankiBase(BaseParser):
             header = {}
         header |= {"x-requested-with": "XMLHttpRequest"}
         return super().get_json_from_url(url, params, header)
-
-    def parse(self) -> None:
-        raise NotImplementedError
 
     def get_page_from_url(
         self, url: str, params: dict[str, Any] | None = None, header: dict[str, Any] | None = None

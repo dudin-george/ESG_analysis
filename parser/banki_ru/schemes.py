@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 
 class BankiRuBankScheme(BaseModel):
-    id: int
     bank_id: int
     bank_name: str
     bank_code: str

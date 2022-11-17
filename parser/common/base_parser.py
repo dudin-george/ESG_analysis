@@ -5,6 +5,7 @@ from time import sleep
 from typing import Any
 
 import requests
+from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from requests import Response
 from requests.exceptions import ConnectTimeout, JSONDecodeError, SSLError
@@ -12,7 +13,6 @@ from requests.exceptions import ConnectTimeout, JSONDecodeError, SSLError
 from common.schemes import Source
 from common.settings import get_settings
 from utils.logger import get_logger
-from bs4 import BeautifulSoup
 
 
 class BaseParser(ABC):

@@ -1,4 +1,4 @@
-from banki_ru.database import BankiRuBank, BankiRuInsurance, BankiRuMfo, BankiRuBroker
+from banki_ru.database import BankiRuBank, BankiRuBroker, BankiRuInsurance, BankiRuMfo
 from banki_ru.schemes import BankTypes
 from common.database import SessionLocal
 

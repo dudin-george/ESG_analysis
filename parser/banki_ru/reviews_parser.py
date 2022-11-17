@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 
 from banki_ru.banki_base_parser import BankiBase
@@ -6,7 +5,7 @@ from banki_ru.database import BankiRuBank
 from banki_ru.queries import create_banks
 from banki_ru.schemes import BankiRuBankScheme, BankTypes
 from common import api
-from common.schemes import PatchSource, Text, TextRequest, SourceTypes
+from common.schemes import SourceTypes, Text
 
 
 class BankiReviews(BankiBase):

@@ -71,4 +71,4 @@ def send_texts(text: TextRequest) -> None:
     r = requests.post(url, json=request)
     if r.status_code != 200:
         logger.error(r.json())
-        raise Exception("Error send text")
+        raise Exception(r.json())

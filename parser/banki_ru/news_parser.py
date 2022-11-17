@@ -1,4 +1,3 @@
-import json
 import re
 from datetime import datetime
 from math import ceil
@@ -8,9 +7,8 @@ from bs4 import BeautifulSoup
 
 from banki_ru.database import BankiRuBank
 from banki_ru.reviews_parser import BankiReviews
-from banki_ru.schemes import BankiRuBankScheme, BankTypes
-from common import api
-from common.schemes import PatchSource, Text, TextRequest, SourceTypes
+from banki_ru.schemes import BankTypes
+from common.schemes import SourceTypes, Text
 
 
 class BankiNews(BankiReviews):
@@ -76,7 +74,7 @@ class BankiNews(BankiReviews):
             self.logger.debug(f"[{num_news+1}/{len(news_urls)}] Getting news for {bank.bank_name} from {url}")
             response = self.send_get_request(url)
             try:
-                page = BeautifulSoup(response.text, "html.parser")
+                page = BeautifulSoup(response.text, "html.parser")  # todo change get page from url
             except Exception as e:
                 self.logger.warning(f"{e} on {url}")
                 continue
