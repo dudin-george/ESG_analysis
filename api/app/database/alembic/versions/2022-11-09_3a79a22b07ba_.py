@@ -37,7 +37,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.execute(bank_type.insert().values(id=1, name="bank"))  # type: ignore
+    op.execute(bank_type.insert().values(name="bank"))  # type: ignore
     op.create_index(op.f("ix_bank_type_id"), "bank_type", ["id"], unique=False)
     op.create_index(op.f("ix_bank_type_name"), "bank_type", ["name"], unique=False)
     op.add_column("bank", sa.Column("bank_type_id", sa.Integer(), nullable=True))

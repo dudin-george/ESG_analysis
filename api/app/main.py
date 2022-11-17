@@ -3,11 +3,8 @@ import os
 import fastapi
 from alembic.command import upgrade
 from alembic.config import Config
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 
-from app.database import SessionManager
 from app.dataloader import load_data
 from app.router import bank, model, source, text, text_result
 from app.settings import Settings
@@ -39,9 +36,7 @@ async def startup() -> None:
     config.attributes["configure_logger"] = False
     config.set_main_option("script_location", "app/database/alembic")
     upgrade(config, "head")
-    session_local = sessionmaker(bind=SessionManager().engine, class_=AsyncSession, expire_on_commit=False)
-    async with session_local() as conn:
-        await load_data(conn)
+    await load_data()
 
 
 def main() -> None:

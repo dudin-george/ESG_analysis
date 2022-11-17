@@ -13,7 +13,6 @@ async def create_bank_element_type(db: AsyncSession, bank_type_name: BankTypeVal
     bank_type = BankType(name=bank_type_name)
     db.add(bank_type)
     await db.commit()
-    await db.refresh(bank_type)
     return bank_type  # type: ignore
 
 
