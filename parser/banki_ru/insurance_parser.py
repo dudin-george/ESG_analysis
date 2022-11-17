@@ -52,7 +52,9 @@ class BankiInsurance(BankiBase):
                 if bank_db is None:
                     continue
                 insurances.append(
-                    BankiRuInsurance(id=bank_db.id, bank_id=bank_db.licence, bank_name=bank_text_url.text, bank_code=bank_text_url['href'].split('/')[-2])
+                    BankiRuInsurance(
+                        bank_id=bank_db.id, bank_name=bank_text_url.text, bank_code=bank_text_url["href"].split("/")[-2]
+                    )
                 )
         self.logger.info("finish download bank list")
         # banks_db = [BankiRuBank.from_pydantic(bank) for bank in banks]
@@ -82,44 +84,9 @@ class BankiInsurance(BankiBase):
                 link=link,
                 comment_count=comment_count.text if comment_count else None,
                 source_id=self.source.id,
-                bank_id=bank.id,
+                bank_id=bank.bank_id,
             )
             if text.date < parsed_time:
                 continue
             texts.append(text)
         return texts
-
-    def parse(self) -> None:  # todo try to base class
-        self.logger.info("start parse banki.ru insurance reviews")
-        start_time = datetime.now()
-        current_source = api.get_source_by_id(self.source.id)  # type: ignore
-        parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
-        for bank_index, bank in enumerate(self.bank_list):
-            self.logger.info(f"[{bank_index + 1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
-            if bank.id < parsed_bank_id:
-                continue
-            start = 1
-            if bank.id == parsed_bank_id:
-                start = parsed_bank_page + 1
-            total_page = self.get_pages_num(bank)
-            if total_page is None:
-                continue
-            for i in range(start, total_page + 1):
-                self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
-                reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
-                if reviews_list is None:
-                    break
-                if len(reviews_list) == 0:
-                    break
-
-                api.send_texts(
-                    TextRequest(
-                        items=reviews_list,
-                        parsed_state=json.dumps({"bank_id": bank.id, "page_num": i}),
-                        last_update=parsed_time,
-                    )
-                )
-
-        self.logger.info("finish parse bank reviews")
-        patch_source = PatchSource(last_update=start_time)
-        self.source = api.patch_source(self.source.id, patch_source)  # type: ignore

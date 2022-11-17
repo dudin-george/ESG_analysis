@@ -21,7 +21,7 @@ class BankiNews(BankiReviews):
         sleep(2)  # if started with reviews parser, then load banks in reviews
         super().__init__()
 
-    def get_pages_num(self, bank: BankiRuBankScheme) -> int | None:
+    def get_pages_num(self, bank: BankiRuBank) -> int | None:
         page = self.bank_news_page(bank)
         if page is None:
             return None
@@ -35,7 +35,7 @@ class BankiNews(BankiReviews):
             params[key.strip()] = value.strip()
         return ceil(int(params["totalItems"]) / int(params["itemsPerPage"]))
 
-    def bank_news_page(self, bank: BankiRuBankScheme, page: int = 1) -> BeautifulSoup | None:
+    def bank_news_page(self, bank: BankiRuBank, page: int = 1) -> BeautifulSoup | None:
         self.logger.debug(f"Getting news page {page} for {bank.bank_name}")
         url = f"https://www.banki.ru/banks/bank/{bank.bank_code}/news/?PAGEN_2={page}"
         response = self.send_get_request(url)
@@ -46,7 +46,7 @@ class BankiNews(BankiReviews):
             return None
         return page_html
 
-    def get_news_links(self, bank: BankiRuBankScheme, parsed_time: datetime, page_num: int = 1) -> list[str]:
+    def get_news_links(self, bank: BankiRuBank, parsed_time: datetime, page_num: int = 1) -> list[str]:
         page = self.bank_news_page(bank, page_num)
         if page is None:
             return []
@@ -97,7 +97,7 @@ class BankiNews(BankiReviews):
                     title=title.text,
                     text=news_text,
                     source_id=self.source.id,
-                    bank_id=bank.id,
+                    bank_id=bank.bank_id,
                 )
             )
         return texts
@@ -106,37 +106,3 @@ class BankiNews(BankiReviews):
         links = self.get_news_links(bank, parsed_time, page_num)
         news = self.news_from_links(bank, links)
         return news
-
-    def parse(self) -> None:
-        self.logger.info("start parse banki.ru news")
-        start_time = datetime.now()
-        current_source = api.get_source_by_id(self.source.id)  # type: ignore
-        parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
-        for bank_index, bank in enumerate(self.bank_list):
-            self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
-            if bank.id < parsed_bank_id:
-                continue
-            start = 1
-            if bank.id == parsed_bank_id:
-                start = parsed_bank_page + 1
-            total_page = self.get_pages_num(bank)
-            if total_page is None:
-                continue
-            for i in range(start, total_page + 1):
-                self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
-                reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
-                if reviews_list is None:
-                    break
-                if len(reviews_list) == 0:
-                    break
-
-                api.send_texts(
-                    TextRequest(
-                        items=reviews_list,
-                        parsed_state=json.dumps({"bank_id": bank.id, "page_num": i}),
-                        last_update=parsed_time,
-                    )
-                )
-        self.logger.info("finish parse bank reviews")
-        patch_source = PatchSource(last_update=start_time)
-        self.source = api.patch_source(self.source.id, patch_source)  # type: ignore

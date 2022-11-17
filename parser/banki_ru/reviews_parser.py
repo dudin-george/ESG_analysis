@@ -39,8 +39,7 @@ class BankiReviews(BankiBase):
 
             banks.append(
                 BankiRuBankScheme(
-                    id=bank_db.id,
-                    bank_id=bank_db.licence,
+                    bank_id=bank_db.id,
                     bank_name=bank["name"],
                     bank_code=bank["code"],
                 )
@@ -63,7 +62,7 @@ class BankiReviews(BankiBase):
                 text=item["text"],
                 comments_num=item["commentCount"],
                 source_id=self.source.id,
-                bank_id=bank.id,
+                bank_id=bank.bank_id,
             )
             if text.date < parsed_time:
                 continue
@@ -76,38 +75,3 @@ class BankiReviews(BankiBase):
         if response_json is None:
             return None
         return int(response_json["total"]) // 25 + 1
-
-    def parse(self) -> None:
-        self.logger.info(f"start parse banki.ru {self.source_type} {self.bank_site}")
-        start_time = datetime.now()
-        current_source = api.get_source_by_id(self.source.id)  # type: ignore
-        parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
-        for bank_index, bank in enumerate(self.bank_list):
-            self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
-            if bank.id < parsed_bank_id:
-                continue
-            start = 1
-            if bank.id == parsed_bank_id:
-                start = parsed_bank_page + 1
-            total_page = self.get_pages_num(bank)
-            if total_page is None:
-                continue
-            for i in range(start, total_page + 1):
-                self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
-                reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
-                if reviews_list is None:
-                    break
-                if len(reviews_list) == 0:
-                    break
-
-                api.send_texts(
-                    TextRequest(
-                        items=reviews_list,
-                        parsed_state=json.dumps({"bank_id": bank.id, "page_num": i}),
-                        last_update=parsed_time,
-                    )
-                )
-
-        self.logger.info(f"finish parse {self.source_type} {self.bank_site}")
-        patch_source = PatchSource(last_update=start_time)
-        self.source = api.patch_source(self.source.id, patch_source)  # type: ignore

@@ -60,6 +60,7 @@ class BaseParser(ABC):
                 sleep(30)
             if response.status_code == 200:
                 break
+            sleep(2)
         return response
 
     def get_json(self, response: Response) -> dict[str, Any] | None:

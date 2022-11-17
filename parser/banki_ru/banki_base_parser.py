@@ -77,3 +77,44 @@ class BankiBase(BaseParser):
             header = {}
         header |= self.headers
         return super().get_page_from_url(url, params, header)
+
+    def parse(self) -> None:
+        self.logger.info(f"start parse banki.ru {self.source_type} {self.bank_site}")
+        start_time = datetime.now()
+        current_source = api.get_source_by_id(self.source.id)  # type: ignore
+        parsed_bank_page, parsed_bank_id, parsed_time = self.get_source_params(current_source)
+        for bank_index, bank in enumerate(self.bank_list):
+            self.logger.info(f"[{bank_index+1}/{len(self.bank_list)}] Start parse bank {bank.bank_name}")
+            if bank.bank_id < parsed_bank_id:
+                continue
+            start = 1
+            if bank.bank_id == parsed_bank_id:
+                start = parsed_bank_page + 1
+            total_page = self.get_pages_num(bank)
+            if total_page is None:
+                continue
+            for i in range(start, total_page + 1):
+                self.logger.info(f"[{i}/{total_page}] start parse {bank.bank_name} reviews page {i}")
+                reviews_list = self.get_page_bank_reviews(bank, i, parsed_time)
+                if reviews_list is None:
+                    break
+                if len(reviews_list) == 0:
+                    break
+
+                api.send_texts(
+                    TextRequest(
+                        items=reviews_list,
+                        parsed_state=json.dumps({"bank_id": bank.bank_id, "page_num": i}),
+                        last_update=parsed_time,
+                    )
+                )
+
+        self.logger.info(f"finish parse {self.source_type} {self.bank_site}")
+        patch_source = PatchSource(last_update=start_time)
+        self.source = api.patch_source(self.source.id, patch_source)  # type: ignore
+
+    def get_pages_num(self, bank: BankiRuBank) -> int | None:
+        raise NotImplementedError
+
+    def get_page_bank_reviews(self, bank: BankiRuBank, page_num: int, parsed_time: datetime) -> list[Text] | None:
+        raise NotImplementedError
