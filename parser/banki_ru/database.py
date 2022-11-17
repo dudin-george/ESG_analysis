@@ -18,6 +18,10 @@ class BankiRuBase(Base):
             f" bank_code={self.bank_code})>"
         )
 
+    @staticmethod
+    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuBank":
+        raise NotImplementedError
+
 
 class BankiRuBank(BankiRuBase):
     __tablename__ = "banki_ru"
@@ -68,4 +72,12 @@ class BankiRuBroker(BankiRuBase):
         return (
             f"<BankiRuBroker(id={self.id}, bank_id={self.bank_id}, bank_name={self.bank_name},"
             f" bank_code={self.bank_code})>"
+        )
+
+    @staticmethod
+    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuBroker":
+        return BankiRuBroker(
+            bank_name=bank.bank_name,
+            bank_code=bank.bank_code,
+            bank_id=bank.bank_id,
         )

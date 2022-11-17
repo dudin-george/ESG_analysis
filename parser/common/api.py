@@ -24,6 +24,14 @@ def get_insurance_list() -> list[ApiBank]:
     return banks
 
 
+def get_broker_list() -> list[ApiBank]:
+    url = URL + "/bank/broker"
+    logger.debug(f"Get broker list from {url}")
+    r = requests.get(url)
+    banks = [ApiBank(**bank) for bank in r.json()["items"]]
+    return banks
+
+
 def send_source(source: SourceRequest) -> Source:
     url = URL + "/source/"
     logger.debug(f"Send source to {url}")
