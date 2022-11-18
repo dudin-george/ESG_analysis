@@ -1,18 +1,16 @@
-import asyncio
-from math import ceil
-from typing import Any
+import json
 
+import pandas as pd
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.bank import Bank, BankType
 from app.dataloader.base_parser import BaseParser
 from app.query import bank as query
 from app.query.bank import create_mfo_type
-from app.utils import get_json_request
 
 
 class MFOParser(BaseParser):
-    URL = "https://www.banki.ru/microloans/ajax/search/?catalog_name=main&period_unit=4&region_ids[]=433&region_ids[]=432&page=%i&per_page=48&total=206&page_type=MAINPRODUCT_SEARCH&sponsor_package_id=4"
+    URL = "https://www.cbr.ru/vfs/finmarkets/files/supervision/list_MFO.xlsx"
 
     def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
@@ -20,43 +18,40 @@ class MFOParser(BaseParser):
     async def create_bank_type(self) -> BankType:
         return await create_mfo_type(self.db)
 
-    def get_bank_list(self, items: list[dict[str, Any]]) -> list[Bank]:  # type: ignore[override]
+    def get_bank_list(self, df: pd.DataFrame) -> list[Bank]:
         self.logger.info("start parse broker list")
-        unique_mfos = list({(company["mfo"]["name"], company["mfo"]["ogrn"]) for company in items})
-        return [Bank(licence=ogrn, bank_name=name, bank_type_id=self.bank_type.id) for name, ogrn in unique_mfos]
-
-    async def get_banki_mfo(self, page: int = 1) -> dict[str, Any] | None:
-        header = {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:105.0) Gecko/20100101 Firefox/105.0",
-            "x-requested-with": "XMLHttpRequest",
-        }
-        url = self.URL % page
-        response = await get_json_request(url, headers=header)
-        if response:
-            return response
-        return None
-
-    def get_total_pages(self, response: dict[str, Any]) -> int:
-        page_elem = response["pagination"]
-        per_page = page_elem["per_page"]
-        total = page_elem["total"]
-        return ceil(total / per_page)
-
-    async def get_mfo_json(self, page: int = 1) -> dict[str, Any]:
-        response = await self.get_banki_mfo(page)
-        if response is None:
-            self.logger.error("banki.ru 403 error")
-            raise Exception("banki.ru 403 error")
-        return response
+        cbr_brokers = []
+        df["Регистрационный номер записи"] = df["Регистрационный номер записи"].fillna(0)
+        df["licence"] = (
+                df["Unnamed: 5"]
+                + df["Unnamed: 4"] * 1e6
+                + df["Unnamed: 3"] * 1e8
+                + df["Unnamed: 2"] * 1e11
+                + df["Регистрационный номер записи"] * 1e12
+        )
+        df["licence"] = df["licence"].astype(int)
+        for index, row in df.iterrows():
+            name = row["Полное наименование"]
+            cbr_brokers.append(
+                Bank(
+                    licence=str(row["licence"]),
+                    bank_name=name,
+                    bank_type_id=self.bank_type.id,
+                    description=json.dumps(
+                        {
+                            "ogrn": row["Основной государственный регистрационный номер"],
+                            "short_name": row["Сокращенное наименование"],  # short name have one NaN
+                        }
+                    ),
+                )
+            )
+        return cbr_brokers
 
     async def parse(self) -> None:
         self.logger.info("start download bank list")
-        microfin: list[dict[str, Any]] = []
-        first_page = await self.get_mfo_json()
-        total_pages = self.get_total_pages(first_page)
-        results = await asyncio.gather(*[self.get_mfo_json(i) for i in range(2, total_pages + 1)])
-        microfin.extend(first_page["data"])
-        for arr in results:
-            microfin.extend(arr["data"])
-        banks = self.get_bank_list(microfin)
+        df = self.get_dataframe(self.URL, skip_rows=4, index_col=0)
+        if df is None:
+            self.logger.error("cbr.ru 403 error")
+            raise Exception("cbr.ru 403 error")
+        banks = self.get_bank_list(df)
         await query.load_banks(self.db, banks)

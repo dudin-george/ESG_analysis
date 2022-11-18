@@ -42,7 +42,7 @@ class BaseParser:
         page = BeautifulSoup(response.text, "html.parser")
         return page
 
-    def get_dataframe(self, url: str, skip_rows: int = 3, index_col: str | None = None) -> pd.DataFrame | None:
+    def get_dataframe(self, url: str, skip_rows: int = 3, index_col: str | int | None = None) -> pd.DataFrame | None:
         response = self.send_get(url)
         if response is None:
             return None
