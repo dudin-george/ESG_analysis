@@ -45,15 +45,15 @@ test:
 
 .PHONY: migragte
 migrate:
-	cd app/database/ && PYTHONPATH=../../ alembic revision --autogenerate
+	cd app/database/ && PYTHONPATH=../../ python3.10 -m alembic revision --autogenerate
 
 .PHONY: downgrade
 downgrade:
-	cd app/database/ && PYTHONPATH=../../ alembic downgrade -1
+	cd app/database/ && PYTHONPATH=../../ python3.10 -m alembic downgrade -1
 
 .PHONY: upgrade
 upgrade:
-	cd app/database/ && PYTHONPATH=../../ alembic upgrade +1
+	cd app/database/ && PYTHONPATH=../../ python3.10 -m alembic upgrade +1
 
 .PHONY: all
 all: format export-dependencies
