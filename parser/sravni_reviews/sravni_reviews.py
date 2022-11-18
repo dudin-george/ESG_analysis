@@ -24,30 +24,17 @@ class SravniReviews(BaseParser):
             self.bank_list = get_bank_list()
 
     def request_bank_list(self) -> Response:
-        data = {
-            "select": [
-                "oldId",
-                "alias",
-                "name",
-                "license",
-                "status",
-                "ratings",
-                "contacts",
-                "requisites",
-            ],
-            "statuses": "active",
-            "type": "bank",
-            "limit": 1000,
-            "skip": 0,
-            "sort": ["-ratings", "ratings.assetsRatingPosition"],
-            "location": "6.",
-            "isMainList": True,
+        params = {
+            "active": True,
+            "limit": 400,
+            "organizationType": "bank",
+            "skip": 0
         }
-        return requests.post("https://www.sravni.ru/proxy-organizations/banks/list", data=data)
+        return requests.get("https://www.sravni.ru/proxy-organizations/organizations", params=params)
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
-        self.logger.info("send request to https://www.sravni.ru/proxy-organizations/banks/list")
+        self.logger.info("send request to https://www.sravni.ru/proxy-organizations/organizations")
         request = self.request_bank_list()
         items = request.json()["items"]
         self.logger.info("finish download bank list")
@@ -59,7 +46,6 @@ class SravniReviews(BaseParser):
             license_id = int(license_id_str)
             if license_id not in banks_id:
                 continue
-            names = item["name"]
 
             sravni_bank_list.append(
                 SravniRuItem(
@@ -67,9 +53,9 @@ class SravniReviews(BaseParser):
                     sravni_old_id=item["oldId"],
                     alias=item["alias"],
                     bank_id=license_id,
-                    bank_name=names["short"],
-                    bank_full_name=names["full"],
-                    bank_official_name=names["official"],
+                    bank_name=item["name"],
+                    bank_full_name=item["prepositionalName"],
+                    bank_official_name=item["fullName"],
                 )
             )
         banks_db = []

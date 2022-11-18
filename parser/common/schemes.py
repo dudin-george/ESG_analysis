@@ -52,14 +52,17 @@ class Text(BaseModel):
         s = re.sub("[\xa0\n\t]", " ", v)
         return re.sub("<[^>]*>", "", s).strip()
 
-    @validator("date")
+    @validator("date", always=True, pre=True)
     def date_validator(cls, v: str | datetime) -> datetime:
         if type(v) is datetime:
             return v
-        if type(v) is str and len(v.split(":")) == 3:
-            return datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
-        if type(v) is str:
+        v = re.sub("[\xa0\n\t]", " ", v).strip()
+        if type(v) is str and len(v.split(":")) == 2:
             return datetime.strptime(v, "%d.%m.%Y %H:%M")
+        if type(v) is str and len(v.split(":")) == 3 and v.find("T") == -1:
+            return datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
+        if type(v) is str and v.find("T") != -1:
+            return datetime.strptime(v, "%Y-%m-%dT%H:%M:%S.%fZ")
         return v  # type: ignore
 
     class Config:
