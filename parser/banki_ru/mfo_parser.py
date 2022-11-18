@@ -4,7 +4,7 @@ from typing import Any
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuMfo
 from banki_ru.queries import create_banks
-from banki_ru.schemes import BankiRuBankScheme, BankTypes
+from banki_ru.schemes import BankiRuBankScheme, BankTypes, MfoScheme
 from common import api
 from common.schemes import SourceTypes, Text
 
@@ -55,14 +55,22 @@ class BankiMfo(BankiBase):
             if arr is None:
                 continue
             microfin.extend(arr["data"])
-        unique_mfos = list(
-            {(company["mfo"]["name"], int(company["mfo"]["ogrn"]), company["mfo"]["code"]) for company in microfin}
+        unique_mfos: list[MfoScheme] = list(
+            {
+                MfoScheme(
+                    name=company["mfo"]["name"],
+                    license=company["mfo"]["certificate"],
+                    ogrn=company["mfo"]["ogrn"],
+                    code=company["mfo"]["code"],
+                )
+                for company in microfin
+            }
         )
         return_microfin = []
-        for name, ogrn, code in unique_mfos:
+        for mfo in unique_mfos:
             bank_db = None
             for existing_bank in existing_mfos:  # todo to different func
-                if existing_bank.licence == ogrn:  # todo change to license (certificate)
+                if existing_bank.licence == mfo.license or existing_bank.ogrn == mfo.ogrn:
                     bank_db = existing_bank
                     break
             if bank_db is None:
@@ -71,8 +79,8 @@ class BankiMfo(BankiBase):
             return_microfin.append(
                 BankiRuBankScheme(
                     bank_id=bank_db.id,
-                    bank_name=name,
-                    bank_code=code,
+                    bank_name=mfo.name,
+                    bank_code=mfo.code,
                 )
             )
         self.logger.info("finish download mfo list")

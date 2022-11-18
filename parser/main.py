@@ -6,7 +6,7 @@ from sqlalchemy_utils import create_database, database_exists
 
 from common.base_parser import BaseParser
 from common.database import Base, engine
-from common.settings import get_settings, Settings
+from common.settings import Settings, get_settings
 from utils.arg_parser import parse_args
 from utils.logger import get_logger
 

@@ -12,6 +12,19 @@ class BankiRuBankScheme(BaseModel):
         orm_mode = True
 
 
+class MfoScheme(BaseModel):
+    license: int
+    name: str
+    code: str
+    ogrn: int
+
+    def __hash__(self) -> int:
+        return hash(self.license) + hash(self.ogrn) + hash(self.code) + hash(self.name)
+
+    class Config:
+        orm_mode = True
+
+
 class BankTypes(str, Enum):
     bank = "banki.ru"
     news = "banki.ru/news"

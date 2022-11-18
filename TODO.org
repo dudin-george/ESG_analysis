@@ -19,6 +19,7 @@ CLOSED: [2022-10-18 Вт 18:18]
 CLOSED: [2022-11-01 Вт 16:44]
 *** DONE Setup tox
 CLOSED: [2022-10-02 Вс 21:01]
+*** TODO Move send/get requests from class to utils
 *** Tests
 **** TODO faker + factoryboy
 **** TODO refactor to commit to db instead of api

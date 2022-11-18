@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import datetime
 from enum import Enum
@@ -9,6 +10,18 @@ class ApiBank(BaseModel):
     id: int
     bank_name: str
     licence: int
+    description: str | None = None
+
+
+class ApiMfo(ApiBank):
+    ogrn: int
+
+    @staticmethod
+    def from_api_bank(bank: ApiBank) -> "ApiMfo":
+        ogrn = 0
+        if bank.description is not None:
+            ogrn = json.loads(bank.description)["ogrn"]
+        return ApiMfo(id=bank.id, bank_name=bank.bank_name, licence=bank.licence, ogrn=ogrn)
 
 
 class Bank(BaseModel):
