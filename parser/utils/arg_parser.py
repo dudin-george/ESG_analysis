@@ -12,6 +12,7 @@ class ParserType(str, Enum):
     banki_mfo = "banki_mfo"
     banki_broker = "banki_broker"
     vk_comments = "vk_comments"
+    vk_other = "vk_other"
     irecommend_reviews = "irecommend_reviews"
 
 
@@ -57,9 +58,13 @@ def _get_class(args: argparse.Namespace) -> type[BaseParser]:
 
             return BankiMfo
         case ParserType.vk_comments:
-            from vk_parser.comments_parser import VKParser
+            from vk_parser.bank_parser import VKBankParser
 
-            return VKParser
+            return VKBankParser
+        case ParserType.vk_other:
+            from vk_parser.other_industries_parser import VKOtherIndustriesParser
+
+            return VKOtherIndustriesParser
         case ParserType.irecommend_reviews:
             from irecommend_reviews.reviews_paresr import IRecommendReviews
 

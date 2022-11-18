@@ -32,10 +32,13 @@ CLOSED: [2022-10-18 Вт 12:43]
 CLOSED: [2022-10-18 Вт 12:43]
 *** DONE rename parser utils to common
 CLOSED: [2022-10-18 Вт 12:39]
-*** TODO tesing parser ([[https://docs.pytest.org/en/latest/how-to/fixtures.html#safe-fixture-structure][link]])
-*** TODO add pytest command for parsers [[https://docs.pytest.org/en/7.1.x/example/simple.html#control-skipping-of-tests-according-to-command-line-option][link]]
-*** TODO integration test in different folder [[https://docs.pytest.org/en/7.1.x/reference/customize.html?highlight=pytest%20ini][link]]
-*** TODO vcr.py [[https://vcrpy.readthedocs.io/en/latest/][(link)]]
+*** TODO Refactor vk parser
+**** TODO Use subclass for requests
+*** Tests
+**** TODO tesing parser ([[https://docs.pytest.org/en/latest/how-to/fixtures.html#safe-fixture-structure][link]])
+**** TODO add pytest command for parsers [[https://docs.pytest.org/en/7.1.x/example/simple.html#control-skipping-of-tests-according-to-command-line-option][link]]
+**** TODO integration test in different folder [[https://docs.pytest.org/en/7.1.x/reference/customize.html?highlight=pytest%20ini][link]]
+**** TODO vcr.py [[https://vcrpy.readthedocs.io/en/latest/][(link)]]
 ** DONE add readme for subprojects
 CLOSED: [2022-11-01 Вт 16:32]
 ** DONE speed up tests

@@ -16,6 +16,7 @@ from utils import relative_path
 from utils.logger import get_logger
 from vk_parser.database import VkBank
 from vk_parser.queries import create_banks, get_bank_list
+from vk_parser.schemes import VKType
 
 
 def clean_text_from_vk_url(match: re.Match[str]) -> str:
@@ -46,23 +47,25 @@ emoji_pattern = re.compile(
 )
 
 
-class VKParser(BaseParser):
+class VKBaseParser(BaseParser):
     logger = get_logger(__name__, Settings().logger_level)
     VERSION = "5.131"
+    file: str
+    type: VKType
 
     def __init__(self) -> None:
         self.logger.info("init vk parser")
-        source_create = SourceRequest(site="vk.com/comments", source_type="vk.com")
+        source_create = SourceRequest(site=f"vk.com/{self.type}", source_type="vk.com")
         self.source = api.send_source(source_create)
-        self.bank_list = get_bank_list()
+        self.bank_list = get_bank_list(self.type)
         if len(self.bank_list) == 0:
             self.load_bank_list()
-            self.bank_list = get_bank_list()
+            self.bank_list = get_bank_list(self.type)
 
     def load_bank_list(self) -> None:
-        path = relative_path(os.path.dirname(__file__), "vk_bank_list.npy")
+        path = relative_path(os.path.dirname(__file__), self.file)
         if not os.path.exists(path):
-            raise FileNotFoundError("vk_bank_list.npy not found")
+            raise FileNotFoundError(f"{self.file} not found")
         bank_arr = np.load(path, allow_pickle=True)
         db_banks = [VkBank(id=bank[0], name=bank[1], vk_id=bank[2], domain=bank[3]) for bank in bank_arr]
         create_banks(db_banks)
@@ -96,7 +99,8 @@ class VKParser(BaseParser):
         }
         for i in range(comments_pages):
             params["offset"] = i * 100
-            sleep(0.4)  # https://vk.com/dev/api_requests
+            sleep(0.6)
+            # https://vk.com/dev/api_requests limited to 3 rps for user token, and for two parsers in ~0.6s
             response = self.send_get_request("https://api.vk.com/method/wall.getComments", params=params)
             comments_json = self.get_json(response)
             if comments_json is None:
@@ -148,7 +152,8 @@ class VKParser(BaseParser):
                 if i <= page_num:
                     continue
                 params_wall_get["offset"] = i * 100
-                sleep(0.4)  # https://vk.com/dev/api_requests
+                sleep(0.6)
+                # https://vk.com/dev/api_requests limited to 3 rps for user token, and for two parsers in ~0.6s
                 response = self.send_get_request("https://api.vk.com/method/wall.get", params=params_wall_get)
                 response_json = self.get_json(response)
                 if response_json is None:
@@ -166,7 +171,7 @@ class VKParser(BaseParser):
                     ):
                         continue
                     comments = self.get_post_comments(
-                        bank.domain, post["owner_id"], post["id"], post["comments"]["count"], bank.id  # type: ignore
+                        bank.domain, post["owner_id"], post["id"], post["comments"]["count"], bank.id
                     )
                     if len(comments) == 0:
                         continue

@@ -53,9 +53,11 @@ class Text(BaseModel):
         return re.sub("<[^>]*>", "", s).strip()
 
     @validator("date", always=True, pre=True)  # todo refactor
-    def date_validator(cls, v: str | datetime) -> datetime:
+    def date_validator(cls, v: str | int | datetime) -> datetime:
         if type(v) is datetime:
             return v
+        if type(v) is int:
+            return datetime.fromtimestamp(v)
         v = re.sub("[\xa0\n\t]", " ", v).strip()  # type: ignore[arg-type]
         try:
             return datetime.fromisoformat(v)
