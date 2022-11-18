@@ -24,13 +24,8 @@ class SravniReviews(BaseParser):
             self.bank_list = get_bank_list()
 
     def request_bank_list(self) -> Response:
-        params = {
-            "active": True,
-            "limit": 400,
-            "organizationType": "bank",
-            "skip": 0
-        }
-        return requests.get("https://www.sravni.ru/proxy-organizations/organizations", params=params)
+        params = {"active": True, "limit": 400, "organizationType": "bank", "skip": 0}
+        return requests.get("https://www.sravni.ru/proxy-organizations/organizations", params=params)  # type: ignore
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")

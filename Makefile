@@ -16,16 +16,13 @@ install: install-linting
 
 .PHONY: lint
 lint:
-	$(isort) --df --check-only
-	$(black) --diff --check
-	$(flake8)
+	make -C api lint
+	make -C parser lint
 
 .PHONY: format
 format:
-	$(isort)
-	$(black)
-	$(mypy)
-	$(flake8)
+	cd api && source .venv/bin/activate && make format && deactivate
+	cd parser && source .venv/bin/activate && make format && deactivate
 
 .PHONY: up
 up:

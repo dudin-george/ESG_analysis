@@ -56,7 +56,7 @@ class Text(BaseModel):
     def date_validator(cls, v: str | datetime) -> datetime:
         if type(v) is datetime:
             return v
-        v = re.sub("[\xa0\n\t]", " ", v).strip()
+        v = re.sub("[\xa0\n\t]", " ", v).strip()  # type: ignore[arg-type]
         try:
             return datetime.fromisoformat(v)
         except ValueError:
