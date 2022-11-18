@@ -1,12 +1,33 @@
+import json
 import re
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel, validator
+
+
+class ApiBank(BaseModel):
+    id: int
+    bank_name: str
+    licence: int
+    description: str | None = None
+
+
+class ApiMfo(ApiBank):
+    ogrn: int
+
+    @staticmethod
+    def from_api_bank(bank: ApiBank) -> "ApiMfo":
+        ogrn = 0
+        if bank.description is not None:
+            ogrn = json.loads(bank.description)["ogrn"]
+        return ApiMfo(id=bank.id, bank_name=bank.bank_name, licence=bank.licence, ogrn=ogrn)
 
 
 class Bank(BaseModel):
     id: int
     bank_name: str
+    licence: int
 
 
 class Source(BaseModel):
@@ -31,12 +52,23 @@ class Text(BaseModel):
         s = re.sub("[\xa0\n\t]", " ", v)
         return re.sub("<[^>]*>", "", s).strip()
 
-    @validator("date")
+    @validator("date", always=True, pre=True)  # todo refactor
     def date_validator(cls, v: str | datetime) -> datetime:
         if type(v) is datetime:
             return v
-        if type(v) is str:
+        v = re.sub("[\xa0\n\t]", " ", v).strip()
+        try:
+            return datetime.fromisoformat(v)
+        except ValueError:
+            pass
+        if type(v) is str and len(v.split(":")) == 2:
+            return datetime.strptime(v, "%d.%m.%Y %H:%M")
+        if type(v) is str and len(v.split(":")) == 3 and v.find("T") == -1:
             return datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
+        if type(v) is str and v.find("T") != -1 and v.find(".") == -1:
+            return datetime.strptime(v, "%Y-%m-%dT%H:%M:%SZ")
+        if type(v) is str and v.find("T") != -1:
+            return datetime.strptime(v, "%Y-%m-%dT%H:%M:%S.%fZ")
         return v  # type: ignore
 
     class Config:
@@ -69,3 +101,8 @@ class PatchSource(BaseModel):
 class SourceRequest(BaseModel):
     site: str
     source_type: str
+
+
+class SourceTypes(str, Enum):
+    reviews = "reviews"
+    news = "news"

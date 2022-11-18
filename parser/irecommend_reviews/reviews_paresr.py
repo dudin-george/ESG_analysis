@@ -4,22 +4,21 @@ from datetime import datetime
 from time import sleep
 
 import numpy as np
+from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException, WebDriverException
 
-from irecommend_reviews.queries import create_banks, get_bank_list
 from common import api
 from common.base_parser import BaseParser
-from common.schemes import Source, SourceRequest, TextRequest, PatchSource, Text
+from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from irecommend_reviews.database import IRecommend
+from irecommend_reviews.queries import create_banks, get_bank_list
 from irecommend_reviews.schemes import IRecommendItem
-from utils import relative_path, get_browser
-from bs4 import BeautifulSoup
-from selenium.common.exceptions import TimeoutException, WebDriverException
+from utils import get_browser, relative_path
 
 
 # noinspection PyMethodMayBeStatic
 class IRecommendReviews(BaseParser):
-
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
         self.source = self.create_source()
@@ -81,19 +80,20 @@ class IRecommendReviews(BaseParser):
             return 0
         pages = 1
         if page.find("ul", {"class": "pager"}) is not None:
-            pages = int(page.find("ul", {"class": "pager"}).find("li", {"class": "pager-last"}).text)
+            pages = int(page.find("ul", {"class": "pager"}).find("li", {"class": "pager-last"}).text)  # type: ignore
         return pages
 
-    def get_review(self, review_url: str, bank: IRecommendItem,
-                   browser: webdriver.Firefox | webdriver.Remote) -> Text | None:
+    def get_review(
+        self, review_url: str, bank: IRecommendItem, browser: webdriver.Firefox | webdriver.Remote
+    ) -> Text | None:
         page = self.get_page(review_url, browser)
         if page is None or page.find("meta", {"itemprop": "datePublished"}) is None:
             self.logger.warning(f"review {review_url} not found")
             return None
-        date = page.find("meta", {"itemprop": "datePublished"})["content"]
+        date = page.find("meta", {"itemprop": "datePublished"})["content"]  # type: ignore
 
-        text = page.find("div", {"class": "description hasinlineimage", "itemprop": "reviewBody"}).text
-        title = page.find("h2", class_="reviewTitle").text
+        text = page.find("div", {"class": "description hasinlineimage", "itemprop": "reviewBody"}).text  # type: ignore
+        title = page.find("h2", class_="reviewTitle").text  # type: ignore
         return Text(
             source_id=self.source.id,
             bank_id=bank.bank_id,
@@ -103,14 +103,15 @@ class IRecommendReviews(BaseParser):
             link=review_url,
         )
 
-    def get_page_bank_reviews(self, bank: IRecommendItem, i: int, parsed_time: datetime,
-                              browser: webdriver.Firefox | webdriver.Remote) -> list[Text] | None:
+    def get_page_bank_reviews(
+        self, bank: IRecommendItem, i: int, parsed_time: datetime, browser: webdriver.Firefox | webdriver.Remote
+    ) -> list[Text] | None:
         page = self.get_page(f"{bank.domain}?new=1&page={i}", browser)
         if page is None:
             return None
         reviews_urls = []
         if page.find("div", id="block-quicktabs-3") is not None:
-            for elem in page.find("div", id="block-quicktabs-3").findAll("div", {"class": "reviewTextSnippet"}):
+            for elem in page.find("div", id="block-quicktabs-3").findAll("div", {"class": "reviewTextSnippet"}):  # type: ignore
                 reviews_urls.append("https://irecommend.ru" + elem.find("a", recursive=False)["href"])
         elif page.find("h1", class_="not-found-title") is not None:
             return None

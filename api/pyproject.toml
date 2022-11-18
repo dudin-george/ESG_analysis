@@ -5,11 +5,11 @@ description = ""
 authors = ["Samoed <samoed.roman@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "~3.10"
 requests = "^2.28.0"
 fastapi = "^0.85.0"
-pydantic = {extras = ["dotenv"], version = "^1.10.2"}
-SQLAlchemy = {extras = ["asyncio"], version = "^1.4.42"}
+pydantic = { extras = ["dotenv"], version = "^1.10.2" }
+SQLAlchemy = { extras = ["asyncio"], version = "^1.4.42" }
 uvicorn = "^0.18.3"
 SQLAlchemy-Utils = "^0.38.3"
 beautifulsoup4 = "^4.11.1"
@@ -17,7 +17,10 @@ beautifulsoup4 = "^4.11.1"
 nltk = "^3.7"
 alembic = "^1.8.1"
 asyncpg = "^0.26.0"
-psycopg2 = "^2.9.4"
+pandas = "^1.5.1"
+openpyxl = "^3.0.10"
+aiohttp = "^3.8.3"
+psycopg2-binary = "^2.9.5"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -77,7 +80,8 @@ exclude = [
 [[tool.mypy.overrides]]
 module = [
     "sqlalchemy_utils",
-    "nltk"
+    "nltk",
+    "pandas"
 ]
 ignore_missing_imports = true
 

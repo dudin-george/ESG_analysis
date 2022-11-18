@@ -1,18 +1,49 @@
 import requests
 
+from common.schemes import (
+    ApiBank,
+    ApiMfo,
+    PatchSource,
+    Source,
+    SourceRequest,
+    TextRequest,
+)
 from common.settings import Settings
-from common.schemes import Bank, PatchSource, Source, SourceRequest, TextRequest
 from utils.logger import get_logger
 
 URL = Settings().api_url
 logger = get_logger(__name__)
 
 
-def get_bank_list() -> list[Bank]:
+def get_bank_list() -> list[ApiBank]:
     url = URL + "/bank/"
     logger.debug(f"Get bank list from {url}")
     r = requests.get(url)
-    banks = [Bank(**bank) for bank in r.json()["items"]]
+    banks = [ApiBank(**bank) for bank in r.json()["items"]]
+    return banks
+
+
+def get_insurance_list() -> list[ApiBank]:
+    url = URL + "/bank/insurance"
+    logger.debug(f"Get insurance list from {url}")
+    r = requests.get(url)
+    banks = [ApiBank(**bank) for bank in r.json()["items"]]
+    return banks
+
+
+def get_broker_list() -> list[ApiBank]:
+    url = URL + "/bank/broker"
+    logger.debug(f"Get broker list from {url}")
+    r = requests.get(url)
+    banks = [ApiBank(**bank) for bank in r.json()["items"]]
+    return banks
+
+
+def get_mfo_list() -> list[ApiMfo]:
+    url = URL + "/bank/mfo"
+    logger.debug(f"Get mfo list from {url}")
+    r = requests.get(url)
+    banks = [ApiMfo.from_api_bank(ApiBank(**bank)) for bank in r.json()["items"]]
     return banks
 
 
@@ -63,4 +94,4 @@ def send_texts(text: TextRequest) -> None:
     r = requests.post(url, json=request)
     if r.status_code != 200:
         logger.error(r.json())
-        raise Exception("Error send text")
+        raise Exception(r.json())

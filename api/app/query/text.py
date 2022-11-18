@@ -40,10 +40,7 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
     except IntegrityError as e:
         await db.rollback()
         raise e
-    ids = []
-    for text_db_item in text_db:
-        await db.refresh(text_db_item)
-        ids.append(text_db_item.id)
+    ids = [text_db_item.id for text_db_item in text_db]
     texts = [text.text for text in post_texts.items]
     if len(texts) == 0 or len(ids) == 0:
         return None
