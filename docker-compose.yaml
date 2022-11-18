@@ -128,6 +128,17 @@ services:
       API_URL: "http://api:8000"
       VK_TOKEN: ""
 
+  vk-other-comments-parser:
+    depends_on:
+      - api
+    build: parser
+    command: [ "python", "main.py", "--site", "vk_other" ]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/vk_other"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+      VK_TOKEN: ""
+
   irecommend-reviews-parser:
     depends_on:
       - api

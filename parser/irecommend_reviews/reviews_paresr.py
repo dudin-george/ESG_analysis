@@ -22,7 +22,7 @@ class IRecommendReviews(BaseParser):
     def __init__(self) -> None:
         self.bank_list = get_bank_list()
         self.source = self.create_source()
-        if len(self.bank_list) == 0:
+        if len(self.bank_list) < 90:
             self.load_bank_list()
             self.bank_list = get_bank_list()
 
