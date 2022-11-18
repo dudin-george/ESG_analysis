@@ -70,26 +70,52 @@ services:
   banki-reviews-parser:
     depends_on:
       - api
-      - selenium-hub
     build: parser
     command: ["python", "main.py", "--site", "banki_reviews"]
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
       DOCKER: "true"
       API_URL: "http://api:8000"
-      SELENIUM_HUB: "http://selenium-hub:4444/wd/hub"
 
   banki-news-parser:
     depends_on:
       - api
-      - selenium-hub
     build: parser
     command: [ "python", "main.py", "--site", "banki_news" ]
     environment:
       DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
       DOCKER: "true"
       API_URL: "http://api:8000"
-      SELENIUM_HUB: "http://selenium-hub:4444/wd/hub"
+
+  banki-insurance-parser:
+    depends_on:
+      - api
+    build: parser
+    command: [ "python", "main.py", "--site", "banki_insurance" ]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki_insurance"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+
+  banki-mfo-parser:
+    depends_on:
+      - api
+    build: parser
+    command: [ "python", "main.py", "--site", "banki_mfo" ]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki_mfo"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+
+  banki-broker-parser:
+    depends_on:
+      - api
+    build: parser
+    command: [ "python", "main.py", "--site", "banki_broker" ]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki_broker"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
 
   vk-comments-parser:
     depends_on:
