@@ -65,7 +65,8 @@ class BaseParser(ABC):
 
     def get_json(self, response: Response) -> dict[str, Any] | None:
         if response.status_code != 200:
-            self.logger.warning(response.json())
+            self.logger.warning(f"response status code is {response.status_code}")
+            self.logger.warning(response.text)
             return None
         try:
             json_response = response.json()  # type: dict[str, Any]

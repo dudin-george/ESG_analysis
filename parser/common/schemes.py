@@ -52,15 +52,21 @@ class Text(BaseModel):
         s = re.sub("[\xa0\n\t]", " ", v)
         return re.sub("<[^>]*>", "", s).strip()
 
-    @validator("date", always=True, pre=True)
+    @validator("date", always=True, pre=True)  # todo refactor
     def date_validator(cls, v: str | datetime) -> datetime:
         if type(v) is datetime:
             return v
         v = re.sub("[\xa0\n\t]", " ", v).strip()
+        try:
+            return datetime.fromisoformat(v)
+        except ValueError:
+            pass
         if type(v) is str and len(v.split(":")) == 2:
             return datetime.strptime(v, "%d.%m.%Y %H:%M")
         if type(v) is str and len(v.split(":")) == 3 and v.find("T") == -1:
             return datetime.strptime(v, "%Y-%m-%d %H:%M:%S")
+        if type(v) is str and v.find("T") != -1 and v.find(".") == -1:
+            return datetime.strptime(v, "%Y-%m-%dT%H:%M:%SZ")
         if type(v) is str and v.find("T") != -1:
             return datetime.strptime(v, "%Y-%m-%dT%H:%M:%S.%fZ")
         return v  # type: ignore
