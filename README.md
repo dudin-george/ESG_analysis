@@ -10,12 +10,36 @@ TODO
 ```mermaid
 classDiagram
 direction BT
+class aggregate_table_model_result {
+   integer year
+   integer quater
+   varchar model_name
+   varchar source_site
+   varchar source_type
+   integer neutral
+   integer positive
+   integer negative
+   integer total
+   integer id
+}
 
-class banks {
+class bank {
    varchar bank_name
-   varchar bank_status
    varchar description
-   varchar id
+   integer bank_type_id
+   varchar licence
+   integer id
+}
+
+class bank_type {
+   varchar name
+   integer id
+}
+
+class model {
+   varchar name
+   integer model_type_id
+   integer id
 }
 
 class model_type {
@@ -23,55 +47,61 @@ class model_type {
    integer id
 }
 
-class models {
-   varchar model_name
-   integer model_type
-   integer id
-}
-
-class texts {
-   varchar link
-   integer source_id
-   datetime date
-   varchar title
-   varchar bank_id
-   integer comments_num
+class source {
+   varchar site
+   integer source_type_id
+   varchar parser_state
+   timestamp last_update
    integer id
 }
 
 class source_type {
-    int id
-    varchar name
-}
-
-class source {
+   varchar name
    integer id
-   varchar site
-   varchar parser_state
-   int source_type_id
 }
 
-class text_sentences {
-    integer id
-    integer review_id
-    integer sentence_num
-    varchar sentence
+class temp_sentences {
+   integer sentence_id
+   varchar sentence
+   varchar query
+   integer id
 }
 
-class textresult {
-   integer text_sentences_id
-   array result
+class text {
+   varchar link
+   integer source_id
+   timestamp date
+   varchar title
+   integer bank_id
+   integer comment_num
+   integer id
+}
+
+class text_result {
+   integer text_sentence_id
    integer model_id
+   double precision[] result
+   boolean is_processed
    integer id
 }
 
-texts --> text_sentences: review_id
-source_type --> source: id
-banks  -->  texts : bank_id
-source  -->  texts : source_id
-text_sentences --> textresult: text_sentences_id
-models --> textresult: model_id
-model_type --> models: model_type
+class text_sentence {
+   integer text_id
+   varchar sentence
+   integer sentence_num
+   integer id
+}
+
+bank  -->  bank_type : bank_type_id
+model  -->  model_type : model_type_id
+source  -->  source_type : source_type_id
+temp_sentences  -->  text_sentence : sentence_id
+text  -->  bank : bank_id
+text  -->  source : source_id
+text_result  -->  model : model_id
+text_result  -->  text_sentence : text_sentence_id
+text_sentence  -->  text : text_id
+
 ```
 ### Parser service
 ```mermaid
