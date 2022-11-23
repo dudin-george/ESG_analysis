@@ -49,7 +49,7 @@ class Text(BaseModel):
 
     @validator("text")
     def text_validator(cls, v: str) -> str:
-        s = re.sub("[\xa0\n\t]", " ", v)
+        s = re.sub("[\xa0\n\t\r]", " ", v)
         return re.sub("<[^>]*>", "", s).strip()
 
     @validator("date", always=True, pre=True)  # todo refactor
