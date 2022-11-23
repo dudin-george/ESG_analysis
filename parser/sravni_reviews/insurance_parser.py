@@ -1,10 +1,6 @@
 import re
 from datetime import datetime
-from math import ceil
 from typing import Any
-
-import requests
-from requests import Response
 
 from common import api
 from common.schemes import Text
@@ -26,7 +22,7 @@ class SravniInsuranceReviews(BaseSravniReviews):
         self.logger.info("start download bank list")
         sravni_insurance = self.request_bank_list()["items"]
         self.logger.info("finish download bank list")
-        existing_insurance = api.get_bank_list()
+        existing_insurance = api.get_insurance_list()
         sravni_bank_list = []
         for insurance in sravni_insurance:
             if len(insurance["license"]) == 0:
@@ -86,7 +82,7 @@ class SravniInsuranceReviews(BaseSravniReviews):
                     title=review["title"],
                     text=review["text"],
                     date=review["createdToMoscow"],
-                    source=self.source.id,
+                    source_id=self.source.id,
                     link=f"https://www.sravni.ru/strakhovaja-kompanija/{bank_info.alias}/otzyvy/{review['id']}",
                 )
                 if text.date < parsed_time:

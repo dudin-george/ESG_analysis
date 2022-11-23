@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class SravniRuItem(BaseModel):
     sravni_id: str
-    sravni_old_id: int
+    sravni_old_id: int | None = None
     alias: str
     bank_name: str
     bank_full_name: str

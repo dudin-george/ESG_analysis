@@ -29,8 +29,7 @@ class SravniMfoReviews(BaseSravniReviews):
         for sravni_mfo in sravni_mfo_json:
             bank_db = None
             for existing_mfo in existing_mfos:
-                description = json.loads(existing_mfo["description"])
-                if (int(sravni_mfo["license"]) == int(existing_mfo["licence"])) or (int(sravni_mfo['orgn']) == int(description['ogrn'])):
+                if (int(sravni_mfo["license"]) == existing_mfo.licence) or (int(sravni_mfo["requisites"]['ogrn']) == existing_mfo.ogrn):
                     bank_db = existing_mfo
                     break
             if bank_db is None:
@@ -83,7 +82,7 @@ class SravniMfoReviews(BaseSravniReviews):
                     title=review["title"],
                     text=review["text"],
                     date=review["createdToMoscow"],
-                    source=self.source.id,
+                    source_id=self.source.id,
                     link=f"https://www.sravni.ru/zaimy/{bank_info.alias}/otzyvy/{review['id']}",
                 )
                 if text.date < parsed_time:

@@ -6,6 +6,8 @@ from common.base_parser import BaseParser
 
 class ParserType(str, Enum):
     sravni_reviews = "sravni_reviews"
+    sravni_insurance_reviews = "sravni_insurance_reviews"
+    sravni_mfo_reviews = "sravni_mfo_reviews"
     banki_reviews = "banki_reviews"
     banki_news = "banki_news"
     banki_insurance = "banki_insurance"
@@ -37,6 +39,14 @@ def _get_class(args: argparse.Namespace) -> type[BaseParser]:
             from sravni_reviews.sravni_reviews import SravniReviews
 
             return SravniReviews
+        case ParserType.sravni_insurance_reviews:
+            from sravni_reviews.insurance_parser import SravniInsuranceReviews
+
+            return SravniInsuranceReviews
+        case ParserType.sravni_mfo_reviews:
+            from sravni_reviews.mfo_parser import SravniMfoReviews
+
+            return SravniMfoReviews
         case ParserType.banki_reviews:
             from banki_ru.reviews_parser import BankiReviews
 
