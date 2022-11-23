@@ -43,6 +43,7 @@ CLOSED: [2022-10-18 Вт 12:39]
 CLOSED: [2022-11-01 Вт 16:32]
 ** DONE speed up tests
 CLOSED: [2022-10-19 Ср 00:40]
+** TODO make .env file with common variables
 * Plans
 ** Must
 *** TODO [[https://github.com/zhanymkanov/fastapi-best-practices#11-sqlalchemy-set-db-keys-naming-convention][Sqlalchemy naming convention]]
