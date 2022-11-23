@@ -21,12 +21,13 @@ pandas = "^1.5.1"
 openpyxl = "^3.0.10"
 aiohttp = "^3.8.3"
 psycopg2-binary = "^2.9.5"
+schedule = "^1.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^4.0.1"
 black = "^22.3.0"
-mypy = "^0.961"
+mypy = "^0.991"
 isort = "^5.10.1"
 SQLAlchemy = {extras = ["mypy"], version = "^1.4.41"}
 #  celery-types = "^0.14.0"
@@ -81,7 +82,9 @@ exclude = [
 module = [
     "sqlalchemy_utils",
     "nltk",
-    "pandas"
+    "pandas",
+    "schedule",
+
 ]
 ignore_missing_imports = true
 
