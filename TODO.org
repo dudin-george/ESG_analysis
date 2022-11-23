@@ -20,6 +20,11 @@ CLOSED: [2022-11-01 Вт 16:44]
 *** DONE Setup tox
 CLOSED: [2022-10-02 Вс 21:01]
 *** TODO Move send/get requests from class to utils
+*** DONE Проверить как работает парсер МФО для banki.ru
+CLOSED: [2022-11-23 Ср 21:00]
+Когда выгружал сделал text.id = text_sentence.id
+[[file:docs/img/bnkiru_mfo_vtb_problems.png]]
+*** TODO Проверить как парсит остальное irecommend
 *** Tests
 **** TODO faker + factoryboy
 **** TODO refactor to commit to db instead of api
