@@ -43,7 +43,7 @@ database:
 test:
 	docker compose -f docker-compose.test.yaml up --build
 
-.PHONY: migragte
+.PHONY: migrate
 migrate:
 	cd app/database/ && PYTHONPATH=../../ python3.10 -m alembic revision --autogenerate
 
