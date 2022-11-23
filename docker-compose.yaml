@@ -67,6 +67,26 @@ services:
       DOCKER: "true"
       API_URL: "http://api:8000"
 
+  sravni-mfo-reviews-parser:
+    depends_on:
+      - api
+    build: parser
+    command: [ "python", "main.py", "--site", "sravni_mfo_reviews" ]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/sravni_mfo"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+
+  sravni-insurance-reviews-parser:
+    depends_on:
+      - api
+    build: parser
+    command: ["python", "main.py", "--site", "sravni_insurance_reviews"]
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://example:example@database/sravni_insurance"
+      DOCKER: "true"
+      API_URL: "http://api:8000"
+
   banki-reviews-parser:
     depends_on:
       - api
