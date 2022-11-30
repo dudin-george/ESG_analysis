@@ -170,3 +170,16 @@ services:
       DOCKER: "true"
       API_URL: "http://api:8000"
       SELENIUM_HUB: "http://selenium-hub:4444/wd/hub"
+
+  views:
+    depends_on:
+      - api
+      - database
+    build: ./api/Dockerfile.view
+    environment:
+      POSTGRES_USER: example
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: database
+      POSTGRES_HOST: database
+      POSTGRES_PORT: 5432
+      ECHO: False
