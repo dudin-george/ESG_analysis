@@ -13,6 +13,8 @@ def run_threaded(job_func: Callable[[None], None]) -> None:
 
 
 def setup() -> None:
+    aggregate_database_sentiment()
+    aggregate_database_mdf()
     logging.getLogger("schedule")
     schedule.every().day.do(run_threaded, aggregate_database_sentiment)
     schedule.every().day.do(run_threaded, aggregate_database_mdf)
