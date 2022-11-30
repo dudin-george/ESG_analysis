@@ -176,7 +176,8 @@ services:
       - api
       - database
     build:
-      dockerfile: ./api/Dockerfile.view
+      context: api
+      dockerfile: Dockerfile.view
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
