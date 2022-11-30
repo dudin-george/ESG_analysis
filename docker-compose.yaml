@@ -175,7 +175,8 @@ services:
     depends_on:
       - api
       - database
-    build: ./api/Dockerfile.view
+    build:
+      dockerfile: ./api/Dockerfile.view
     environment:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
