@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 import schedule
 
-from app.tasks.aggregate_database_model_result import aggregate_database
+from app.tasks.aggregate_database_model_result import aggregate_database_sentiment, aggregate_database_mdf
 
 
 def run_threaded(job_func: Callable[[None], None]) -> None:
@@ -14,9 +14,8 @@ def run_threaded(job_func: Callable[[None], None]) -> None:
 
 def setup() -> None:
     logging.getLogger("schedule")
-    aggregate_database()
-    # schedule.every().day.do(run_threaded, aggregate_database)
-    schedule.every().day.do(aggregate_database)
+    schedule.every().day.do(run_threaded, aggregate_database_sentiment)
+    schedule.every().day.do(run_threaded, aggregate_database_mdf)
     while True:
         schedule.run_pending()
 
