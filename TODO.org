@@ -50,6 +50,13 @@ CLOSED: [2022-11-01 Вт 16:32]
 ** DONE speed up tests
 CLOSED: [2022-10-19 Ср 00:40]
 ** TODO make .env file with common variables
+* Doc
+** детализация актуальности
++ не понятно какие сервисы
++ Что понимается под этичностью (дать определение)
++ Существуют сервисы, которые оценивают компанию по судебным делам (?), но не дают оценку по отзывам
++ Уточнить цель работы
++
 * Plans
 ** Must
 *** TODO [[https://github.com/zhanymkanov/fastapi-best-practices#11-sqlalchemy-set-db-keys-naming-convention][Sqlalchemy naming convention]]
