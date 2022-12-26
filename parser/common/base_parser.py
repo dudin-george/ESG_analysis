@@ -6,7 +6,6 @@ from typing import Any
 
 import requests
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
 from requests import Response
 from requests.exceptions import ConnectTimeout, JSONDecodeError, SSLError
 
@@ -42,13 +41,12 @@ class BaseParser(ABC):
             params = {}
         if header is None:
             header = {}
-        ua = UserAgent()
         response = Response()
         log_params = params.copy()
         if "access_token" in log_params.keys():
             log_params["access_token"] = "..."
         for _ in range(5):
-            header |= {"User-Agent": ua.random}
+            header |= {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"}
             try:
                 self.logger.debug(f"send request to {url} with {log_params=}")
                 response = requests.get(url, headers=header, params=params)
