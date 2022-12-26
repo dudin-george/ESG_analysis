@@ -6,11 +6,11 @@ from banki_ru.database import (
     BankiRuMfo,
 )
 from banki_ru.schemes import BankTypes
-from common.database import SessionLocal
+from common.database import get_sync
 
 
 def get_bank_list(bank_site: BankTypes) -> list[BankiRuBase]:
-    with SessionLocal() as db:
+    with get_sync() as db:
         match bank_site:
             case BankTypes.bank | BankTypes.news:
                 bank_list = db.query(BankiRuBank).order_by(BankiRuBank.bank_id).all()
@@ -26,6 +26,6 @@ def get_bank_list(bank_site: BankTypes) -> list[BankiRuBase]:
 
 
 def create_banks(bank_list: list[BankiRuBase]) -> None:
-    with SessionLocal() as db:
+    with get_sync() as db:
         db.add_all(bank_list)
         db.commit()
