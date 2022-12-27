@@ -31,6 +31,6 @@ class VKOtherIndustriesParser(VKBaseParser):
             raise Exception("bank array and response have different length")
         db_banks = []
         for bank, vk_group in zip(bank_arr, response["response"]):
-            db_banks.append(VkOtherIndustries(id=bank[0], name=bank[1], vk_id=-vk_group['id'], domain=bank[2]))
+            db_banks.append(VkOtherIndustries(id=bank[0], name=bank[1], vk_id=-vk_group["id"], domain=bank[2]))
         create_banks(db_banks)
         self.logger.info("bank list loaded")

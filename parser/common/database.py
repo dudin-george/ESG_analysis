@@ -7,6 +7,7 @@ from common.settings import Settings
 
 Base = declarative_base()
 
+
 class SessionManager:
     """
     A class that implements the necessary functionality for working with the database:
@@ -26,6 +27,7 @@ class SessionManager:
 
     def refresh(self) -> None:
         self.engine = create_engine(Settings().database_url, echo=True)  # type: ignore[assignment]
+
 
 def get_sync() -> Session:
     session_maker = SessionManager().get_session_maker()

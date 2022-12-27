@@ -1,5 +1,5 @@
 from common.database import get_sync
-from vk_parser.database import VkBank, VkOtherIndustries, VKBaseDB
+from vk_parser.database import VkBank, VKBaseDB, VkOtherIndustries
 from vk_parser.schemes import VKType
 
 

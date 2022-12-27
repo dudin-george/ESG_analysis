@@ -1,18 +1,22 @@
 import asyncio
+from os import environ
 from pathlib import Path
 from uuid import uuid4
+
 import pytest
-from os import environ
-from sqlalchemy.orm import sessionmaker
+import requests_mock
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
+
 from common.database import Base
 from common.settings import Settings
+from tests.request_data import api_bank, api_get_source_by_id, api_source
 
 PROJECT_PATH = Path(__file__).parent.parent.resolve()
 settings = Settings()
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -37,50 +41,51 @@ def postgres() -> str:
     finally:
         drop_database(tmp_url)
 
+
 @pytest.fixture
 def engine(postgres: str) -> Engine:
     engine = create_engine(postgres, echo=True)
     Base.metadata.create_all(bind=engine)
     return engine
 
+
 @pytest.fixture
 def session_factory(engine) -> sessionmaker:
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 @pytest.fixture
-async def session(session_factory) -> Session:
-    async with session_factory() as session:
+def session(session_factory) -> Session:
+    with session_factory() as session:
         yield session
 
 
-
+@pytest.fixture
+def mock_request() -> requests_mock.Mocker:
+    with requests_mock.Mocker() as m:
+        yield m
 
 
 @pytest.fixture
-def api_source() -> tuple[str, dict]:
-    return f"{settings.api_url}/source/", {
-                "id": 0,
-                "site": "string",
-                "source_type_id": 0,
-                "parser_state": "string",
-                "last_update": "2022-12-26T18:14:55.962Z"
-            }
+def mock_source(mock_request) -> requests_mock.Mocker:
+    mock_request.post(api_source()[0], status_code=200, json=api_source()[1])
+    yield mock_request
+
 
 @pytest.fixture
-def api_bank() -> tuple[str, dict]:
-    return f"{settings.api_url}/bank/", {
-                "items": [
-                    {
-                        "id": 1,
-                        "bank_name": "string",
-                        "licence": "1",
-                        "description": "string"
-                    },
-                    {
-                        "id": 1000,
-                        "bank_name": "string",
-                        "licence": "1000",
-                        "description": "string"
-                    }
-                ]
-            }
+def mock_get_source_by_id(mock_request) -> requests_mock.Mocker:
+    mock_request.get(api_get_source_by_id()[0], status_code=200, json=api_get_source_by_id()[1])
+    mock_request.patch(api_get_source_by_id()[0], status_code=200, json=api_get_source_by_id()[1])
+    yield mock_request
+
+
+@pytest.fixture
+def mock_text(mock_request) -> requests_mock.Mocker:
+    mock_request.post(f"{Settings().api_url}/text/", status_code=200, json={"data": "ok"})
+    yield mock_request
+
+
+@pytest.fixture
+def mock_bank_list(mock_request) -> requests_mock.Mocker:
+    mock_request.get(api_bank()[0], status_code=200, json=api_bank()[1])
+    yield mock_request

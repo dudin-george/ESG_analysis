@@ -1,5 +1,7 @@
 import requests
+
 from common.settings import Settings
+
 
 class Client:
     base_url = Settings().api_url

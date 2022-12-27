@@ -29,7 +29,9 @@ class SravniMfoReviews(BaseSravniReviews):
         for sravni_mfo in sravni_mfo_json:
             bank_db = None
             for existing_mfo in existing_mfos:
-                if (int(sravni_mfo["license"]) == existing_mfo.licence) or (int(sravni_mfo["requisites"]['ogrn']) == existing_mfo.ogrn):
+                if (int(sravni_mfo["license"]) == existing_mfo.licence) or (
+                    int(sravni_mfo["requisites"]["ogrn"]) == existing_mfo.ogrn
+                ):
                     bank_db = existing_mfo
                     break
             if bank_db is None:
