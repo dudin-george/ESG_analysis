@@ -1,100 +1,32 @@
+import re
+
 import pytest
+import requests
 import requests_mock
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def banki_banks_list() -> tuple[str, dict]:
-    return "https://www.banki.ru/widget/ajax/bank_list.json", {
-        "data": [
-            {
-                "id": 1,
-                "name": "uni",
-                "licence": "1",
-                "code": "uni",
-                "bank_id": 1,
-                "bank_name": "uni",
-            },
-            {
-                "id": 1000,
-                "name": "vtb",
-                "licence": "1000",
-                "code": "vtb",
-                "bank_id": 1000,
-                "bank_name": "vtb",
-            },
-            {
-                "id": 1234,
-                "name": "vtb",
-                "licence": "1234-K",
-                "code": "test",
-                "bank_id": 1234,
-                "bank_name": "test",
-            },
-            {
-                "id": 1234,
-                "name": "test",
-                "licence": "—",
-                "code": "test",
-                "bank_id": 1234,
-                "bank_name": "test",
-            },
-            {
-                "id": 1234,
-                "name": "vtb",
-                "licence": "",
-                "code": "vtb",
-                "bank_id": 1234,
-                "bank_name": "vtb",
-            },
-        ]
-    }
+    return (
+        "https://www.banki.ru/widget/ajax/bank_list.json",
+        requests.get("https://www.banki.ru/widget/ajax/bank_list.json").json(),
+    )
+
+
+@pytest.fixture(scope="session")
+def bank_reviews_response() -> tuple[str, dict]:
+    return (
+        "https://www.banki.ru/services/responses/list/ajax/",
+        requests.get(
+            "https://www.banki.ru/services/responses/list/ajax/", params={"page": 1, "bank": "unicreditbank"}
+        ).json(),
+    )
 
 
 @pytest.fixture
-def bank_reviews_response() -> tuple[str, dict]:
-    return "https://www.banki.ru/services/responses/list/ajax/", {
-        "data": [
-            {
-                "id": 10721721,
-                "dateCreate": "2022-10-08 16:05:01",
-                "text": "<p>Клиент Юникредита c с…онков, ни сообщений.</p>",
-                "title": "<p>Клиент Юникредита c с…онков, ни сообщений.</p>",
-                "grade": 1,
-                "isCountable": True,
-                "resolutionIsApproved": None,
-                "commentCount": 4,
-                "company": {
-                    "id": 4045,
-                    "code": "unicreditbank",
-                    "name": "unicreditbank",
-                    "url": "unicreditbank",
-                },
-            },
-            {
-                "id": 10720416,
-                "dateCreate": "2021-10-04 15:46:32",
-                "text": (
-                    "Сегодня выяснилась еще одна новинка от ЮниКредит Банк. На сайте банка публикуется одна ставка, но"
-                    " при размещении депозита вы ее не получаете. Сегодня нам было предложено 0,63% вместо 2,1%,"
-                    " заявленного на сайте банка. \r\n\r\nНикаких комментариев при этом не предоставляется. До текущего"
-                    " момента подобных ситуаций не возникало. С начала года и до текущего времени оборот по депозитным"
-                    " сделкам составляет несколько миллиардов."
-                ),
-                "title": "Ставки на сайте банка не…ствуют действительности",
-                "grade": 1,
-                "isCountable": True,
-                "resolutionIsApproved": None,
-                "commentCount": 4,
-                "company": {
-                    "id": 4045,
-                    "code": "unicreditbank",
-                    "name": "unicreditbank",
-                    "url": "unicreditbank",
-                },
-            },
-        ],
-        "total": 2,
-    }
+def mock_bank_reviews_response(mock_request, bank_reviews_response) -> requests_mock.Mocker:
+    mock_request.get(bank_reviews_response[0], json=bank_reviews_response[1])
+    yield mock_request
 
 
 @pytest.fixture
@@ -103,7 +35,52 @@ def mock_banki_ru_banks_list(mock_request, banki_banks_list) -> requests_mock.Mo
     yield mock_request
 
 
+broker_banki_list = requests.get(
+    "https://www.banki.ru/investment/brokers/list/", headers={"x-requested-with": "XMLHttpRequest"}
+).json()
+
+
+@pytest.fixture(scope="session")
+def banki_brokers_list_with_header() -> tuple[str, dict]:
+    return "https://www.banki.ru/investment/brokers/list/", broker_banki_list
+
+
 @pytest.fixture
-def mock_bank_reviews_response(mock_request, bank_reviews_response) -> requests_mock.Mocker:
-    mock_request.get(bank_reviews_response[0], json=bank_reviews_response[1])
+def mock_banki_ru_brokers_list(mock_request, banki_brokers_list_with_header) -> requests_mock.Mocker:
+    mock_request.get(banki_brokers_list_with_header[0], json=banki_brokers_list_with_header[1])
+    yield mock_request
+
+
+def json_response_for_broker(request, context):
+    dict_response = {
+        "creditsuisse": {"licence": "045-02972-100000"},
+        "crescofinance": {"licence": "045-12685-100000"},
+        "generalinvest": {"licence": "177-12660-100000, 177-12670-001000"},
+    }
+    name = request.path_url.split("/")[-2]
+    match name:
+        case "list":
+            return broker_banki_list
+        case _ if name in dict_response.keys():
+            return {"data": {"broker": dict_response[name]}}
+        case _:
+            return {"message": "Not found"}
+
+
+@pytest.fixture
+def mock_banki_ru_brokers_license(mock_request, banki_brokers_list_with_header) -> requests_mock.Mocker:
+    pattern = re.compile(r"https://www.banki.ru/investment/brokers/(.+)/")
+    mock_request.get(pattern, json=json_response_for_broker)
+    yield mock_request
+
+
+@pytest.fixture(scope="session")
+def broker_page() -> str:
+    return requests.get("https://www.banki.ru/investment/responses/company/broker/alfa-direkt/").text
+
+
+@pytest.fixture
+def mock_broker_page(mock_request, broker_page) -> requests_mock.Mocker:
+    pattern = re.compile(r"https://www.banki.ru/investment/responses/company/broker/(.+)/")
+    mock_request.get(pattern, text=broker_page)
     yield mock_request

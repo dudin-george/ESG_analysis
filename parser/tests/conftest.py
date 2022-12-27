@@ -12,7 +12,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from common.database import Base
 from common.settings import Settings
-from tests.request_data import api_bank, api_get_source_by_id, api_source
+from tests.request_data import api_bank, api_broker, api_get_source_by_id, api_source
 
 PROJECT_PATH = Path(__file__).parent.parent.resolve()
 settings = Settings()
@@ -88,4 +88,10 @@ def mock_text(mock_request) -> requests_mock.Mocker:
 @pytest.fixture
 def mock_bank_list(mock_request) -> requests_mock.Mocker:
     mock_request.get(api_bank()[0], status_code=200, json=api_bank()[1])
+    yield mock_request
+
+
+@pytest.fixture
+def mock_broker_list(mock_request) -> requests_mock.Mocker:
+    mock_request.get(api_broker()[0], status_code=200, json=api_broker()[1])
     yield mock_request

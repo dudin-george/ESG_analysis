@@ -55,6 +55,7 @@ class BaseParser(ABC):
                 sleep(30)
             except Exception as error:
                 self.logger.warning(f"{type(error)} when request {response.url} {error=}")
+                raise error
                 sleep(30)
             if response.status_code == 200:
                 break
