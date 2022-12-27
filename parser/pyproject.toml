@@ -66,6 +66,9 @@ plugins = [
     "pydantic.mypy",
 ]
 ignore_missing_imports = false
+exclude = [
+    "tests/"
+]
 # --strict end
 [[tool.mypy.overrides]]
 module = [

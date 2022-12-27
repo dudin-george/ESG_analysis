@@ -26,7 +26,7 @@ def api_bank() -> tuple[str, dict]:
         "items": [
             {"id": 1, "bank_name": "string", "licence": "1", "description": "string"},
             {"id": 1000, "bank_name": "string", "licence": "1000", "description": "string"},
-            {"id": 1234, "bank_name": "string", "licence": "1234", "description": "string"},
+            {"id": 2761, "bank_name": "string", "licence": "2761", "description": "string"},
         ]
     }
 

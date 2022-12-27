@@ -27,6 +27,11 @@ class TestBankiRuReviews(TestMixin):
         setup_test_reviews.get(bank_reviews_response[0], status_code=200, json=v)
         yield setup_test_reviews
 
+    @pytest.fixture
+    def setup_reviews_difference_dates(self, setup_test_reviews, bank_reviews_response_fixed) -> requests_mock.Mocker:
+        setup_test_reviews.get(bank_reviews_response_fixed[0], json=bank_reviews_response_fixed[1])
+        yield setup_test_reviews
+
     def test_reviews(self, setup_test_reviews):
         banki_reviews = BankiReviews()
         assert len(get_bank_list(banki_reviews.bank_site)) == 3
@@ -41,9 +46,9 @@ class TestBankiRuReviews(TestMixin):
         banki_reviews = BankiReviews()
         bank = BankiRuBase(bank_id=1, bank_name="test", bank_code="unicreditbank")
         reviews = banki_reviews.get_page_bank_reviews(bank, page_num=1, parsed_time=datetime.fromtimestamp(1))
-        assert len(reviews) == 2
+        assert len(reviews) == 25
 
-    def test_bank_page_reviews_diff_dates(self, setup_bank_page):
+    def test_bank_page_reviews_diff_dates(self, setup_reviews_difference_dates):
         banki_reviews = BankiReviews()
         bank = BankiRuBase(bank_id=1, bank_name="test", bank_code="unicreditbank")
         reviews = banki_reviews.get_page_bank_reviews(bank, page_num=1, parsed_time=datetime(2022, 1, 1))
@@ -54,4 +59,4 @@ class TestBankiRuReviews(TestMixin):
         banki_reviews.parse()
         text_post = [x for x in setup_bank_page.request_history if x.method == "POST" and x.path == "/text/"][0]
         request_json = text_post.json()
-        assert len(request_json["items"]) == 1
+        assert len(request_json["items"]) == 25

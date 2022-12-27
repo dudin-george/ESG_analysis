@@ -1,11 +1,57 @@
 import re
+from typing import Any
 
 import pytest
 import requests
 import requests_mock
+import vcr
+
+
+@pytest.fixture
+def bank_reviews_response_fixed() -> tuple[str, dict]:
+    return "https://www.banki.ru/services/responses/list/ajax/", {
+        "data": [
+            {
+                "id": 10721721,
+                "dateCreate": "2022-10-08 16:05:01",
+                "text": "<p>Клиент Юникредита c с…онков, ни сообщений.</p>",
+                "title": "<p>Клиент Юникредита c с…онков, ни сообщений.</p>",
+                "grade": 1,
+                "isCountable": True,
+                "resolutionIsApproved": None,
+                "commentCount": 4,
+                "company": {
+                    "id": 4045,
+                    "code": "unicreditbank",
+                    "name": "unicreditbank",
+                    "url": "unicreditbank",
+                },
+            },
+            {
+                "id": 10720416,
+                "dateCreate": "2021-10-04 15:46:32",
+                "text": (
+                    "Сегодня выяснилась еще одна новинка от ЮниКредит Банк. На сайте банка публикуется одна ставка, но"
+                ),
+                "title": "Ставки на сайте банка не…ствуют действительности",
+                "grade": 1,
+                "isCountable": True,
+                "resolutionIsApproved": None,
+                "commentCount": 4,
+                "company": {
+                    "id": 4045,
+                    "code": "unicreditbank",
+                    "name": "unicreditbank",
+                    "url": "unicreditbank",
+                },
+            },
+        ],
+        "total": 2,
+    }
 
 
 @pytest.fixture(scope="session")
+@vcr.use_cassette("vcr_cassettes/banki_banks_list.yaml")
 def banki_banks_list() -> tuple[str, dict]:
     return (
         "https://www.banki.ru/widget/ajax/bank_list.json",
@@ -14,6 +60,7 @@ def banki_banks_list() -> tuple[str, dict]:
 
 
 @pytest.fixture(scope="session")
+@vcr.use_cassette("vcr_cassettes/bank_reviews_response.yaml")
 def bank_reviews_response() -> tuple[str, dict]:
     return (
         "https://www.banki.ru/services/responses/list/ajax/",
@@ -35,9 +82,14 @@ def mock_banki_ru_banks_list(mock_request, banki_banks_list) -> requests_mock.Mo
     yield mock_request
 
 
-broker_banki_list = requests.get(
-    "https://www.banki.ru/investment/brokers/list/", headers={"x-requested-with": "XMLHttpRequest"}
-).json()
+@vcr.use_cassette("vcr_cassettes/get_broker_list.yaml")
+def get_broker_list() -> dict[str, Any]:
+    return requests.get(
+        "https://www.banki.ru/investment/brokers/list/", headers={"x-requested-with": "XMLHttpRequest"}
+    ).json()
+
+
+broker_banki_list = get_broker_list()
 
 
 @pytest.fixture(scope="session")
@@ -75,6 +127,7 @@ def mock_banki_ru_brokers_license(mock_request, banki_brokers_list_with_header) 
 
 
 @pytest.fixture(scope="session")
+@vcr.use_cassette("vcr_cassettes/broker_page.yaml")
 def broker_page() -> str:
     return requests.get("https://www.banki.ru/investment/responses/company/broker/alfa-direkt/").text
 
