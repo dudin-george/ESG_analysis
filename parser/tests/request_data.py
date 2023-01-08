@@ -48,3 +48,12 @@ def api_insurance() -> tuple[str, dict]:
             {"id": 1003, "bank_name": "string", "licence": "3947", "description": "string"},
         ]
     }
+
+def api_mfo() -> tuple[str, dict]:
+    return f"{settings.api_url}/bank/mfo", {
+        "items": [
+            {"id": 1001, "bank_name": "string", "licence": "651303532004088", "description": '{"ogrn":1134205019189}'},
+            {"id": 1002, "bank_name": "string", "licence": "1903550009325", "description": '{"ogrn":1134205019189}'},
+            {"id": 1003, "bank_name": "string", "licence": "1903475009492", "description": '{"ogrn":1134205019189}'},
+        ]
+    }

@@ -173,3 +173,47 @@ def mock_insurance_page(mock_request, insurance_page) -> requests_mock.Mocker:
     pattern = re.compile(r"https://www.banki.ru/insurance/responses/company/(.+)(/)?")
     mock_request.get(pattern, text=insurance_page)
     yield mock_request
+
+mfo_list_url = "https://www.banki.ru/microloans/ajax/search/"
+@vcr.use_cassette("vcr_cassettes/get_mfo_list.yaml")
+def get_mfo_list() -> str:
+    params = {
+        "catalog_name": "main",
+        "period_unit": 4,
+        "region_ids[]": ["433", "432"],
+        "page": 1,
+        "per_page": 500,
+        "total": 500,
+        "page_type": "MAINPRODUCT_SEARCH",
+        "sponsor_package_id": "4",
+    }
+    return requests.get(
+        mfo_list_url, headers={"x-requested-with": "XMLHttpRequest"}, params=params
+    ).json()
+
+
+mfo_banki_list = get_mfo_list()
+
+
+@pytest.fixture(scope="session")
+def banki_mfo_list_with_header() -> tuple[str, str]:
+    return mfo_list_url, mfo_banki_list
+
+
+@pytest.fixture
+def mock_banki_ru_mfo_list(mock_request, banki_mfo_list_with_header) -> requests_mock.Mocker:
+    mock_request.get(banki_mfo_list_with_header[0], json=banki_mfo_list_with_header[1])
+    yield mock_request
+
+
+@pytest.fixture(scope="session")
+@vcr.use_cassette("vcr_cassettes/mfo_page.yaml")
+def mfo_page() -> str:
+    params = {"perPage": 200, "grade": "all", "status": "all", "companyCodes": "bistrodengi"}
+    return requests.get("https://www.banki.ru/microloans/responses/ajax/responses/", params=params, headers={"x-requested-with": "XMLHttpRequest"}).json()
+
+@pytest.fixture
+def mock_mfo_page(mock_request, mfo_page) -> requests_mock.Mocker:
+    pattern = re.compile(r"https://www.banki.ru/microloans/responses/ajax/responses/(.+)(/)?")
+    mock_request.get(pattern, json=mfo_page)
+    yield mock_request
