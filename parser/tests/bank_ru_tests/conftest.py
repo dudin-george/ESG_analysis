@@ -53,19 +53,21 @@ def bank_reviews_response_fixed() -> tuple[str, dict]:
 @pytest.fixture(scope="session")
 @vcr.use_cassette("vcr_cassettes/banki_banks_list.yaml")
 def banki_banks_list() -> tuple[str, dict]:
+    url = "https://www.banki.ru/widget/ajax/bank_list.json"
     return (
-        "https://www.banki.ru/widget/ajax/bank_list.json",
-        requests.get("https://www.banki.ru/widget/ajax/bank_list.json").json(),
+        url,
+        requests.get(url).json(),
     )
 
 
 @pytest.fixture(scope="session")
 @vcr.use_cassette("vcr_cassettes/bank_reviews_response.yaml")
 def bank_reviews_response() -> tuple[str, dict]:
+    url = "https://www.banki.ru/services/responses/list/ajax/"
     return (
-        "https://www.banki.ru/services/responses/list/ajax/",
+        url,
         requests.get(
-            "https://www.banki.ru/services/responses/list/ajax/", params={"page": 1, "bank": "unicreditbank"}
+            url, params={"page": 1, "bank": "unicreditbank"}
         ).json(),
     )
 
@@ -81,11 +83,11 @@ def mock_banki_ru_banks_list(mock_request, banki_banks_list) -> requests_mock.Mo
     mock_request.get(banki_banks_list[0], json=banki_banks_list[1])
     yield mock_request
 
-
+broker_list_url = "https://www.banki.ru/investment/brokers/list/"
 @vcr.use_cassette("vcr_cassettes/get_broker_list.yaml")
 def get_broker_list() -> dict[str, Any]:
     return requests.get(
-        "https://www.banki.ru/investment/brokers/list/", headers={"x-requested-with": "XMLHttpRequest"}
+        broker_list_url, headers={"x-requested-with": "XMLHttpRequest"}
     ).json()
 
 
@@ -94,7 +96,7 @@ broker_banki_list = get_broker_list()
 
 @pytest.fixture(scope="session")
 def banki_brokers_list_with_header() -> tuple[str, dict]:
-    return "https://www.banki.ru/investment/brokers/list/", broker_banki_list
+    return broker_list_url, broker_banki_list
 
 
 @pytest.fixture
