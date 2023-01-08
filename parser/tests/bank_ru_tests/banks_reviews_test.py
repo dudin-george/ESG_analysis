@@ -28,8 +28,8 @@ class TestBankiRuReviews(TestMixin):
         yield setup_test_reviews
 
     @pytest.fixture
-    def setup_reviews_difference_dates(self, setup_test_reviews, bank_reviews_response_fixed) -> requests_mock.Mocker:
-        setup_test_reviews.get(bank_reviews_response_fixed[0], json=bank_reviews_response_fixed[1])
+    def setup_reviews_difference_dates(self, setup_test_reviews, bank_reviews_response_freeze) -> requests_mock.Mocker:
+        setup_test_reviews.get(bank_reviews_response_freeze[0], json=bank_reviews_response_freeze[1])
         yield setup_test_reviews
 
     def test_reviews(self, setup_test_reviews):

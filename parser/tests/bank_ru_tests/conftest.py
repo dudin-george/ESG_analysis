@@ -8,7 +8,7 @@ import vcr
 
 
 @pytest.fixture
-def bank_reviews_response_fixed() -> tuple[str, dict]:
+def bank_reviews_response_freeze() -> tuple[str, dict]:
     return "https://www.banki.ru/services/responses/list/ajax/", {
         "data": [
             {
@@ -84,14 +84,14 @@ def mock_banki_ru_banks_list(mock_request, banki_banks_list) -> requests_mock.Mo
     yield mock_request
 
 broker_list_url = "https://www.banki.ru/investment/brokers/list/"
-@vcr.use_cassette("vcr_cassettes/get_broker_list.yaml")
-def get_broker_list() -> dict[str, Any]:
+@vcr.use_cassette("vcr_cassettes/get_broker_list_with_header.yaml")
+def get_broker_list_with_header() -> dict[str, Any]:
     return requests.get(
         broker_list_url, headers={"x-requested-with": "XMLHttpRequest"}
     ).json()
 
 
-broker_banki_list = get_broker_list()
+broker_banki_list = get_broker_list_with_header()
 
 
 @pytest.fixture(scope="session")
@@ -138,4 +138,38 @@ def broker_page() -> str:
 def mock_broker_page(mock_request, broker_page) -> requests_mock.Mocker:
     pattern = re.compile(r"https://www.banki.ru/investment/responses/company/broker/(.+)/")
     mock_request.get(pattern, text=broker_page)
+    yield mock_request
+
+
+insurance_list_url = "https://www.banki.ru/insurance/companies/"
+@vcr.use_cassette("vcr_cassettes/get_insurance_list.yaml")
+def get_insurance_list() -> str:
+    return requests.get(
+        insurance_list_url, headers={"x-requested-with": "XMLHttpRequest"}
+    ).text
+
+
+insurance_banki_list = get_insurance_list()
+
+
+@pytest.fixture(scope="session")
+def banki_insurance_list_with_header() -> tuple[str, str]:
+    return insurance_list_url, insurance_banki_list
+
+
+@pytest.fixture
+def mock_banki_ru_insurance_list(mock_request, banki_insurance_list_with_header) -> requests_mock.Mocker:
+    mock_request.get(banki_insurance_list_with_header[0], text=banki_insurance_list_with_header[1])
+    yield mock_request
+
+
+@pytest.fixture(scope="session")
+@vcr.use_cassette("vcr_cassettes/insurance_page.yaml")
+def insurance_page() -> str:
+    return requests.get("https://www.banki.ru/insurance/responses/company/alfastrahovanie/").text
+
+@pytest.fixture
+def mock_insurance_page(mock_request, insurance_page) -> requests_mock.Mocker:
+    pattern = re.compile(r"https://www.banki.ru/insurance/responses/company/(.+)(/)?")
+    mock_request.get(pattern, text=insurance_page)
     yield mock_request

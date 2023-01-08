@@ -39,3 +39,12 @@ def api_broker() -> tuple[str, dict]:
             {"id": 1003, "bank_name": "string", "licence": "04502972100000", "description": "string"},
         ]
     }
+
+def api_insurance() -> tuple[str, dict]:
+    return f"{settings.api_url}/bank/insurance", {
+        "items": [
+            {"id": 1001, "bank_name": "string", "licence": "2496", "description": "string"},
+            {"id": 1002, "bank_name": "string", "licence": "0796", "description": "string"},
+            {"id": 1003, "bank_name": "string", "licence": "3947", "description": "string"},
+        ]
+    }
