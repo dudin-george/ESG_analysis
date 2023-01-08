@@ -217,3 +217,27 @@ def mock_mfo_page(mock_request, mfo_page) -> requests_mock.Mocker:
     pattern = re.compile(r"https://www.banki.ru/microloans/responses/ajax/responses/(.+)(/)?")
     mock_request.get(pattern, json=mfo_page)
     yield mock_request
+
+
+@vcr.use_cassette("vcr_cassettes/news_lenta.yaml")
+def news_page_lenta() -> str:
+    return requests.get("https://www.banki.ru/banks/bank/alfabank/news/").text
+
+lenta = news_page_lenta()
+@pytest.fixture
+def mock_news_page_lenta(mock_request) -> requests_mock.Mocker:
+    pattern = re.compile(r"https://www.banki.ru/banks/bank/.+/news/")
+    mock_request.get(pattern, text=lenta)
+    yield mock_request
+
+
+@vcr.use_cassette("vcr_cassettes/news_news.yaml")
+def news_page() -> str:
+    return requests.get("https://www.banki.ru/news/lenta/?id=10978151").text
+
+news_page_text = news_page()
+@pytest.fixture
+def mock_news_page(mock_request) -> requests_mock.Mocker:
+    pattern = re.compile(r"https://www.banki.ru/news/lenta/.+")
+    mock_request.get(pattern, text=news_page_text)
+    yield mock_request

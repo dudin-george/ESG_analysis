@@ -1,7 +1,6 @@
 import re
 from datetime import datetime
 from math import ceil
-from time import sleep
 
 from bs4 import BeautifulSoup
 
@@ -16,7 +15,8 @@ class BankiNews(BankiReviews):
     source_type = SourceTypes.news
 
     def __init__(self) -> None:
-        sleep(2)  # if started with reviews parser, then load banks in reviews
+        # sleep(2)  # if started with reviews parser, then load banks in reviews
+        # todo move sleep to arg parse
         super().__init__()
 
     def get_pages_num(self, bank: BankiRuBase) -> int | None:
