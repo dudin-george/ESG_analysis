@@ -89,3 +89,29 @@ def mock_sravni_insurance_reviews_response(mock_request, insurance_sravni_review
 def mock_sravni_insurance_list(mock_request, sravni_insurance_list) -> requests_mock.Mocker:
     mock_request.get(sravni_insurance_list[0], json=sravni_insurance_list[1])
     yield mock_request
+
+@pytest.fixture(scope="session")
+@my_vcr.use_cassette
+def sravni_mfo_list() -> tuple[str, dict]:
+    params = organizations_params.copy() | {"organizationType": "mfo"}
+    return organizations_url, requests.get(organizations_url, params=params).json(),
+
+@pytest.fixture(scope="session")
+@my_vcr.use_cassette
+def mfo_sravni_reviews_response() -> tuple[str, dict]:
+    params = reviews_params.copy() | {"reviewObjectId": "5e95c820380d2c001c873e36", "reviewObjectType":"mfo"}
+    return (
+        reviews_url,
+        requests.get(reviews_url, params=params).json(),
+    )
+
+
+@pytest.fixture
+def mock_sravni_mfo_list(mock_request, sravni_mfo_list) -> requests_mock.Mocker:
+    mock_request.get(sravni_mfo_list[0], json=sravni_mfo_list[1])
+    yield mock_request
+
+@pytest.fixture
+def mock_sravni_mfo_reviews_response(mock_request, mfo_sravni_reviews_response) -> requests_mock.Mocker:
+    mock_request.get(mfo_sravni_reviews_response[0], json=mfo_sravni_reviews_response[1])
+    yield mock_request

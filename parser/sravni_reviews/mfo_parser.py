@@ -16,6 +16,7 @@ class SravniMfoReviews(BaseSravniReviews):
 
     def request_bank_list(self) -> dict[str, Any]:
         params = {"active": True, "limit": 200, "organizationType": "mfo", "skip": 0}
+        # todo move to base sravni class
         return self.get_json_from_url("https://www.sravni.ru/proxy-organizations/organizations", params=params)
 
     def load_bank_list(self) -> None:
@@ -53,6 +54,7 @@ class SravniMfoReviews(BaseSravniReviews):
 
     def load_mfo_reviews(self, bank_info: SravniBankInfo, page: int = 0) -> dict[str, Any]:
         url = "https://www.sravni.ru/proxy-reviews/reviews"
+        # todo move to base sravni class
         params = {
             "filterBy": "withRates",
             "fingerPrint": "9be16a8e68e64e948f4465306f63c9ec",
