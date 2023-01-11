@@ -1,7 +1,7 @@
 import pytest
-import vcr
 import requests
 import requests_mock
+import vcr
 
 my_vcr = vcr.VCR(
     path_transformer=vcr.VCR.ensure_suffix(".yaml"),
@@ -13,16 +13,16 @@ reviews_url = "https://www.sravni.ru/proxy-reviews/reviews"
 organizations_url = "https://www.sravni.ru/proxy-organizations/organizations"
 
 reviews_params = {
-        "filterBy": "withRates",
-        "isClient": False,
-        "locationRoute": None,
-        "newIds": True,
-        "orderBy": "byDate",
-        "pageIndex": 1,
-        "pageSize": 10,
-        "specificProductId": None,
-        "tag": None,
-        "withVotes": True,
+    "filterBy": "withRates",
+    "isClient": False,
+    "locationRoute": None,
+    "newIds": True,
+    "orderBy": "byDate",
+    "pageIndex": 1,
+    "pageSize": 10,
+    "specificProductId": None,
+    "tag": None,
+    "withVotes": True,
 }
 organizations_params = {"active": True, "limit": 400, "organizationType": "bank", "skip": 0}
 
@@ -37,12 +37,10 @@ def sravni_banks_list() -> tuple[str, dict]:
     )
 
 
-
-
 @pytest.fixture(scope="session")
 @my_vcr.use_cassette
 def bank_sravni_reviews_response() -> tuple[str, dict]:
-    params = reviews_params.copy() | {"reviewObjectId": "5bb4f768245bc22a520a6115", "reviewObjectType":"bank"}
+    params = reviews_params.copy() | {"reviewObjectId": "5bb4f768245bc22a520a6115", "reviewObjectType": "bank"}
     return (
         reviews_url,
         requests.get(reviews_url, params=params).json(),
@@ -60,6 +58,7 @@ def mock_sravni_banks_list(mock_request, sravni_banks_list) -> requests_mock.Moc
     mock_request.get(sravni_banks_list[0], json=sravni_banks_list[1])
     yield mock_request
 
+
 @pytest.fixture(scope="session")
 @my_vcr.use_cassette
 def sravni_insurance_list() -> tuple[str, dict]:
@@ -69,10 +68,11 @@ def sravni_insurance_list() -> tuple[str, dict]:
         requests.get(organizations_url, params=params).json(),
     )
 
+
 @pytest.fixture(scope="session")
 @my_vcr.use_cassette
 def insurance_sravni_reviews_response() -> tuple[str, dict]:
-    params = reviews_params.copy() | {"reviewObjectId": "126810", "reviewObjectType":"insuranceCompany"}
+    params = reviews_params.copy() | {"reviewObjectId": "126810", "reviewObjectType": "insuranceCompany"}
     return (
         reviews_url,
         requests.get(reviews_url, params=params).json(),
@@ -90,16 +90,21 @@ def mock_sravni_insurance_list(mock_request, sravni_insurance_list) -> requests_
     mock_request.get(sravni_insurance_list[0], json=sravni_insurance_list[1])
     yield mock_request
 
+
 @pytest.fixture(scope="session")
 @my_vcr.use_cassette
 def sravni_mfo_list() -> tuple[str, dict]:
     params = organizations_params.copy() | {"organizationType": "mfo"}
-    return organizations_url, requests.get(organizations_url, params=params).json(),
+    return (
+        organizations_url,
+        requests.get(organizations_url, params=params).json(),
+    )
+
 
 @pytest.fixture(scope="session")
 @my_vcr.use_cassette
 def mfo_sravni_reviews_response() -> tuple[str, dict]:
-    params = reviews_params.copy() | {"reviewObjectId": "5e95c820380d2c001c873e36", "reviewObjectType":"mfo"}
+    params = reviews_params.copy() | {"reviewObjectId": "5e95c820380d2c001c873e36", "reviewObjectType": "mfo"}
     return (
         reviews_url,
         requests.get(reviews_url, params=params).json(),
@@ -110,6 +115,7 @@ def mfo_sravni_reviews_response() -> tuple[str, dict]:
 def mock_sravni_mfo_list(mock_request, sravni_mfo_list) -> requests_mock.Mocker:
     mock_request.get(sravni_mfo_list[0], json=sravni_mfo_list[1])
     yield mock_request
+
 
 @pytest.fixture
 def mock_sravni_mfo_reviews_response(mock_request, mfo_sravni_reviews_response) -> requests_mock.Mocker:

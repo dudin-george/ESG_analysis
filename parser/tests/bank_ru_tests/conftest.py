@@ -12,6 +12,7 @@ my_vcr = vcr.VCR(
     cassette_library_dir="../vcr_cassettes/banki_ru",
 )
 
+
 @pytest.fixture
 def bank_reviews_response_freeze() -> tuple[str, dict]:
     return "https://www.banki.ru/services/responses/list/ajax/", {
@@ -71,9 +72,7 @@ def bank_reviews_response() -> tuple[str, dict]:
     url = "https://www.banki.ru/services/responses/list/ajax/"
     return (
         url,
-        requests.get(
-            url, params={"page": 1, "bank": "unicreditbank"}
-        ).json(),
+        requests.get(url, params={"page": 1, "bank": "unicreditbank"}).json(),
     )
 
 
@@ -88,12 +87,13 @@ def mock_banki_ru_banks_list(mock_request, banki_banks_list) -> requests_mock.Mo
     mock_request.get(banki_banks_list[0], json=banki_banks_list[1])
     yield mock_request
 
+
 broker_list_url = "https://www.banki.ru/investment/brokers/list/"
+
+
 @my_vcr.use_cassette
 def get_broker_list_with_header() -> dict[str, Any]:
-    return requests.get(
-        broker_list_url, headers={"x-requested-with": "XMLHttpRequest"}
-    ).json()
+    return requests.get(broker_list_url, headers={"x-requested-with": "XMLHttpRequest"}).json()
 
 
 broker_banki_list = get_broker_list_with_header()
@@ -147,11 +147,11 @@ def mock_broker_page(mock_request, broker_page) -> requests_mock.Mocker:
 
 
 insurance_list_url = "https://www.banki.ru/insurance/companies/"
+
+
 @my_vcr.use_cassette
 def get_insurance_list() -> str:
-    return requests.get(
-        insurance_list_url, headers={"x-requested-with": "XMLHttpRequest"}
-    ).text
+    return requests.get(insurance_list_url, headers={"x-requested-with": "XMLHttpRequest"}).text
 
 
 insurance_banki_list = get_insurance_list()
@@ -173,13 +173,17 @@ def mock_banki_ru_insurance_list(mock_request, banki_insurance_list_with_header)
 def insurance_page() -> str:
     return requests.get("https://www.banki.ru/insurance/responses/company/alfastrahovanie/").text
 
+
 @pytest.fixture
 def mock_insurance_page(mock_request, insurance_page) -> requests_mock.Mocker:
     pattern = re.compile(r"https://www.banki.ru/insurance/responses/company/(.+)(/)?")
     mock_request.get(pattern, text=insurance_page)
     yield mock_request
 
+
 mfo_list_url = "https://www.banki.ru/microloans/ajax/search/"
+
+
 @my_vcr.use_cassette
 def get_mfo_list() -> str:
     params = {
@@ -192,9 +196,7 @@ def get_mfo_list() -> str:
         "page_type": "MAINPRODUCT_SEARCH",
         "sponsor_package_id": "4",
     }
-    return requests.get(
-        mfo_list_url, headers={"x-requested-with": "XMLHttpRequest"}, params=params
-    ).json()
+    return requests.get(mfo_list_url, headers={"x-requested-with": "XMLHttpRequest"}, params=params).json()
 
 
 mfo_banki_list = get_mfo_list()
@@ -215,7 +217,12 @@ def mock_banki_ru_mfo_list(mock_request, banki_mfo_list_with_header) -> requests
 @my_vcr.use_cassette
 def mfo_page() -> str:
     params = {"perPage": 200, "grade": "all", "status": "all", "companyCodes": "bistrodengi"}
-    return requests.get("https://www.banki.ru/microloans/responses/ajax/responses/", params=params, headers={"x-requested-with": "XMLHttpRequest"}).json()
+    return requests.get(
+        "https://www.banki.ru/microloans/responses/ajax/responses/",
+        params=params,
+        headers={"x-requested-with": "XMLHttpRequest"},
+    ).json()
+
 
 @pytest.fixture
 def mock_mfo_page(mock_request, mfo_page) -> requests_mock.Mocker:
@@ -228,7 +235,10 @@ def mock_mfo_page(mock_request, mfo_page) -> requests_mock.Mocker:
 def news_page_lenta() -> str:
     return requests.get("https://www.banki.ru/banks/bank/alfabank/news/").text
 
+
 lenta = news_page_lenta()
+
+
 @pytest.fixture
 def mock_news_page_lenta(mock_request) -> requests_mock.Mocker:
     pattern = re.compile(r"https://www.banki.ru/banks/bank/.+/news/")
@@ -240,7 +250,10 @@ def mock_news_page_lenta(mock_request) -> requests_mock.Mocker:
 def news_page() -> str:
     return requests.get("https://www.banki.ru/news/lenta/?id=10978151").text
 
+
 news_page_text = news_page()
+
+
 @pytest.fixture
 def mock_news_page(mock_request) -> requests_mock.Mocker:
     pattern = re.compile(r"https://www.banki.ru/news/lenta/.+")

@@ -1,10 +1,11 @@
 from datetime import datetime
 
+import pytest
+
 from banki_ru.database import BankiRuBase
 from banki_ru.insurance_parser import BankiInsurance
 from banki_ru.queries import get_bank_list
 from tests.mixins import TestMixin
-import pytest
 
 
 class TestBankiRuInsurance(TestMixin):

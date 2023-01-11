@@ -22,7 +22,7 @@ class BankiMfo(BankiBase):
             "period_unit": 4,
             "region_ids[]": ["433", "432"],
             "page": page,
-            "per_page": 48, # todo change to greater or remove
+            "per_page": 48,  # todo change to greater or remove
             "total": 206,  # todo change to greater or remove
             "page_type": "MAINPRODUCT_SEARCH",
             "sponsor_package_id": "4",

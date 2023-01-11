@@ -1,21 +1,33 @@
 from datetime import datetime
 
-from sravni_reviews.database import SravniBankInfo
-from sravni_reviews.queries import get_bank_list
-from sravni_reviews.mfo_parser import SravniMfoReviews
-from tests.mixins import TestMixin
 import pytest
 import requests_mock
 
+from sravni_reviews.database import SravniBankInfo
+from sravni_reviews.mfo_parser import SravniMfoReviews
+from sravni_reviews.queries import get_bank_list
+from tests.mixins import TestMixin
+
+
 class TestBankiRuMfo(TestMixin):
-    mfo = SravniBankInfo(bank_id=1, sravni_id=1, sravni_old_id=1, alias="test", bank_name="test", bank_full_name="test", bank_official_name="test")
+    mfo = SravniBankInfo(
+        bank_id=1,
+        sravni_id=1,
+        sravni_old_id=1,
+        alias="test",
+        bank_name="test",
+        bank_full_name="test",
+        bank_official_name="test",
+    )
 
     @pytest.fixture
     def setup_test_reviews(self, mock_source, mock_get_source_by_id, mock_text, mock_mfo_list) -> requests_mock.Mocker:
         return mock_source
 
     @pytest.fixture
-    def setup_bank_page(self, setup_test_reviews, mock_sravni_mfo_list, mock_sravni_mfo_reviews_response) -> requests_mock.Mocker:
+    def setup_bank_page(
+        self, setup_test_reviews, mock_sravni_mfo_list, mock_sravni_mfo_reviews_response
+    ) -> requests_mock.Mocker:
         yield setup_test_reviews
 
     def test_reviews(self, setup_bank_page):

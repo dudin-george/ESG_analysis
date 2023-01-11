@@ -1,10 +1,11 @@
 from datetime import datetime
 
+import pytest
+import requests_mock
+
 from banki_ru.database import BankiRuBase
 from banki_ru.news_parser import BankiNews
 from tests.mixins import TestMixin
-import requests_mock
-import pytest
 
 
 class TestBankiRuNews(TestMixin):
@@ -12,7 +13,7 @@ class TestBankiRuNews(TestMixin):
 
     @pytest.fixture
     def setup_test_reviews(
-            self, mock_source, mock_get_source_by_id, mock_text, mock_banki_ru_banks_list, mock_bank_list
+        self, mock_source, mock_get_source_by_id, mock_text, mock_banki_ru_banks_list, mock_bank_list
     ) -> requests_mock.Mocker:
         return mock_source
 
@@ -32,13 +33,14 @@ class TestBankiRuNews(TestMixin):
 
     def test_news_from_links(self, setup_bank_page):
         bank_news = BankiNews()
-        news = bank_news.news_from_links(self.bank, ["https://www.banki.ru/news/lenta/?id=10978151/", "https://www.banki.ru/news/lenta/?id=10978151"])
+        news = bank_news.news_from_links(
+            self.bank, ["https://www.banki.ru/news/lenta/?id=10978151/", "https://www.banki.ru/news/lenta/?id=10978151"]
+        )
         assert len(news) == 2
         assert len(news[0].text) > 0
         assert len(news[0].title) > 0
         assert news[0].link == "https://www.banki.ru/news/lenta/?id=10978151/"
         assert news[0].bank_id == 1
-
 
     def test_page_reviews(self, setup_bank_page):
         bank_news = BankiNews()

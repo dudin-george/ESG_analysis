@@ -40,6 +40,7 @@ def api_broker() -> tuple[str, dict]:
         ]
     }
 
+
 def api_insurance() -> tuple[str, dict]:
     return f"{settings.api_url}/bank/insurance", {
         "items": [
@@ -48,6 +49,7 @@ def api_insurance() -> tuple[str, dict]:
             {"id": 1003, "bank_name": "string", "licence": "3947", "description": "string"},
         ]
     }
+
 
 def api_mfo() -> tuple[str, dict]:
     return f"{settings.api_url}/bank/mfo", {
