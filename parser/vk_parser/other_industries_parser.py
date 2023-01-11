@@ -4,7 +4,7 @@ import numpy as np
 
 from utils import relative_path
 from vk_parser.base_parser import VKBaseParser
-from vk_parser.database import VkOtherIndustries
+from vk_parser.database import VKBaseDB, VkOtherIndustries
 from vk_parser.queries import create_banks
 from vk_parser.schemes import VKType
 
@@ -29,7 +29,7 @@ class VKOtherIndustriesParser(VKBaseParser):
         if bank_arr.shape[0] != len(response["response"]):
             self.logger.error("bank array and response have different length")
             raise Exception("bank array and response have different length")
-        db_banks = []
+        db_banks: list[VKBaseDB] = []
         for bank, vk_group in zip(bank_arr, response["response"]):
             db_banks.append(VkOtherIndustries(id=bank[0], name=bank[1], vk_id=-vk_group["id"], domain=bank[2]))
         create_banks(db_banks)

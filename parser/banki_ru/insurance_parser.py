@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from time import sleep
 
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuInsurance

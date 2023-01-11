@@ -20,7 +20,7 @@ class SravniBankInfo(Base):
     def from_pydantic(bank: SravniRuItem) -> "SravniBankInfo":
         return SravniBankInfo(
             sravni_id=bank.sravni_id,
-            sravni_old_id=bank.sravni_old_id,
+            sravni_old_id=bank.sravni_old_id,  # type: ignore
             alias=bank.alias,
             bank_name=bank.bank_name,
             bank_full_name=bank.bank_full_name,

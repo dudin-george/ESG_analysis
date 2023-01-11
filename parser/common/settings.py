@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import AnyHttpUrl, BaseSettings, Field, PostgresDsn
+from pydantic import AnyHttpUrl, BaseSettings, Field
 
 
 class Settings(BaseSettings):
