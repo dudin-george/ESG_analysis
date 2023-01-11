@@ -8,6 +8,8 @@ import pytest
 
 
 class TestBankiRuNews(TestMixin):
+    bank = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
+
     @pytest.fixture
     def setup_test_reviews(
             self, mock_source, mock_get_source_by_id, mock_text, mock_banki_ru_banks_list, mock_bank_list
@@ -19,21 +21,18 @@ class TestBankiRuNews(TestMixin):
         yield setup_test_reviews
 
     def test_page_num(self, setup_bank_page):
-        broker_reviews = BankiNews()
-        bank = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
-        num = broker_reviews.get_pages_num(bank)
+        bank_news = BankiNews()
+        num = bank_news.get_pages_num(self.bank)
         assert num == 101  # https://www.banki.ru/banks/bank/alfabank/news/
 
     def test_get_news_links(self, setup_bank_page):
-        broker_reviews = BankiNews()
-        bank = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
-        links = broker_reviews.get_news_links(bank, datetime.fromtimestamp(1), 1)
+        bank_news = BankiNews()
+        links = bank_news.get_news_links(self.bank, datetime.fromtimestamp(1), 1)
         assert len(links) == 55
 
     def test_news_from_links(self, setup_bank_page):
-        broker_reviews = BankiNews()
-        bank = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
-        news = broker_reviews.news_from_links(bank, ["https://www.banki.ru/news/lenta/?id=10978151/", "https://www.banki.ru/news/lenta/?id=10978151"])
+        bank_news = BankiNews()
+        news = bank_news.news_from_links(self.bank, ["https://www.banki.ru/news/lenta/?id=10978151/", "https://www.banki.ru/news/lenta/?id=10978151"])
         assert len(news) == 2
         assert len(news[0].text) > 0
         assert len(news[0].title) > 0
@@ -42,7 +41,6 @@ class TestBankiRuNews(TestMixin):
 
 
     def test_page_reviews(self, setup_bank_page):
-        broker_reviews = BankiNews()
-        bank = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
-        reviews = broker_reviews.get_page_bank_reviews(bank, 1, datetime.fromtimestamp(1))
+        bank_news = BankiNews()
+        reviews = bank_news.get_page_bank_reviews(self.bank, 1, datetime.fromtimestamp(1))
         assert len(reviews) == 55

@@ -9,6 +9,8 @@ from tests.mixins import TestMixin
 
 
 class TestBankiRuBroker(TestMixin):
+    broker = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
+
     @pytest.fixture
     def setup_test_reviews(self, mock_source, mock_get_source_by_id, mock_text, mock_broker_list):
         return mock_source
@@ -23,12 +25,10 @@ class TestBankiRuBroker(TestMixin):
 
     def test_page_num(self, setup_broker_page_with_header):
         broker_reviews = BankiBroker()
-        broker = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
-        num = broker_reviews.get_pages_num(broker)
+        num = broker_reviews.get_pages_num(self.broker)
         assert num == 14  # check page num https://www.banki.ru/investment/responses/company/broker/alfa-direkt/
 
     def test_page_reviews(self, setup_broker_page_with_header):
         broker_reviews = BankiBroker()
-        broker = BankiRuBase(id=1, bank_name="test", bank_id=1, bank_code=12345678)
-        reviews = broker_reviews.get_page_bank_reviews(broker, 1, datetime.fromtimestamp(1))
+        reviews = broker_reviews.get_page_bank_reviews(self.broker, 1, datetime.fromtimestamp(1))
         assert len(reviews) == 25

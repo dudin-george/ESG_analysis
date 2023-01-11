@@ -10,6 +10,8 @@ from tests.mixins import TestMixin
 
 
 class TestBankiRuReviews(TestMixin):
+    bank = BankiRuBase(bank_id=1, bank_name="test", bank_code="unicreditbank")
+
     @pytest.fixture
     def setup_test_reviews(
         self, mock_source, mock_get_source_by_id, mock_text, mock_banki_ru_banks_list, mock_bank_list
@@ -38,20 +40,17 @@ class TestBankiRuReviews(TestMixin):
 
     def test_bank_page_num(self, setup_bank_page_large_reviews):
         banki_reviews = BankiReviews()
-        bank = BankiRuBase(bank_id=1, bank_name="test", bank_code="unicreditbank")
-        pages = banki_reviews.get_pages_num(bank)
+        pages = banki_reviews.get_pages_num(self.bank)
         assert pages == 178
 
     def test_bank_page_reviews(self, setup_bank_page):
         banki_reviews = BankiReviews()
-        bank = BankiRuBase(bank_id=1, bank_name="test", bank_code="unicreditbank")
-        reviews = banki_reviews.get_page_bank_reviews(bank, page_num=1, parsed_time=datetime.fromtimestamp(1))
+        reviews = banki_reviews.get_page_bank_reviews(self.bank, page_num=1, parsed_time=datetime.fromtimestamp(1))
         assert len(reviews) == 25
 
     def test_bank_page_reviews_diff_dates(self, setup_reviews_difference_dates):
         banki_reviews = BankiReviews()
-        bank = BankiRuBase(bank_id=1, bank_name="test", bank_code="unicreditbank")
-        reviews = banki_reviews.get_page_bank_reviews(bank, page_num=1, parsed_time=datetime(2022, 1, 1))
+        reviews = banki_reviews.get_page_bank_reviews(self.bank, page_num=1, parsed_time=datetime(2022, 1, 1))
         assert len(reviews) == 1
 
     def test_parse(self, setup_bank_page):
