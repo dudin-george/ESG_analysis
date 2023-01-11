@@ -88,7 +88,7 @@ class SravniReviews(BaseSravniReviews):
             "tag": None,
             "withVotes": True,
         }
-        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews/", params=params)
+        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews", params=params)
         if response.status_code != 200:
             self.logger.warning(f"error {response.status_code} for {bank_info.alias}")
         return response

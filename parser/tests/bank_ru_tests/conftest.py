@@ -9,7 +9,7 @@ import vcr
 my_vcr = vcr.VCR(
     path_transformer=vcr.VCR.ensure_suffix(".yaml"),
     serializer="yaml",
-    cassette_library_dir="vcr_cassettes",
+    cassette_library_dir="../vcr_cassettes/banki_ru",
 )
 
 @pytest.fixture
