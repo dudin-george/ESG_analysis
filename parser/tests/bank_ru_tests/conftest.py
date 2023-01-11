@@ -6,6 +6,11 @@ import requests
 import requests_mock
 import vcr
 
+my_vcr = vcr.VCR(
+    path_transformer=vcr.VCR.ensure_suffix(".yaml"),
+    serializer="yaml",
+    cassette_library_dir="vcr_cassettes",
+)
 
 @pytest.fixture
 def bank_reviews_response_freeze() -> tuple[str, dict]:
@@ -51,7 +56,7 @@ def bank_reviews_response_freeze() -> tuple[str, dict]:
 
 
 @pytest.fixture(scope="session")
-@vcr.use_cassette("vcr_cassettes/banki_banks_list.yaml")
+@my_vcr.use_cassette
 def banki_banks_list() -> tuple[str, dict]:
     url = "https://www.banki.ru/widget/ajax/bank_list.json"
     return (
@@ -61,7 +66,7 @@ def banki_banks_list() -> tuple[str, dict]:
 
 
 @pytest.fixture(scope="session")
-@vcr.use_cassette("vcr_cassettes/bank_reviews_response.yaml")
+@my_vcr.use_cassette
 def bank_reviews_response() -> tuple[str, dict]:
     url = "https://www.banki.ru/services/responses/list/ajax/"
     return (
@@ -84,7 +89,7 @@ def mock_banki_ru_banks_list(mock_request, banki_banks_list) -> requests_mock.Mo
     yield mock_request
 
 broker_list_url = "https://www.banki.ru/investment/brokers/list/"
-@vcr.use_cassette("vcr_cassettes/get_broker_list_with_header.yaml")
+@my_vcr.use_cassette
 def get_broker_list_with_header() -> dict[str, Any]:
     return requests.get(
         broker_list_url, headers={"x-requested-with": "XMLHttpRequest"}
@@ -129,7 +134,7 @@ def mock_banki_ru_brokers_license(mock_request, banki_brokers_list_with_header) 
 
 
 @pytest.fixture(scope="session")
-@vcr.use_cassette("vcr_cassettes/broker_page.yaml")
+@my_vcr.use_cassette
 def broker_page() -> str:
     return requests.get("https://www.banki.ru/investment/responses/company/broker/alfa-direkt/").text
 
@@ -142,7 +147,7 @@ def mock_broker_page(mock_request, broker_page) -> requests_mock.Mocker:
 
 
 insurance_list_url = "https://www.banki.ru/insurance/companies/"
-@vcr.use_cassette("vcr_cassettes/get_insurance_list.yaml")
+@my_vcr.use_cassette
 def get_insurance_list() -> str:
     return requests.get(
         insurance_list_url, headers={"x-requested-with": "XMLHttpRequest"}
@@ -164,7 +169,7 @@ def mock_banki_ru_insurance_list(mock_request, banki_insurance_list_with_header)
 
 
 @pytest.fixture(scope="session")
-@vcr.use_cassette("vcr_cassettes/insurance_page.yaml")
+@my_vcr.use_cassette
 def insurance_page() -> str:
     return requests.get("https://www.banki.ru/insurance/responses/company/alfastrahovanie/").text
 
@@ -175,7 +180,7 @@ def mock_insurance_page(mock_request, insurance_page) -> requests_mock.Mocker:
     yield mock_request
 
 mfo_list_url = "https://www.banki.ru/microloans/ajax/search/"
-@vcr.use_cassette("vcr_cassettes/get_mfo_list.yaml")
+@my_vcr.use_cassette
 def get_mfo_list() -> str:
     params = {
         "catalog_name": "main",
@@ -207,7 +212,7 @@ def mock_banki_ru_mfo_list(mock_request, banki_mfo_list_with_header) -> requests
 
 
 @pytest.fixture(scope="session")
-@vcr.use_cassette("vcr_cassettes/mfo_page.yaml")
+@my_vcr.use_cassette
 def mfo_page() -> str:
     params = {"perPage": 200, "grade": "all", "status": "all", "companyCodes": "bistrodengi"}
     return requests.get("https://www.banki.ru/microloans/responses/ajax/responses/", params=params, headers={"x-requested-with": "XMLHttpRequest"}).json()
@@ -219,7 +224,7 @@ def mock_mfo_page(mock_request, mfo_page) -> requests_mock.Mocker:
     yield mock_request
 
 
-@vcr.use_cassette("vcr_cassettes/news_lenta.yaml")
+@my_vcr.use_cassette
 def news_page_lenta() -> str:
     return requests.get("https://www.banki.ru/banks/bank/alfabank/news/").text
 
@@ -231,7 +236,7 @@ def mock_news_page_lenta(mock_request) -> requests_mock.Mocker:
     yield mock_request
 
 
-@vcr.use_cassette("vcr_cassettes/news_news.yaml")
+@my_vcr.use_cassette
 def news_page() -> str:
     return requests.get("https://www.banki.ru/news/lenta/?id=10978151").text
 
