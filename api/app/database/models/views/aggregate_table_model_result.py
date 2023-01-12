@@ -8,11 +8,12 @@ class AggregateTableModelResult(Base):
 
     id = Column(Integer, primary_key=True)
     year = Column(Integer, index=True)
-    quater = Column(Integer, index=True)
+    quater = Column(Integer, index=True)  # todo rename
     model_name = Column(String)
     source_site = Column(String)
     source_type = Column(String)
     bank_name = Column(String)
+    bank_id = Column(Integer)
     neutral = Column(Integer)
     positive = Column(Integer)
     negative = Column(Integer)

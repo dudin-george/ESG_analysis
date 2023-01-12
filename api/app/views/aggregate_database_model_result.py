@@ -134,6 +134,7 @@ def aggregate_database_sentiment() -> None:
         data.append(
             AggregateTableModelResult(
                 bank_name=row[0],
+                bank_id=row[0],
                 year=row[2],
                 quater=row[1],
                 model_name=row[3],
@@ -145,8 +146,8 @@ def aggregate_database_sentiment() -> None:
                 total=row[9],
             )
         )
-        session.add_all(data)
-        session.commit()
+    session.add_all(data)
+    session.commit()
     print("Done")
 
 
@@ -190,9 +191,7 @@ def aggregate_database_mdf() -> None:
             SourceType.name,
             func.sum(select_pos_neut_neg.c.positive).label("positive"),
             func.sum(select_pos_neut_neg.c.negative).label("negative"),
-            func.sum(
-                select_pos_neut_neg.c.positive + select_pos_neut_neg.c.negative
-            ).label("total"),
+            func.sum(select_pos_neut_neg.c.positive + select_pos_neut_neg.c.negative).label("total"),
         )
         .select_from(select_pos_neut_neg)
         .join(TextSentence)
@@ -211,6 +210,7 @@ def aggregate_database_mdf() -> None:
         data.append(
             AggregateTableModelResult(
                 bank_name=row[0],
+                bank_id=row[0],
                 year=row[2],
                 quater=row[1],
                 model_name=row[3],
@@ -222,6 +222,6 @@ def aggregate_database_mdf() -> None:
                 total=row[8],
             )
         )
-        session.add_all(data)
-        session.commit()
+    session.add_all(data)
+    session.commit()
     print("Done")

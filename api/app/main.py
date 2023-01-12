@@ -4,9 +4,17 @@ import fastapi
 from alembic.command import upgrade
 from alembic.config import Config
 from sqlalchemy_utils import create_database, database_exists
+from starlette.middleware.gzip import GZipMiddleware
 
 from app.dataloader import load_data
-from app.router import bank, model, source, text, text_result
+from app.router import (
+    bank_router,
+    model_router,
+    source_router,
+    text_result_router,
+    text_router,
+    views_router,
+)
 from app.settings import Settings
 
 app = fastapi.FastAPI(
@@ -14,11 +22,13 @@ app = fastapi.FastAPI(
     version="0.1.0",
     description="API for DB",
 )
-app.include_router(text.router)
-app.include_router(model.router)
-app.include_router(text_result.router)
-app.include_router(source.router)
-app.include_router(bank.router)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.include_router(text_router)
+app.include_router(model_router)
+app.include_router(text_result_router)
+app.include_router(source_router)
+app.include_router(bank_router)
+app.include_router(views_router)
 
 
 # @app.exception_handler(RequestValidationError)

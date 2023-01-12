@@ -4,7 +4,10 @@ from collections.abc import Callable
 
 import schedule
 
-from app.tasks.aggregate_database_model_result import aggregate_database_sentiment, aggregate_database_mdf
+from app.views.aggregate_database_model_result import (
+    aggregate_database_mdf,
+    aggregate_database_sentiment,
+)
 
 
 def run_threaded(job_func: Callable[[None], None]) -> None:
