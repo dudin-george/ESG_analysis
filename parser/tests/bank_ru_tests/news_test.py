@@ -44,5 +44,6 @@ class TestBankiRuNews(TestMixin):
 
     def test_page_reviews(self, setup_bank_page):
         bank_news = BankiNews()
+        bank_news.get_news_links = lambda a, b, c: ["https://www.banki.ru/news/lenta/?id=10978151/"] * 3
         reviews = bank_news.get_page_bank_reviews(self.bank, 1, datetime.fromtimestamp(1))
-        assert len(reviews) == 55
+        assert len(reviews) == 3

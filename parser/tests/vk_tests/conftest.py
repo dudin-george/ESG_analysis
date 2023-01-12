@@ -3,15 +3,13 @@ import requests
 import requests_mock
 import vcr
 
-from common.settings import Settings
+from tests.conftest import settings
 
 my_vcr = vcr.VCR(
     path_transformer=vcr.VCR.ensure_suffix(".yaml"),
     serializer="yaml",
     cassette_library_dir="../vcr_cassettes/vk",
 )
-
-settings = Settings(_env_file="../../.env", _env_file_encoding="utf-8")
 
 base_params = {
     "access_token": settings.vk_token,

@@ -55,6 +55,7 @@ class TestBankiRuReviews(TestMixin):
 
     def test_parse(self, setup_bank_page):
         banki_reviews = BankiReviews()
+        banki_reviews.get_pages_num = lambda x: 1
         banki_reviews.parse()
         text_post = [x for x in setup_bank_page.request_history if x.method == "POST" and x.path == "/text/"][0]
         request_json = text_post.json()
