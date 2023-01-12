@@ -1,6 +1,5 @@
 import asyncio
 from os import environ
-from pathlib import Path
 from uuid import uuid4
 
 import pytest

@@ -88,6 +88,7 @@ exclude = '''
     .git
   | .venv
   | notebooks
+  | .tox
 )/
 '''
 

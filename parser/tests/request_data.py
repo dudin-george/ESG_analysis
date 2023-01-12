@@ -6,7 +6,8 @@ from common.settings import Settings
 
 PROJECT_PATH = Path(__file__).parent.parent.resolve()
 settings = Settings(_env_file=f"{PROJECT_PATH}/.env", _env_file_encoding="utf-8")
-a=0
+a = 0
+
 
 def api_source() -> tuple[str, dict]:
     return f"{settings.api_url}/source/", {
