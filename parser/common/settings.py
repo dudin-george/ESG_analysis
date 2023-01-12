@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import AnyHttpUrl, BaseSettings, Field, PostgresDsn
+from pydantic import AnyHttpUrl, BaseSettings, Field
 
 
 class Settings(BaseSettings):
@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     vk_token: str | None = Field(env="VK_TOKEN")
     selenium_hub: AnyHttpUrl | None = Field(env="SELENIUM_HUB")
     sleep: int = Field(env="SLEEP", default=60)
+
     @property
     def database_settings(self) -> dict[str, Any]:
         """
@@ -35,8 +36,6 @@ class Settings(BaseSettings):
         return "postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}".format(
             **self.database_settings,
         )
-
-
 
     class Config:
         env_file = "../.env"

@@ -22,8 +22,8 @@ class BankiMfo(BankiBase):
             "period_unit": 4,
             "region_ids[]": ["433", "432"],
             "page": page,
-            "per_page": 48,
-            "total": 206,
+            "per_page": 48,  # todo change to greater or remove
+            "total": 206,  # todo change to greater or remove
             "page_type": "MAINPRODUCT_SEARCH",
             "sponsor_package_id": "4",
         }
@@ -64,8 +64,10 @@ class BankiMfo(BankiBase):
                     code=company["mfo"]["code"],
                 )
                 for company in microfin
+                if company["mfo"]["certificate"].isnumeric()
             }
         )
+        # todo check if licence or ogrn is numeric in scheme
         return_microfin = []
         for mfo in unique_mfos:
             bank_db = None

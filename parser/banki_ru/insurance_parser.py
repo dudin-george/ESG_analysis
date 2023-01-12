@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from time import sleep
 
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuInsurance
@@ -16,7 +15,6 @@ class BankiInsurance(BankiBase):
     url = "https://www.banki.ru/insurance/responses/company/"
 
     def __init__(self) -> None:
-        sleep(2)
         super().__init__()
 
     def get_pages_num_insurance_list(self, url: str) -> int:

@@ -17,7 +17,7 @@ class SravniReviews(BaseSravniReviews):
     site: str = "sravni.ru"
 
     def request_bank_list(self) -> Response:
-        params = {"active": True, "limit": 400, "organizationType": "bank", "skip": 0}
+        params = {"active": True, "limit": 400, "organizationType": "bank", "skip": 0}  # todo request json
         return requests.get("https://www.sravni.ru/proxy-organizations/organizations", params=params)  # type: ignore
 
     def load_bank_list(self) -> None:
@@ -88,7 +88,7 @@ class SravniReviews(BaseSravniReviews):
             "tag": None,
             "withVotes": True,
         }
-        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews/", params=params)
+        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews", params=params)
         if response.status_code != 200:
             self.logger.warning(f"error {response.status_code} for {bank_info.alias}")
         return response

@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from typing import Any
 
@@ -15,13 +14,14 @@ class SravniMfoReviews(BaseSravniReviews):
     site: str = "sravni.ru/mfo"
 
     def request_bank_list(self) -> dict[str, Any]:
-        page = self.get_page_from_url("https://www.sravni.ru/zaimy/mfo/")
-        return json.loads(page.find(id="__NEXT_DATA__").text)
+        params = {"active": True, "limit": 200, "organizationType": "mfo", "skip": 0}
+        # todo move to base sravni class
+        return self.get_json_from_url("https://www.sravni.ru/proxy-organizations/organizations", params=params)  # type: ignore
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
         sravni_mfo_json_full = self.request_bank_list()
-        sravni_mfo_json = sravni_mfo_json_full["props"]["initialReduxState"]["organizations"]["list"]
+        sravni_mfo_json = sravni_mfo_json_full["items"]
         self.logger.info("finish download bank list")
         existing_mfos = api.get_mfo_list()
         sravni_bank_list = []
@@ -29,7 +29,9 @@ class SravniMfoReviews(BaseSravniReviews):
         for sravni_mfo in sravni_mfo_json:
             bank_db = None
             for existing_mfo in existing_mfos:
-                if (int(sravni_mfo["license"]) == existing_mfo.licence) or (int(sravni_mfo["requisites"]['ogrn']) == existing_mfo.ogrn):
+                if (int(sravni_mfo["license"]) == existing_mfo.licence) or (
+                    int(sravni_mfo["requisites"]["ogrn"]) == existing_mfo.ogrn
+                ):
                     bank_db = existing_mfo
                     break
             if bank_db is None:
@@ -40,9 +42,9 @@ class SravniMfoReviews(BaseSravniReviews):
                     sravni_id=sravni_mfo["id"],
                     alias=sravni_mfo["alias"],
                     bank_id=bank_db.id,
-                    bank_name=sravni_mfo["name"]["short"],
-                    bank_full_name=sravni_mfo["name"]["full"],
-                    bank_official_name=sravni_mfo["name"]["official"],
+                    bank_name=sravni_mfo["name"],
+                    bank_full_name=sravni_mfo["fullName"],
+                    bank_official_name=sravni_mfo["genitiveName"],
                 )
             )
         banks_db = [SravniBankInfo.from_pydantic(bank) for bank in sravni_bank_list]
@@ -51,6 +53,7 @@ class SravniMfoReviews(BaseSravniReviews):
 
     def load_mfo_reviews(self, bank_info: SravniBankInfo, page: int = 0) -> dict[str, Any]:
         url = "https://www.sravni.ru/proxy-reviews/reviews"
+        # todo move to base sravni class
         params = {
             "filterBy": "withRates",
             "fingerPrint": "9be16a8e68e64e948f4465306f63c9ec",
@@ -66,7 +69,7 @@ class SravniMfoReviews(BaseSravniReviews):
             "tag": "microcredits",
             "withVotes": True,
         }
-        return self.get_json_from_url(url, params=params)
+        return self.get_json_from_url(url, params=params)  # type: ignore
 
     def get_reviews(self, parsed_time: datetime, bank_info: SravniBankInfo) -> list[Text]:
         reviews_json = self.load_mfo_reviews(bank_info)

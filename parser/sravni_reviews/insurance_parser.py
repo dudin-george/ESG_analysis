@@ -16,7 +16,7 @@ class SravniInsuranceReviews(BaseSravniReviews):
 
     def request_bank_list(self) -> dict[str, Any]:
         params = {"active": True, "limit": 200, "organizationType": "insuranceCompany", "skip": 0}
-        return self.get_json_from_url("https://www.sravni.ru/proxy-organizations/organizations", params=params)
+        return self.get_json_from_url("https://www.sravni.ru/proxy-organizations/organizations", params=params)  # type: ignore
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -66,7 +66,7 @@ class SravniInsuranceReviews(BaseSravniReviews):
             "tag": "",
             "withVotes": True,
         }
-        return self.get_json_from_url(url, params=params)
+        return self.get_json_from_url(url, params=params)  # type: ignore
 
     def get_reviews(self, parsed_time: datetime, bank_info: SravniBankInfo) -> list[Text]:
         reviews_json = self.load_bank_reviews(bank_info)

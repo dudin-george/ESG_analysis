@@ -15,7 +15,7 @@ class BankiBroker(BankiBase):
 
     def get_broker_licence_from_url(self, url: str) -> str | None:
         broker_json = self.get_json_from_url(url)
-        if broker_json is None:
+        if broker_json is None or "data" not in broker_json.keys():
             return None
         broker_license_str: str = broker_json["data"]["broker"]["licence"]
         return broker_license_str
@@ -34,13 +34,14 @@ class BankiBroker(BankiBase):
             if len(name_arr) == 0 or name_arr[0] == "Заявка":
                 continue
             broker_license_unparsed = self.get_broker_licence_from_url(broker["url"])
+            # broker_license_unparsed = broker["license"] # todo send request without x-requested-with header to get licenses
             if broker_license_unparsed is None:
                 continue
             broker_license_unparsed = re.sub("-", "", broker_license_unparsed)
             broker_license_arr = re.findall("\\d{8}100000|\\d{8}300000", broker_license_unparsed)
             broker_license = int(broker_license_arr[0])  # todo to validator
             bank_db = None
-            for existing_bank in existing_brokers:  # todo to different func
+            for existing_bank in existing_brokers:  # todo to different func (try any)
                 if existing_bank.licence == broker_license:
                     bank_db = existing_bank
                     break

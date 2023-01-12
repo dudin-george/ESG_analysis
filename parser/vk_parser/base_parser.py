@@ -14,7 +14,7 @@ from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from common.settings import Settings
 from utils import relative_path
 from utils.logger import get_logger
-from vk_parser.database import VkBank
+from vk_parser.database import VkBank, VKBaseDB
 from vk_parser.queries import create_banks, get_bank_list
 from vk_parser.schemes import VKType
 
@@ -67,7 +67,9 @@ class VKBaseParser(BaseParser):
         if not os.path.exists(path):
             raise FileNotFoundError(f"{self.file} not found")
         bank_arr = np.load(path, allow_pickle=True)
-        db_banks = [VkBank(id=bank[0], name=bank[1], vk_id=bank[2], domain=bank[3]) for bank in bank_arr]
+        db_banks: list[VKBaseDB] = [
+            VkBank(id=bank[0], name=bank[1], vk_id=bank[2], domain=bank[3]) for bank in bank_arr
+        ]
         create_banks(db_banks)
         self.logger.info("bank list loaded")
 
@@ -171,7 +173,7 @@ class VKBaseParser(BaseParser):
                     ):
                         continue
                     comments = self.get_post_comments(
-                        bank.domain, post["owner_id"], post["id"], post["comments"]["count"], bank.id
+                        bank.domain, post["owner_id"], post["id"], post["comments"]["count"], bank.id  # type: ignore
                     )
                     if len(comments) == 0:
                         continue
