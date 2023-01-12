@@ -71,7 +71,7 @@ class TestVKParser(TestMixin):
     def test_get_post_comment(self, setup_bank_page):
         parser = VKBankParser()
         texts = parser.get_post_comments(self.bank.domain, "123", "2132702", 1, self.bank.id)
-        assert len(texts) == 1
+        assert len(texts) == 6
 
     def test_parse(self, setup_bank_page, mocker):
         mocker.patch("vk_parser.base_parser.sleep", return_value=None)

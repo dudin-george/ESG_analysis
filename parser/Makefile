@@ -41,7 +41,7 @@ database:
 
 .PHONY: test
 test:
-	docker compose -f docker-compose.test.yaml up --build
+	pytest --cov-report html --cov=.
 
 .PHONY: env
 env:

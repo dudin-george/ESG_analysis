@@ -16,6 +16,43 @@ interactions:
     uri: https://www.banki.ru/investment/brokers/list/
   response:
     body:
+      string: ''
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      Date:
+      - Thu, 12 Jan 2023 08:58:34 GMT
+      Location:
+      - /investment/brokers/list/
+      Server:
+      - nginx
+      Set-Cookie:
+      - __hash_=4b771d13c482220c983f94294b7731de; Max-Age=900; SameSite=None; Secure;
+        Path=/
+    status:
+      code: 302
+      message: Moved Temporarily
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Cookie:
+      - __hash_=4b771d13c482220c983f94294b7731de
+      User-Agent:
+      - python-requests/2.28.1
+      x-requested-with:
+      - XMLHttpRequest
+    method: GET
+    uri: https://www.banki.ru/investment/brokers/list/
+  response:
+    body:
       string: !!binary |
         H4sIAAAAAAAAA81dW4/buBX+K4MBArTAOtGFvgXoQzdFu/u2QNunpigoifKwliWDkp2dWex/r2zK
         8Tk8lCXTVNKXycT2mB/Jc7/pt+f6kKairp8/NuogfnjOeMOfP/7rt2eZPX+M2OKH55LvxPPH509K
@@ -82,30 +119,29 @@ interactions:
         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
-        2AMgiISLQiZ8jkSVNrj1w4yOi6sz09lyrisVO+h8LyzL3FFVP9FpNFv1evKVaA+3OQZWXLWGd6VV
-        NabSMqRKri9CA7mdO/IG6kS9RNqtbbhCDchxTmtSo3M3a3rpLFsaEwhhV+fK5GM2YPV5O7EQzzid
-        D22EZjFQoeKI0g+cyb+jZMHxroTa1Vv+yvOqzKpj+0sr/Pe8lK8os2925t894PTmfaGvoOJ6TF6H
-        eW7HwJNVo7mVhFd0/7QizENKby8boWZmWo8tAwsoOoAZRt98OwZ77BewYDkOEnzmg+MN7dUOxlnD
-        GysLchj6gvKroe07enCaSFAfX/kbGZga3YOTlAegQQpL35f5gqchh+OgEmpHUV+vR9ooTu1EY07R
-        +FE58RxYkb2zLBePUGlmacNY98NdX9UEY+brMX0OiLfDVVzmuZA1Gk8fGRIG+ae0hQ6OtvOngpXg
-        hdQBZOwtMWMU05D3PAMX77vcXbwJdaQ1R8YANNe8+iSGshJ0wl1sSNGucmZ+5ZJQjEr1e6eButIJ
-        VDIYw8ZMaLy9gC3sN7MjPkay65zHgTxTlxkD3uCTkKGx4zyysCpp1dFi3bumb+GsKlMss+XA4t9D
-        xSms4qK1jUFhiHjKQQetPVdy0yGLjVKxy3wtTdGeg27q3KyRVgo/S8IgVd8PO7hpyI96+NT0kyzr
-        RFZlIUuUj7IfzCiHHUjNrhvAtcUmUfkslfhRa2sLri5QmnommTpDsUHjuSMoM06JgXZD+8MljkJt
-        iL0dGTXpAwAtwfV7SyE8HrU4luiereRHrVp/AGRj1g1GxvwbG4hR7Oq7vIoANQbadUzRPXfH903t
-        SIpqZVtd2yXxQ/xfbiBNGJNtUSEvmsbxTasLWqXy675Az15kCzaEdMKsRl0dUzrVMRyERKtm3AG0
-        2gRz0o2rQzXYvon1XJxtHsXCBgaodpjUGDlb2jXyJtJGWYxZG0fR3nlLKSc4Uvig776gC50e37nf
-        HgMtidEeYMgquCvNlGxC77VpfX/quxqDD2Gbbqf1UpNrL4GL7yBxmhTVkBjV7VFkJwQGGs0RojlA
-        5FkUNS+kmmFuAdsbTxtVwuoZMn1wUngP5m/FV+foYN2o6tWAu1z2o4UUDYvbOrp2RSLLXKYVokkD
-        RAxMYlgwTyMV/obMERVoPHW7A5WT24wITBi00AldBiexQS6HRnJ6R08zlM+OkvaLQF3kc8tuhx77
-        M2EM7vTIndZytcSIF4txSAfapgbGycORKXRMIOCSLmEDH7r+dSr59Z97htQ7Hlii8MA3w7tjE9ZZ
-        5JaxEIYBSYtjfQwXkKUxXsB4IgpdNkQBeddlN6o6oGlM62Bou9SwmsRiaY9kr2xtlmsLQNtEI0uz
-        /zcNL50iSxaTy7TCyTOBvDfU5JWiw6YN8oL5HmInX3hqwubFF76rG2FxCSIrUAEEVvo9shUv1U6Q
-        lkVmPDp+4KlVnRIFDzGd6GHyp0dYceSoG7W9/UAndEnOsGgLP7KgLhO44JRZ+FS1YOzsVuc5XKnM
-        Fbe0UZgxsjPCrkg58Etr6Y5UdBkzJyKYNaYykPm1MNMX0co2UlNrNJZQTF0tRjiGpKZATCjNAAzz
-        HjA2IvyCEb/uK+JqRTYopBEDTljxCKgUakMgmQmHEZC+VZWIBmyrE2FmwC2DMrajPP2fYMCGds4p
-        nT5RFClSYoZeEHDVFXxOoO+K60OCYybGpZLc9DdWo4dSWnP+kTEUNMqJOIMRS+8P5mvffuVlJn49
-        Yfr37/8D7/OA8ZGcAAA=
+        2AMgiISLQiZ8jkSVNqj1Y2GBdEex+0Qgm616PbkwtLXanM4qrsLcuy6pGlOXGMx+tntQqqCXxryB
+        OhEVEUJrG65QA3Icn5rU6NzNUls6Ypa66iFstlyZ7MUGjDFvJxbi0aPzoY3Q5AKqHxxRkYET7HdU
+        EjjelVC7estfeV6VWXVsf2ll8p6X8hUl3M2G+bvnjt68L/QVVIqOSbcwz10SeOBpNLeS8IrunxZq
+        eci07WUj1MzMtrFlYAFF5yLDoJhve32PzXUWLMdBgo9icLyhvdrB8Gd4Y2VBDkNfUH61f3079adB
+        AfXxlb+ROabRPThJ1h7NN1j6vswXPKQ4HAeVUDsKxno90kZxar4Z44PGT7CJ58C46x0xuXiESjNL
+        d8S6H+76qiYYM1+P6eM5vB2u4jLPhazR1PjIkDDIbaSdbXDinD8VrAQvpI7rYieGGROShpzaGbh4
+        31Xo4k2oIy0FMuaSuaa7JzGUlaCD52JDinYFLfMrl4RiVAbeOw3Ulc5rknkVNmZCU+cF7Cy/mbTw
+        MSldpyIO5FG3zJi7Bh9QDI0d50mCVUmLgRbr3jV9C2dVmWKZLQcW/x4qTmEVF61tDAojt1POH2jt
+        uZKbDllsVHBdxl5pivYcC1PnHoq0UvgRDwap+n4GwU1DftQzoaYfMFknsioLWaI0kf1gRjnsQGp2
+        RfqunS+JymepxE9AW1twdfHL1DPJ1BkK2RmPA0EJa0oMtEnZHy5xFGpD7O3IKBUfAGiJed9boeDx
+        qMWxRPdsJT9q1foDIBuznC8yxtLYQIxiV99VTwSoMWeuY4rucTi+b2pHMkcr2+raLokf4v9yA2nC
+        GDiL6mvRkIxvmvRvlcqv+wI9EpEt2BDSCZMNdXVM6bDFcBASLWZxB9BqE8xJN64OlUb7JtZzzbR5
+        FAsbGKDaYa5h5Mhn18ibSBtlMWZtHEVb2i0VluBI4fO3+4IudKh75357DLQkRtW+IavgrjRTsgm9
+        16b1/anvaswjhN2zndZLTa69BC6+g8RpUlTaYRSdR5GdEBjo/0aI5gCRZ1HUvJAig7kFbG88bVRl
+        qWfI9HlG4T2YvxVfnaODdaOqVwPuctmPFlI0rDnr6NoViSxzmVaIJg0QMTCJYR07jVT4m/1GVKDx
+        MOwOVE5uMyIwYdBCJ3QZHJAGuRwayekdrcZQPjtK2i8CNXfPLbsdehrPhDG405NwWsvVEiNeLMYh
+        HehmGpjyDieZ0Ol9gEu6hA18FvrXYeHXf+6ZHe94YInCc9gM745NWP6QW6Y1GAYkrVn10fMvS9z1
+        H6+DoWWpgTOJ5dBC2ytbF+LaAtA28MfSC/9NwzynCI/F9DGtYfLIHO/9Jnml6CxmwwKDeRdir15o
+        e8Levhe+qxthMc0jK1ABBEf6PbIGL9VOkI4+ZjxZfeChTp0yA8/4nOhZ66cnPHHkMBulr/1AJ3QN
+        zrBohzuyZC4DquAQVvjQsWDsaFPnMVWpzBW3dBmYsaozwq6GN/BLa+mOVFYZIxkimL2lMpD5tfTS
+        F9HKNlJyavRdUExdTUQ4hqSmQEwozQAM8w8wRiH8ghG/7ivi8kQ2KKRPAQ4g8QioFGpDIJmB/xGQ
+        vlW1hgZsq9dgZuArgzK2ozz9n2DAlnXO7Zw+URQpUmKGXhBw1RV8jJ7vguRDgmMXxqWSHPE3VqOH
+        Ulpz75ExMzPKiTiDkUPvz61r337lZSZ+PWH69+//A+OHsxKwmwAA
     headers:
       Access-Control-Allow-Credentials:
       - 'true'
@@ -124,16 +160,16 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 11 Jan 2023 11:21:39 GMT
+      - Thu, 12 Jan 2023 08:58:35 GMT
       Link:
       - <https://www.banki.ru/ng/api/v1.0/docs.jsonld>; rel="http://www.w3.org/ns/hydra/core#apiDocumentation"
       Server:
       - nginx
       Set-Cookie:
-      - __lhash_=9db7acd01176d018f5d921a1ad938dce; Max-Age=604800; Path=/
-      - BANKI_RU_USER_IDENTITY_UID=6281709612141535356; expires=Thu, 11-Jan-2024 11:21:39
+      - __lhash_=07ed30038022b76cab4c37df5d067e05; Max-Age=604800; Path=/
+      - BANKI_RU_USER_IDENTITY_UID=3277341426401945814; expires=Fri, 12-Jan-2024 08:58:35
         GMT; Max-Age=31536000; path=/; domain=banki.ru; httponly
-      - HO_SOURCE=deleted; expires=Tue, 11-Jan-2022 11:21:38 GMT; Max-Age=0; path=/;
+      - HO_SOURCE=deleted; expires=Wed, 12-Jan-2022 08:58:34 GMT; Max-Age=0; path=/;
         domain=www.banki.ru; secure; samesite=none
       - aff_sub3=%2Finvestment%2Fbrokers%2Flist%2F; path=/; domain=www.banki.ru
       Transfer-Encoding:

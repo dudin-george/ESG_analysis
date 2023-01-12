@@ -3,12 +3,13 @@ import requests
 import requests_mock
 import vcr
 
-from tests.conftest import settings
+from tests.request_data import PROJECT_PATH, settings
 
 my_vcr = vcr.VCR(
     path_transformer=vcr.VCR.ensure_suffix(".yaml"),
     serializer="yaml",
-    cassette_library_dir="../vcr_cassettes/vk",
+    cassette_library_dir=f"{PROJECT_PATH}/vcr_cassettes/vk",
+    match_on=("method", "scheme", "host", "port", "path"),
 )
 
 base_params = {
@@ -43,7 +44,7 @@ def mock_wall(mock_request, group_page) -> requests_mock.Mocker:
 @my_vcr.use_cassette
 def post_comments():
     params = base_params.copy() | {
-        "post_id": 2132438,
+        "post_id": 2125420,
         "start_comment_id": None,
         "sort": "desc",
         "thread_items_count": 10,

@@ -3,10 +3,12 @@ import requests
 import requests_mock
 import vcr
 
+from tests.request_data import PROJECT_PATH
+
 my_vcr = vcr.VCR(
     path_transformer=vcr.VCR.ensure_suffix(".yaml"),
     serializer="yaml",
-    cassette_library_dir="../vcr_cassettes/sravni_ru",
+    cassette_library_dir=f"{PROJECT_PATH}/vcr_cassettes/sravni_ru",
 )
 
 reviews_url = "https://www.sravni.ru/proxy-reviews/reviews"

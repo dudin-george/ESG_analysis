@@ -19,10 +19,8 @@ from tests.request_data import (
     api_insurance,
     api_mfo,
     api_source,
+    settings,
 )
-
-PROJECT_PATH = Path(__file__).parent.parent.resolve()
-settings = Settings(_env_file="../../.env", _env_file_encoding="utf-8")
 
 
 @pytest.fixture(scope="session")
