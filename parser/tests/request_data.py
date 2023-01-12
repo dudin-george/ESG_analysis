@@ -10,9 +10,9 @@ a=0
 
 def api_source() -> tuple[str, dict]:
     return f"{settings.api_url}/source/", {
-        "id": 0,
-        "site": "string",
-        "source_type_id": 0,
+        "id": 1,
+        "site": "test",
+        "source_type_id": 1,
         "parser_state": json.dumps({"bank_id": 100, "page": 1}),
         "last_update": str(datetime(2022, 1, 1)),
     }
