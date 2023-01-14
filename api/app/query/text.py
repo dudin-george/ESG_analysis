@@ -23,11 +23,11 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
             bank_id=text.bank_id,
             comment_num=text.comments_num,
         )
-        text_db.append(text_db_item)
         source = await db.scalar(select(Source).filter(Source.id == text_db_item.source_id))
         bank = await db.scalar(select(Bank).filter(Bank.id == text_db_item.bank_id))
         if source is None or bank is None:
             raise IdNotFoundError("Source or bank not found")
+        text_db.append(text_db_item)
         if len(text_db) > 0:
             if post_texts.parser_state:
                 source.parser_state = post_texts.parser_state
@@ -49,10 +49,6 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
     logger.info(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
 
-def _generate_table_name(model_id: int, sources: list[str]) -> str:
-    return f"table_model_{model_id}_" + "_".join(sources)
-
-
 async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[str]) -> None:
     text_result_subq = select(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
@@ -64,9 +60,10 @@ async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[st
         .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
     )
     sentence_ids = await db.execute(query)
-    text_results = []
-    for sentence_id in sentence_ids:
-        text_results.append(TextResult(text_sentence_id=sentence_id.id, model_id=model_id, is_processed=False))
+    text_results = [
+        TextResult(text_sentence_id=sentence_id.id, model_id=model_id, is_processed=False) for sentence_id in
+        sentence_ids
+    ]
     db.add_all(text_results)
     await db.commit()
 
@@ -88,7 +85,7 @@ async def get_text_sentences(
         .limit(limit)
     )
     query = select(TextSentence.id, TextSentence.sentence).filter(TextSentence.id.in_(select_unused_sentence_ids))
-    items = []
-    for sentence in await db.execute(query):
-        items.append(GetTextSentencesItem(sentence_id=sentence.id, sentence=sentence.sentence))
-    return items
+    return [
+        GetTextSentencesItem(sentence_id=sentence.id, sentence=sentence.sentence)
+        for sentence in await db.execute(query)
+    ]
