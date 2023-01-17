@@ -32,6 +32,7 @@ async def create_mfo_type(db: AsyncSession) -> BankType:
     return await create_bank_element_type(db, BankTypeVal.mfo)
 
 
+# todo make bank_type_id as subquery
 async def get_bank_count(db: AsyncSession, bank_type_id: int) -> int:
     return await db.scalar(select(func.count(Bank.id)).filter(Bank.bank_type_id == bank_type_id))  # type: ignore
 

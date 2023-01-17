@@ -32,4 +32,4 @@ class Bank(Base):
     texts: Mapped[list["Text"]] = relationship("Text", back_populates="bank")
 
     def __repr__(self) -> str:
-        return f"Bank(id={self.id}, bank_name={self.bank_name}, description={self.description})"
+        return f"Bank(id={self.id}, license={self.licence} bank_name={self.bank_name}, description={self.description})"
