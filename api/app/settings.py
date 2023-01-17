@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 from pydantic import BaseSettings, Field
@@ -7,9 +8,9 @@ class Settings(BaseSettings):
     echo: bool = Field(env="ECHO", default=False)
     POSTGRES_DB: str = Field(env="POSTGRES_DB", default="database")
     POSTGRES_HOST: str = Field(env="POSTGRES_HOST", default="localhost")
-    POSTGRES_USER: str = Field(env="POSTGRES_USER", default="myusername")
     POSTGRES_PORT: int = Field(env="POSTGRES_PORT", default=5432)
-    POSTGRES_PASSWORD: str = Field(env="POSTGRES_PASSWORD", default="mypassword")
+    POSTGRES_USER: str = Field(env="POSTGRES_USER")
+    POSTGRES_PASSWORD: str = Field(env="POSTGRES_PASSWORD")
     # broker_url: AmqpDsn = Field(env="BROKER_URL")
 
     @property
@@ -44,5 +45,11 @@ class Settings(BaseSettings):
         )
 
     class Config:
-        env_file = "../.env"
+        env_file = ".env"
         env_file_encoding = "utf-8"
+
+
+def get_settings() -> Settings:
+    if os.getenv("ENV") == "view":
+        return Settings(_env_file="../.env")  # type: ignore[call-arg]
+    return Settings()

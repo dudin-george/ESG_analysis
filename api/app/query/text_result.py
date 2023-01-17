@@ -15,7 +15,7 @@ async def get_text_result_items(db: AsyncSession, text_id: int) -> list[TextResu
 
 async def create_text_results(db: AsyncSession, texts: list[PostTextResultItem]) -> None:
     for text in texts:
-        text_sentence = await db.get(TextSentence, text.text_sentence_id)
+        text_sentence = await db.get(TextSentence, text.text_sentence_id)  # todo find all text_sentences and model
         model = await db.get(Model, text.model_id)
         if text_sentence is None or model is None:
             raise IdNotFoundError("Source or bank not found")

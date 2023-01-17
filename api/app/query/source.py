@@ -26,7 +26,6 @@ async def create_source(db: AsyncSession, model: CreateSource) -> Source:
     source = Source(site=model.site, source_type=source_type)
     db.add(source)
     await db.commit()
-    await db.refresh(source)
     return source  # type: ignore
 
 
@@ -45,5 +44,4 @@ async def patch_source_by_id(db: AsyncSession, source_id: int, patch_source: Pat
     source.parser_state = patch_source.parser_state
     source.last_update = patch_source.last_update
     await db.commit()
-    await db.refresh(source)
     return source
