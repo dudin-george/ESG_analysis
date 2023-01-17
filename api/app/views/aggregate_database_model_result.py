@@ -1,4 +1,4 @@
-from sqlalchemy import and_, case, extract, func, select
+from sqlalchemy import and_, case, delete, extract, func, insert, select
 
 from app.database import (
     AggregateTableModelResult,
@@ -56,172 +56,191 @@ def aggregate_database_sentiment() -> None:
       model ON model.id = pos_neut_neg.model_id
     GROUP BY quarter, year, source.site, source_type.name, bank.id, model.name
     """
-    session = get_sync()
-    select_log_result = (
-        select(
-            TextResult.text_sentence_id,
-            TextResult.model_id,
-            func.log(TextResult.result[1] + 0.0000001).label("log_neutral"),
-            func.log(TextResult.result[2] + 0.0000001).label("log_positive"),
-            func.log(TextResult.result[3] + 0.0000001).label("log_negative"),
+    eps = 1e-7
+    with get_sync() as session:
+        session.execute(delete(AggregateTableModelResult))
+        session.commit()
+        select_log_result = (
+            select(
+                TextResult.text_sentence_id,
+                TextResult.model_id,
+                func.log(TextResult.result[1] + eps).label("log_neutral"),
+                func.log(TextResult.result[2] + eps).label("log_positive"),
+                func.log(TextResult.result[3] + eps).label("log_negative"),
+            )
+            .where(TextResult.model_id == 1)
+            .subquery()
         )
-        .where(TextResult.model_id == 1)
-        .subquery()
-    )
-    select_pos_neut_neg = select(
-        select_log_result.c.text_sentence_id,
-        select_log_result.c.model_id,
-        case(
-            (
-                and_(
-                    select_log_result.c.log_positive > select_log_result.c.log_neutral,
-                    select_log_result.c.log_positive > select_log_result.c.log_negative,
+        select_pos_neut_neg = select(
+            select_log_result.c.text_sentence_id,
+            select_log_result.c.model_id,
+            case(
+                (
+                    and_(
+                        select_log_result.c.log_positive > select_log_result.c.log_neutral,
+                        select_log_result.c.log_positive > select_log_result.c.log_negative,
+                    ),
+                    1,
                 ),
-                1,
-            ),
-            else_=0,
-        ).label("positive"),
-        case(
-            (
-                and_(
-                    select_log_result.c.log_neutral > select_log_result.c.log_positive,
-                    select_log_result.c.log_neutral > select_log_result.c.log_negative,
+                else_=0,
+            ).label("positive"),
+            case(
+                (
+                    and_(
+                        select_log_result.c.log_neutral > select_log_result.c.log_positive,
+                        select_log_result.c.log_neutral > select_log_result.c.log_negative,
+                    ),
+                    1,
                 ),
-                1,
-            ),
-            else_=0,
-        ).label("neutral"),
-        case(
-            (
-                and_(
-                    select_log_result.c.log_negative > select_log_result.c.log_neutral,
-                    select_log_result.c.log_negative > select_log_result.c.log_positive,
+                else_=0,
+            ).label("neutral"),
+            case(
+                (
+                    and_(
+                        select_log_result.c.log_negative > select_log_result.c.log_neutral,
+                        select_log_result.c.log_negative > select_log_result.c.log_positive,
+                    ),
+                    1,
                 ),
-                1,
-            ),
-            else_=0,
-        ).label("negative"),
-    ).subquery()
-    query = (
-        select(
-            Bank.id,
-            extract("quarter", Text.date).label("quarter"),
-            extract("year", Text.date).label("year"),
-            Model.name,
-            Source.site,
-            SourceType.name,
-            func.sum(select_pos_neut_neg.c.positive).label("positive"),
-            func.sum(select_pos_neut_neg.c.neutral).label("neutral"),
-            func.sum(select_pos_neut_neg.c.negative).label("negative"),
-            func.sum(
-                select_pos_neut_neg.c.positive + select_pos_neut_neg.c.neutral + select_pos_neut_neg.c.negative
-            ).label("total"),
-        )
-        .select_from(select_pos_neut_neg)
-        .join(TextSentence)
-        .join(Text)
-        .join(Bank)
-        .join(BankType)
-        .join(Source)
-        .join(SourceType)
-        .join(Model)
-        .group_by(
-            "quarter", "year", Text.date, Text.id, Source.site, SourceType.name, Bank.id, Model.name, BankType.name
-        )
-    )
-    data = []
-    for row in session.execute(query):
-        data.append(
-            AggregateTableModelResult(
-                bank_name=row[0],
-                bank_id=row[0],
-                year=row[2],
-                quater=row[1],
-                model_name=row[3],
-                source_site=row[4],
-                source_type=row[5],
-                positive=row[6],
-                neutral=row[7],
-                negative=row[8],
-                total=row[9],
+                else_=0,
+            ).label("negative"),
+        ).subquery()
+        query = (
+            select(
+                Bank.id,
+                Bank.bank_name,
+                extract("quarter", Text.date).label("quarter"),
+                extract("year", Text.date).label("year"),
+                Model.name,
+                Source.site,
+                SourceType.name,
+                func.sum(select_pos_neut_neg.c.positive).label("positive"),
+                func.sum(select_pos_neut_neg.c.neutral).label("neutral"),
+                func.sum(select_pos_neut_neg.c.negative).label("negative"),
+                func.sum(
+                    select_pos_neut_neg.c.positive + select_pos_neut_neg.c.neutral + select_pos_neut_neg.c.negative
+                ).label("total"),
+            )
+            .select_from(select_pos_neut_neg)
+            .join(TextSentence)
+            .join(Text)
+            .join(Bank)
+            .join(BankType)
+            .join(Source)
+            .join(SourceType)
+            .join(Model)
+            .group_by(
+                "year",
+                "quarter",
+                Bank.id,
+                Bank.bank_name,
+                BankType.name,
+                SourceType.name,
+                Source.site,
+                Model.name,
             )
         )
-    session.add_all(data)
-    session.commit()
-    print("Done")
+        session.execute(
+            insert(AggregateTableModelResult).from_select(
+                [
+                    AggregateTableModelResult.bank_id,
+                    AggregateTableModelResult.bank_name,
+                    AggregateTableModelResult.quater,
+                    AggregateTableModelResult.year,
+                    AggregateTableModelResult.model_name,
+                    AggregateTableModelResult.source_site,
+                    AggregateTableModelResult.source_type,
+                    AggregateTableModelResult.positive,
+                    AggregateTableModelResult.neutral,
+                    AggregateTableModelResult.negative,
+                    AggregateTableModelResult.total,
+                ],
+                query,
+            )
+        )
+        session.commit()
+        print("Done")
 
 
 def aggregate_database_mdf() -> None:
-    session = get_sync()
-    select_log_result = (
-        select(
-            TextResult.text_sentence_id,
-            TextResult.model_id,
-            func.log(TextResult.result[1] + 0.0000001).label("log_positive"),
-            func.log(TextResult.result[2] + 0.0000001).label("log_negative"),
+    eps = 1e-7
+    with get_sync() as session:
+        select_log_result = (
+            select(
+                TextResult.text_sentence_id,
+                TextResult.model_id,
+                func.log(TextResult.result[1] + eps).label("log_positive"),
+                func.log(TextResult.result[2] + eps).label("log_negative"),
+            )
+            .where(TextResult.model_id == 1)
+            .subquery()
         )
-        .where(TextResult.model_id == 1)
-        .subquery()
-    )
-    select_pos_neut_neg = select(
-        select_log_result.c.text_sentence_id,
-        select_log_result.c.model_id,
-        case(
-            (
-                select_log_result.c.log_positive > select_log_result.c.log_negative,
-                1,
-            ),
-            else_=0,
-        ).label("positive"),
-        case(
-            (
-                select_log_result.c.log_negative > select_log_result.c.log_positive,
-                1,
-            ),
-            else_=0,
-        ).label("negative"),
-    ).subquery()
-    query = (
-        select(
-            Bank.id,
-            extract("quarter", Text.date).label("quarter"),
-            extract("year", Text.date).label("year"),
-            Model.name,
-            Source.site,
-            SourceType.name,
-            func.sum(select_pos_neut_neg.c.positive).label("positive"),
-            func.sum(select_pos_neut_neg.c.negative).label("negative"),
-            func.sum(select_pos_neut_neg.c.positive + select_pos_neut_neg.c.negative).label("total"),
-        )
-        .select_from(select_pos_neut_neg)
-        .join(TextSentence)
-        .join(Text)
-        .join(Bank)
-        .join(BankType)
-        .join(Source)
-        .join(SourceType)
-        .join(Model)
-        .group_by(
-            "quarter", "year", Text.date, Text.id, Source.site, SourceType.name, Bank.id, Model.name, BankType.name
-        )
-    )
-    data = []
-    for row in session.execute(query):
-        data.append(
-            AggregateTableModelResult(
-                bank_name=row[0],
-                bank_id=row[0],
-                year=row[2],
-                quater=row[1],
-                model_name=row[3],
-                source_site=row[4],
-                source_type=row[5],
-                positive=row[6],
-                negative=row[7],
-                neutral=0,
-                total=row[8],
+        select_pos_neut_neg = select(
+            select_log_result.c.text_sentence_id,
+            select_log_result.c.model_id,
+            case(
+                (
+                    select_log_result.c.log_positive > select_log_result.c.log_negative,
+                    1,
+                ),
+                else_=0,
+            ).label("positive"),
+            case(
+                (
+                    select_log_result.c.log_negative > select_log_result.c.log_positive,
+                    1,
+                ),
+                else_=0,
+            ).label("negative"),
+        ).subquery()
+        query = (
+            select(
+                Bank.id,
+                Bank.bank_name,
+                extract("quarter", Text.date).label("quarter"),
+                extract("year", Text.date).label("year"),
+                Model.name,
+                Source.site,
+                SourceType.name,
+                func.sum(select_pos_neut_neg.c.positive).label("positive"),
+                func.sum(select_pos_neut_neg.c.negative).label("negative"),
+                func.sum(select_pos_neut_neg.c.positive + select_pos_neut_neg.c.negative).label("total"),
+            )
+            .select_from(select_pos_neut_neg)
+            .join(TextSentence)
+            .join(Text)
+            .join(Bank)
+            .join(BankType)
+            .join(Source)
+            .join(SourceType)
+            .join(Model)
+            .group_by(
+                "year",
+                "quarter",
+                Bank.id,
+                Bank.bank_name,
+                BankType.name,
+                SourceType.name,
+                Source.site,
+                Model.name,
             )
         )
-    session.add_all(data)
-    session.commit()
+        session.execute(
+            insert(AggregateTableModelResult).from_select(
+                [
+                    AggregateTableModelResult.bank_id,
+                    AggregateTableModelResult.bank_name,
+                    AggregateTableModelResult.quater,
+                    AggregateTableModelResult.year,
+                    AggregateTableModelResult.model_name,
+                    AggregateTableModelResult.source_site,
+                    AggregateTableModelResult.source_type,
+                    AggregateTableModelResult.positive,
+                    AggregateTableModelResult.negative,
+                    AggregateTableModelResult.total,
+                ],
+                query,
+            )
+        )
+        session.commit()
     print("Done")
