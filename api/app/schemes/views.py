@@ -14,6 +14,7 @@ class AggregateTextResultItem(BaseModel):
     quarter: int
     date: date
     bank_name: str
+    bank_id: int
     model_name: str
     source_type: str
     index: float

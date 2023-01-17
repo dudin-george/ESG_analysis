@@ -31,6 +31,7 @@ async def get_aggregate_text_result(
         model_names: conlist(str, min_items=1) = Query(description="Список id моделей"),  # type: ignore[valid-type]
         source_type: conlist(str, min_items=1) = Query(description="Список типов источников"),
         # type: ignore[valid-type]
+        # todo test in request 0 elems # https://github.com/pydantic/pydantic/issues/975
         aggregate_by_year: bool = Query(default=False, description="Типы агрегации год/квартал"),
         index_type: IndexTypeVal = Query(default=IndexTypeVal.default_index, description="Тип индекса"),
         db: AsyncSession = Depends(get_session),
