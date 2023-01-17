@@ -13,7 +13,6 @@ class SessionManager:
 
     def __init__(self, is_async: bool = True) -> None:
         self.is_async = is_async
-        self.settings = get_settings()
         self.refresh()
 
     def __new__(cls, is_async: bool = True) -> "SessionManager":
@@ -29,9 +28,9 @@ class SessionManager:
 
     def refresh(self) -> None:
         if self.is_async:
-            self.engine = create_async_engine(self.settings.database_uri, echo=True, future=True)
+            self.engine = create_async_engine(get_settings().database_uri, echo=True, future=True)
         else:
-            self.engine = create_engine(self.settings.database_uri_sync, echo=True)  # type: ignore[assignment]
+            self.engine = create_engine(get_settings().database_uri_sync, echo=True)  # type: ignore[assignment]
 
 
 async def get_session() -> AsyncSession:  # type: ignore
