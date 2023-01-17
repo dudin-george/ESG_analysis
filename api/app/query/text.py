@@ -61,8 +61,8 @@ async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[st
     )
     sentence_ids = await db.execute(query)
     text_results = [
-        TextResult(text_sentence_id=sentence_id.id, model_id=model_id, is_processed=False) for sentence_id in
-        sentence_ids
+        TextResult(text_sentence_id=sentence_id.id, model_id=model_id, is_processed=False)
+        for sentence_id in sentence_ids
     ]
     db.add_all(text_results)
     await db.commit()

@@ -34,7 +34,8 @@ def aggregate_columns(aggregate_by_year: bool) -> list[Any]:
     else:
         aggregate_cols = [TextResultAgg.quater, TextResultAgg.year]
     aggregate_cols.extend(
-        [TextResultAgg.source_type, TextResultAgg.model_name, TextResultAgg.bank_name, TextResultAgg.bank_id])
+        [TextResultAgg.source_type, TextResultAgg.model_name, TextResultAgg.bank_name, TextResultAgg.bank_id]
+    )
     return aggregate_cols
 
 
