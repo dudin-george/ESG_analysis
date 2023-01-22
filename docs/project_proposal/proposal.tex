@@ -1,4 +1,4 @@
-% Created 2023-01-20 Пт 00:40
+% Created 2023-01-23 Пн 00:09
 % Intended LaTeX compiler: pdflatex
 \documentclass[PI]{ProjectProposal}
          \usepackage{array,tabularx,tabulary,booktabs,longtable,multirow}
@@ -30,47 +30,47 @@
  pdflang={En}}
 \usepackage{biblatex}
 \addbibresource{/home/samoed/Desktop/ESGanalysis/docs/library.bib}
-\addbibresource{~/Desktop/notes/org/bibliography.bib}
 \begin{document}
 
 \maketitle
-In this paper, an analysis of the ethics of different companies is carried out.
+Abstarct
 
 \chapter{Introduction}
-\label{sec:orgaf2e0c6}
-The trustworthiness of companies has long been a matter of concern, particularly with respect to their behavior in contentious situations and their delivery of customer-centric services. In recent years, there has been a growing emphasis on assessing the ethicality of companies\autocites{mure_esg_2021}[][]{miralles-quiros_esg_2019}[][]{climent_ethical_2018}, particularly within the banking sector and through the lens of Environmental, Social and Governance (ESG) factors. The need for such assessments has become increasingly urgent as society continues to grapple with the consequences of corporate misconduct and the broader impact of corporate activities on society.
+\label{sec:org5ff4ef8}
+The ethics of companies have long been of concern to stakeholders, particularly with regard to their actions in contentious situations and their delivery of customer-centric services. In recent years, there has been a growing emphasis on evaluating the ethical standards of companies, particularly in the banking sector and through the lens of Environmental, Social and Governance (ESG) factors\autocites{mure_esg_2021}[][]{miralles-quiros_esg_2019}[][]{climent_ethical_2018}. The need for such assessments has become increasingly urgent as society continues to grapple with the consequences of corporate misconduct and the broader impact of corporate activities on society as a whole.
 
-Currently, there are several services that purport to assess a company's ethics, but these assessments are often based on court cases and other official records rather than on customer feedback. This has led to a situation where individuals must conduct their own research to determine the ethics of a particular company. This research often involves reviewing customer feedback from various websites, which can be time-consuming and may not always provide a comprehensive or accurate picture of a company's ethical practices.
+Assessing a company's ethical standards is a complex process that involves evaluating various aspects of a company's operations, such as its business practices, policies, and overall culture. In addition to traditional financial metrics, ESG factors play a critical role in determining a company's overall ethical standing. All of this provides valuable insight into a company's ethical standards.
 
-To address this issue, there have been recent calls for the development of a system that would collect and analyze customer feedback from multiple websites to provide a more comprehensive and accurate assessment of a company's ethical practices. Such a system will be designed to automatically collect and analyze customer feedback from a variety of sources, including social media and review sites. The collected data could then be analyzed using various techniques, such as natural language processing, to identify patterns and trends related to a company's ethical practices. The resulting analysis could then be used to develop a more robust and reliable system for assessing the ethicality of companies.
+Currently, there are a number of services that claim to evaluate a company's ethics, but these evaluations are often based on court cases and other official records rather than customer feedback. This has resulted in a scenario where individuals must conduct their own research to determine the ethics of a particular company. This research often involves reviewing customer feedback from various websites, which can be time-consuming and may not always provide a comprehensive or accurate picture of a company's ethical practices.
+
+To address this issue, there have been recent calls for the development of a system that would collect and analyze customer feedback from multiple websites to provide a more comprehensive view, and this system could also incorporate other data sources such as financial reports, sustainability reports, and news articles to provide a more holistic view of a company's ethical practices. The system could also incorporate machine learning algorithms, such as sentiment analysis and topic modeling, to analyze customer feedback and extract valuable insights. These insights could then be used to generate a score or rating that provides an overall assessment of a company's ethical practices.
 \chapter{Literature Review}
-\label{sec:orgb839d60}
-\section{BERT}
-\label{sec:org8f3ff8c}
-BERT~\autocite{devlin2018bert} (Bidirectional Encoder Representations from Transformers) is a language model that has been shown to be highly effective for natural language processing tasks such as text classification, question answering, and named entity recognition. BERT is based on the transformer architecture, introduced in the paper "Attention is All You Need" \autocite{NIPS2017_3f5ee243}, that uses self-attention mechanisms to process input sequences in parallel, rather than sequentially as in traditional recurrent neural network architectures.
+\label{sec:org487cdf2}
+\section{Etics measurment}
+\label{sec:orge82890f}
+The importance of ethical behavior in business cannot be overstated. As evidenced by various studies and research \autocites{climent_ethical_2018}[][]{mure_esg_2021}, companies that prioritize ethical behavior tend to achieve greater financial success and better business performance over the long term than those that engage in unethical practices.
 
-The BERT model is trained using a technique called "masked language modeling," in which the model is trained to predict the value of certain randomly masked tokens in a sentence, given the surrounding context. This training process allows the model to learn the relationships between words in a sentence and to represent each word in a high-dimensional vector space called an embedding. These embeddings capture the meaning of the words in a sentence and can be used to represent the sentence as a whole.
+Evaluating a company's ethical standards can be approached from several perspectives. From the perspective of the company itself, various factors can be considered, including the level of capitalization to ensure that it is not at risk of bankruptcy, the impact it has on the surrounding environment, and the direction of its investments \autocite{harvey1995ethical}. On the other hand, customers may focus on the quality of customer service \autocite{brunk2010exploring} and the degree to which a company's services are intrusive \autocite{mitchell1992bank}.
 
-Unlike simple machine learning algorithms such as, TF-IDF \autocite{jones1972statistical}, word bag\autocite{doi:10.1080/00437956.1954.11659520} and word2vec \autocite{mikolov2013efficient} sequences of words and sentences are encoded by vector (embedding) of fixed length. This allows you to efficiently analyze text with context understanding, which will help in review analysis.
-One of the main reasons for BERT's superior performance is its ability to handle bidirectional context. Unlike ELMO \autocite{elmo} and GPT\autocite{radford2019language}, which are unidirectional models, BERT is trained to consider context on both the left and right sides of a word, resulting in a more accurate representation of word meaning in a sentence.
+It is important to note that evaluating a company's ethics is not a one-time endeavor. Rather, it is an ongoing process that requires continuous monitoring and evaluation of the company's actions, policies and practices over time. This is particularly important given the constantly evolving nature of business conduct and the need to stay abreast of emerging issues and trends. In addition, it is important to consider the broader societal impacts of corporate activities and to evaluate companies not only on their financial performance, but also on their environmental, social and governance (ESG) factors.
+\section{Text analyis}
+\label{sec:org68c64ea}
+Machine learning algorithms for text analysis have been widely used to extract information from unstructured data using large annotated datasets. Among the various methods used, several algorithms have proven to be particularly effective in this area. These include the bag of words \autocite{doi:10.1080/00437956.1954.11659520}, TF-IDF \autocite{jones1972statistical}, Word2Vec \autocite{mikolov2013efficient}, ELMO \autocite{elmo}, GPT \autocite{radford2019language}, and BERT \autocite{devlin2018bert}. Each of these algorithms has unique characteristics that make it well suited for specific applications.
 
-BERT can be used to obtain embeddings to assess the tone of reviews about companies. These embeddings can then be used to train a classifier to predict the tone of the reviews. The classifier can be trained to predict whether a review is positive, negative, or neutral. Once trained, the classifier can be used to predict the tone of new reviews, providing a reliable and efficient way to assess the tone of reviews about companies.
-\section{Sentence BERT}
-\label{sec:org0c94d31}
-Sentence BERT~\autocite{reimers-2019-sentence-bert} is a modified version of the BERT model that exploits the capabilities of the BERT model by inputting pairs of sentences and averaging their output representations. The primary benefit of this modification is the ability to compare sentence embeddings in an independent and computationally efficient manner. The primary advantage of Sentence BERT over traditional BERT models is its ability to compare sentence embeddings independently and without the need for recalculating them each time. For example, when searching for similar sentences among a set of 10,000, traditional BERT models would require 50 million calculations of different sentence pairs, which would take approximately 50 hours. In contrast, Sentence BERT calculates the embedding of each sentence separately and then compares them, which takes only about 5 seconds. This makes Sentence BERT a computationally efficient solution for comparing sentence embeddings and identifying similarities.
-\section{CLIP}
-\label{sec:orgb3f6512}
-CLIP\autocite{radford2021learning} (Contrastive Language-Image Pre-training) is a pre-training technique that uses a transformer-based models to learn general-purpose embeddings. The CLIP model is trained on a large dataset of image-text pairs and is capable of learning a wide range of visual and linguistic concepts by predicting the text that corresponds to a given image input.
+The bag of words model represents text data by assigning a unique number to each word in a document. This method is easy to implement, but does not take into account the order of words in a sentence. On the other hand, the TF-IDF model represents text data by considering both the frequency of a word in a document (TF) and its rarity across all documents in the corpus (IDF). This approach can be used to determine the importance of a word in a given document and is commonly used in information retrieval and natural language processing tasks.
 
-The model uses Visual Transformer (ViZ) \autocite{dosovitskiy2020image} to learn representations of images. The ViZ is trained to understand and generate images, while the transformer is trained to understand and generate text. The combination of these two architectures allows the CLIP model to learn visual and linguistic concepts simultaneously.
+The field of natural language processing has seen a significant advancement in recent years, largely due to the emergence of neural network-based algorithms such as Word2Vec, ELMO, GPT, and BERT. These algorithms represent text data in a more nuanced and complex manner, allowing for a deeper understanding of the underlying semantics and meaning.
 
-One of the key advantages of CLIP is its ability to learn embeddings that are not specific to a particular task or domain. In addition, CLIP can be fine-tuned on a task-specific dataset to improve performance on specific tasks. This method allows you to connect the spaces of two different sources of information. For example, this model can be adapted to connect sentences from different fields.
-\chapter{Methods}
-\label{sec:orgcd66628}
+Word2Vec, for instance, utilizes a vector representation of words, which enables the algorithm to capture the meaning of words in similar contexts. This allows for a more accurate and sophisticated representation of the relationships between words, leading to improved performance in tasks such as text classification and sentiment analysis.
+
+ELMO, GPT, and BERT, on the other hand, are based on the transformer architecture, in which each sentence is represented by a vector of numbers, commonly known as an embedding. This representation allows for a more comprehensive and holistic understanding of the text, as it takes into account the context of the entire sentence or text.
+
+Of these algorithms, BERT is considered to be the most advanced and powerful, as it is able to consider the context of the entire sentence or text, whereas GPT and ELMO only consider a one-sided context. This allows BERT to achieve state-of-the-art performance in a wide range of NLP tasks, including text classification, named entity recognition, and question answering.
+
 \chapter{Results Anticipated}
-\label{sec:org866eda8}
+\label{sec:org046eebe}
 \chapter{Conclusion}
-\label{sec:org8c44bb1}
+\label{sec:org19b0260}
 %\nocite{*}
 \putbibliography
 \appendix

@@ -10,14 +10,12 @@
 \RequirePackage[T2A]{fontenc}    % Поддержка русских букв
 \RequirePackage[utf8]{inputenc}  % Кодировка utf8
 \RequirePackage{csquotes}
-\RequirePackage[russian]{babel}  % Языки: русский, английский
+\RequirePackage[main=english, russian]{babel}  % Языки: русский, английский
 
 
 \RequirePackage[font=small,skip=4pt]{caption}
 \RequirePackage{graphicx}
 
-%\usepackage{pscyr}    % Красивые русские шрифты
-%\renewcommand{\rmdefault}{ftm} % Включаем Times New Roman
 
 %%% Оформление абзацев %%%
 \RequirePackage{indentfirst} % Красная строка
@@ -43,9 +41,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \RequirePackage[
   style=apa,
-  language=russian,
+  language=english,    % get main language from babel
+  autolang=other,
   babel=other,
   backend=biber,
+  bibencoding=UTF8,
   sorting=anyvt, % sorts entries by alphabetic label, name, year, volume, title;
   url=false,
   doi=false,
@@ -55,8 +55,6 @@
 ]{biblatex}
 \renewcommand*{\multicitedelim}{\addcomma\space}
 
-%\usepackage{cite} % Красивые ссылки на литературу
-% Настройки языка в списке литературы.
 \DeclareSourcemap{
   \maps[datatype=bibtex,overwrite=false]{
     \map{
@@ -80,8 +78,7 @@
 \NewBibliographyString{fromjapanese}
 % \bibliographystyle{apacite}
 \newcommand{\putbibliography}{
-  \chapter*{Reference}
-
+  \chapter*{References}
   \printbibliography[heading=none] %title={Библиографический список}, env=gostbibliography,
 }
 
@@ -100,24 +97,28 @@
 \captionsetup[figure]{labelfont={bf, it}, textfont={bf, it}, position=b, singlelinecheck=false, labelsep=endash, justification=centering, name=Рисунок}
 
 %%% Главы и разделы %%%
+\RequirePackage{titlecaps}
+% https://capitalizemytitle.com/#capitalizationrules
+\Addlcwords{at off by on down onto for over from in to into upon near with of a an the and so as than but that for if nor yet or }
 \RequirePackage{titlesec}
 \titleclass{\chapter}{straight}
 \titleformat{\chapter}%[display]
-  {\bfseries\centering}
-  {}{}{}
+  {\large\bfseries\centering}
+  {}{}{\titlecap}
 \titlespacing*{\chapter}{1pt}{1pt}{1pt}
 \titleformat{\section}
-  {\bfseries\centering}
-  {}{3pt}{}
+  {\large\bfseries\raggedright}
+  {}{3pt}{\titlecap}
 \titlespacing*{\section}{0pt}{8pt}{4pt}
 \titleformat{\subsection}
-  {\bfseries\centering}
+  {\bfseries}
   {}{3pt}{}
 \titlespacing*{\subsection}{0pt}{8pt}{4pt}
 \titleformat{\subsubsection}
   {\centering}
   {}{3pt}{}
 \titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
+
 \RequirePackage{titletoc}
 \titlecontents{chapter}[1em]{}
 {\thecontentslabel\enspace}
@@ -188,19 +189,18 @@
 }
 \ProcessKeyvalOptions*
 
-\def\@year{1900}
+\def\@year{\the\year{}}
 \def\@supervisorTitle{}
+\def\@supervisorAcademic{}
 \def\@supervisorName{I.I.~Ivanov}
 \def\@groupTitle{UNKNOWN GROUP}
-% \def\@reviewerTitle{}
-% \def\@reviewerName{I.I.~Ivanov}
-% \def\@abstract{TODO}
 
 \newcommand{\Group}[1]{\def\@groupTitle{#1}}
 \newcommand{\Year}[1]{\def\@year{#1}}
-\newcommand{\supervisor}[2]{
+\newcommand{\supervisor}[3]{
   \def\@supervisorTitle{#1}
-  \def\@supervisorName{#2}
+  \def\@supervisorAcademic{#2}
+  \def\@supervisorName{#3}
 }
 
 \renewcommand{\maketitle}{
@@ -244,7 +244,7 @@
   \hfill
   \begin{minipage}[t]{0.4\textwidth}
     \begin{flushright}
-      \textbf{Supervisor} \@supervisorTitle, \@supervisorName
+      \textbf{Supervisor:} \@supervisorTitle, \@supervisorAcademic, \@supervisorName
     \end{flushright}
   \end{minipage}
   \vfill
@@ -257,13 +257,6 @@
 
   \newpage
 }
-
-  \chapter**{TOC}
-
-  \@starttoc{toc}
-
-  \newpage
-
 }
 
 \newsavebox{\TABLEbox}
@@ -299,7 +292,3 @@
   \caption{\@figureCaption}
   \end{figure}
 }
-
-\newcommand{\appendixsection}[1]{\section{#1}\addcontentsline{toc}{section}{Приложение \thesection. \currentname}} % не уверен что работает
-\newcommand{\reftable}[1]{см. таблицу ~\ref{#1}}
-\newcommand{\reffig}[1]{Рисунок ~\ref{#1}}
