@@ -38,8 +38,6 @@ async def get_aggregate_text_result(
         db,
         start_year,
         end_year,
-        start_quarter,
-        end_quarter,
         bank_ids,
         model_names,
         source_type,

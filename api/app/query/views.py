@@ -43,8 +43,6 @@ async def aggregate_text_result(
         session: AsyncSession,
         start_year: int,
         end_year: int,
-        start_quarter: int,
-        end_quarter: int,
         bank_ids: list[int],
         model_names: list[str],
         source_types: list[str],
