@@ -25,8 +25,6 @@ async def get_aggregate_text_result(
             le=datetime.now().year,
             description="Последний год рассматриваемого периода",
         ),
-        start_quarter: int = Query(default=1, ge=1, le=4, description="Первый квартал рассматриваемого периода"),
-        end_quarter: int = Query(default=4, ge=1, le=4, description="Последний квартал рассматриваемого периода"),
         bank_ids: conlist(int, min_items=1) = Query(description="Список id банков"),  # type: ignore[valid-type]
         model_names: conlist(str, min_items=1) = Query(description="Список id моделей"),  # type: ignore[valid-type]
         source_type: conlist(str, min_items=1) = Query(description="Список типов источников"),
