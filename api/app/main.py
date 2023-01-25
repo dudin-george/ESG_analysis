@@ -3,6 +3,7 @@ import os
 import fastapi
 from alembic.command import upgrade
 from alembic.config import Config
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy_utils import create_database, database_exists
 from starlette.middleware.gzip import GZipMiddleware
 
@@ -23,6 +24,7 @@ app = fastapi.FastAPI(
     description="API for DB",
 )
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 app.include_router(text_router)
 app.include_router(model_router)
 app.include_router(text_result_router)
