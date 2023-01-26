@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Float, Integer, String
 
 from app.database.models.base import Base
 
@@ -18,6 +18,10 @@ class AggregateTableModelResult(Base):
     positive = Column(Integer)
     negative = Column(Integer)
     total = Column(Integer)
+    index_base = Column(Float, default=0)
+    index_mean = Column(Float, default=0)
+    index_std = Column(Float, default=0)
+    index_safe = Column(Float, default=0)
 
     def __repr__(self) -> str:
         return (
