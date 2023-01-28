@@ -81,26 +81,25 @@ def upgrade() -> None:
     )
 
     # (2 * (db['INDEX'] - db['INDEX_MEAN'] > 0) - 1) * (np.maximum(np.abs(db['INDEX'] - db['INDEX_MEAN']) - db['INDEX_STD'],0))
-    # (index - index_mean) > 0 && (abs(index - index_mean) - index_std) > 0 ? abs(index - index_mean) - index_std : 0
-    # TODO Check if it is correct
+    # (2 * (index_base - index_mean > 0) - 1) * (np.maximum(np.abs(index_base - index_mean) - index_std,0))
     op.execute(
-        aggregate_table_model_result.update()
-        .where(
-            sa.and_(
-                (aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean) > 0,
-                (
-                        sa.func.abs(
-                            aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean)
-                        - aggregate_table_model_result.c.index_std
-                )
-                > 0,
-            ),
-        )
-        .values(
-            index_safe=sa.func.abs(
-                aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean
+        aggregate_table_model_result.update().values(
+            index_safe=(
+                    sa.cast(
+                        2
+                        * sa.cast(
+                            aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean > 0,
+                            sa.Integer,
+                        )
+                        - 1,
+                        sa.Float,
+                    )
+                    * sa.func.greatest(
+                sa.func.abs(aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean)
+                - aggregate_table_model_result.c.index_std,
+                0,
             )
-                       - aggregate_table_model_result.c.index_std,
+            ),
         )
     )
 
