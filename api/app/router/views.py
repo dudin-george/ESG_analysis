@@ -26,7 +26,7 @@ async def get_aggregate_text_result(
         description="Последний год рассматриваемого периода",
     ),
     bank_ids: conlist(int, min_items=1) = Query(description="Список id банков"),  # type: ignore[valid-type]
-    model_names: conlist(str, min_items=1) = Query(description="Список id моделей"),  # type: ignore[valid-type]
+    model_names: conlist(str, min_items=1) = Query(description="Список названий моделей"),  # type: ignore[valid-type]
     source_type: conlist(str, min_items=1) = Query(description="Список типов источников"),  # type: ignore[valid-type]
     # todo test in request 0 elems # https://github.com/pydantic/pydantic/issues/975
     aggregate_by_year: bool = Query(default=False, description="Типы агрегации год/квартал"),
