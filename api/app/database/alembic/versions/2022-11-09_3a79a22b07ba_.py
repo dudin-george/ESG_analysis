@@ -37,11 +37,11 @@ def upgrade() -> None:
         sa.Column("name", sa.String(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.execute(bank_type.insert().values(name="bank"))  # type: ignore
+    op.execute(sa.insert(bank_type).values(name="bank"))  # type: ignore
     op.create_index(op.f("ix_bank_type_id"), "bank_type", ["id"], unique=False)
     op.create_index(op.f("ix_bank_type_name"), "bank_type", ["name"], unique=False)
     op.add_column("bank", sa.Column("bank_type_id", sa.Integer(), nullable=True))
-    op.execute(bank.update().values(bank_type_id=1))
+    op.execute(sa.update(bank).values(bank_type_id=1))
     op.create_index(op.f("ix_bank_bank_type_id"), "bank", ["bank_type_id"], unique=False)
     op.create_foreign_key(None, "bank", "bank_type", ["bank_type_id"], ["id"])
     # ### end Alembic commands ###

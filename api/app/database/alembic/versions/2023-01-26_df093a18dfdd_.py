@@ -44,7 +44,7 @@ def upgrade() -> None:
     op.add_column("aggregate_table_model_result", sa.Column("index_safe", sa.Float(), nullable=True))
     # ### end Alembic commands ###
     op.execute(
-        aggregate_table_model_result.update()
+        sa.update(aggregate_table_model_result)
         .where(aggregate_table_model_result.c.total > 0)
         .values(
             index_base=sa.cast(
@@ -60,14 +60,14 @@ def upgrade() -> None:
         .label("avg"),
     ).subquery("select_mean")
     op.execute(
-        aggregate_table_model_result.update()
+        sa.update(aggregate_table_model_result)
         .where(aggregate_table_model_result.c.id == select_mean.c.id)
         .values(
             index_mean=select_mean.c.avg,
         )
     )
     op.execute(
-        aggregate_table_model_result.update().values(
+        sa.update(aggregate_table_model_result).values(
             # (db.POS / (db.TOTAL - db.POS) / db.TOTAL**3 + db.NEG / (db.TOTAL - db.NEG) / db.TOTAL**3)**0.5
             index_std=sa.func.sqrt(
                 aggregate_table_model_result.c.positive
@@ -83,7 +83,7 @@ def upgrade() -> None:
     # (2 * (db['INDEX'] - db['INDEX_MEAN'] > 0) - 1) * (np.maximum(np.abs(db['INDEX'] - db['INDEX_MEAN']) - db['INDEX_STD'],0))
     # (2 * (index_base - index_mean > 0) - 1) * (max(abs(index_base - index_mean) - index_std, 0))
     op.execute(
-        aggregate_table_model_result.update().values(
+        sa.update(aggregate_table_model_result).values(
             index_safe=(
                 sa.cast(
                     2
