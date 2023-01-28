@@ -39,3 +39,13 @@ from text_sentence; --16563367
 SELECT reltuples::bigint AS estimate
 FROM pg_class
 WHERE relname = 'ix_text_sentence_text_id';
+
+
+select
+    id,
+    model_name, source_type,
+    --avg(case when total > 0 then ((positive - negative)::float)/total else 0 end) over (PARTITION BY model_name, source_type) as "index"
+    avg(((positive - negative)::float)/total) over (PARTITION BY model_name, source_type) as "index"
+from aggregate_table_model_result
+order by id
+limit 100;

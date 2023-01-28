@@ -21,9 +21,7 @@ async def get_sentences(
         return JSONResponse(status_code=400, content={"message": "sources not found"})
     sentences = await get_text_sentences(db, model_id, sources, limit)
 
-    return GetTextSentences(
-        items=sentences
-    )  # [GetTextSentencesItem(sentence_id=sentence.id, sentence=sentence.sentence) for sentence in sentences]
+    return GetTextSentences(items=sentences)
 
 
 @router.post("/")
