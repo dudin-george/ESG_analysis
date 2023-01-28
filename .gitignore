@@ -131,3 +131,4 @@ dmypy.json
 .idea/
 *.db
 pretrained_models/
+/docs/pdfs/
