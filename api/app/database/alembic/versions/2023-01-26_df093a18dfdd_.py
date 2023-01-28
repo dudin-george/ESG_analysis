@@ -69,7 +69,9 @@ def upgrade() -> None:
     eps = 1e-5
     # todo add test for zero division
     op.execute(
-        sa.update(aggregate_table_model_result).values(
+        sa.update(aggregate_table_model_result)
+        .where(aggregate_table_model_result.c.total > 0)
+        .values(
             # (db.POS / (db.TOTAL - db.POS) / db.TOTAL**3 + db.NEG / (db.TOTAL - db.NEG) / db.TOTAL**3)**0.5
             index_std=sa.func.sqrt(
                 aggregate_table_model_result.c.positive
@@ -85,7 +87,9 @@ def upgrade() -> None:
     # (2 * (db['INDEX'] - db['INDEX_MEAN'] > 0) - 1) * (np.maximum(np.abs(db['INDEX'] - db['INDEX_MEAN']) - db['INDEX_STD'],0))
     # (2 * (index_base - index_mean > 0) - 1) * (max(abs(index_base - index_mean) - index_std, 0))
     op.execute(
-        sa.update(aggregate_table_model_result).values(
+        sa.update(aggregate_table_model_result)
+        .where(aggregate_table_model_result.c.total > 0)
+        .values(
             index_safe=(
                 sa.cast(
                     2

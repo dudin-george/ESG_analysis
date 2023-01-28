@@ -19,7 +19,7 @@ class AggregateTextResultItem(BaseModel):
     bank_id: int
     model_name: str
     source_type: str
-    index: float
+    index: float | None
 
     def __repr__(self) -> str:
         return (
