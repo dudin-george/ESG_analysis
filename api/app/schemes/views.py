@@ -5,8 +5,10 @@ from pydantic import BaseModel
 
 
 class IndexTypeVal(str, Enum):
-    default_index = "index"
-    index_std = "index_safe"
+    index_base = "index_base"
+    index_mean = "index_mean"
+    index_std = "index_std"
+    index_safe = "index_safe"
 
 
 class AggregateTextResultItem(BaseModel):

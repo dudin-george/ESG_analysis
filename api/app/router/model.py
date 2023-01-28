@@ -18,6 +18,7 @@ router = APIRouter(prefix="/model", tags=["model"])
 @router.get("/", response_model=GetModel)
 async def get_models(db: AsyncSession = Depends(get_session)) -> GetModel:
     models = await get_model_items(db)
+    # todo refactor
     get_model = GetModel(items=[])
     for model in models:
         get_model_item = GetModelItem(

@@ -50,6 +50,10 @@ class Settings(BaseSettings):
 
 
 def get_settings() -> Settings:
-    if os.getenv("ENV") == "view":
-        return Settings(_env_file="../.env")  # type: ignore[call-arg]
-    return Settings()
+    match os.getenv("ENV"):
+        case "view":
+            return Settings(_env_file="../.env")  # type: ignore[call-arg]
+        case "migrate":
+            return Settings(_env_file="../../.env")  # type: ignore[call-arg]
+        case _:
+            return Settings()

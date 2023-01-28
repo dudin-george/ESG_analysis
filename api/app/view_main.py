@@ -1,26 +1,26 @@
 import logging
-import threading
-from collections.abc import Callable
 
 import schedule
 
-from app.views.aggregate_database_model_result import (
+from app.database import get_sync
+from app.views import (
     aggregate_database_mdf,
     aggregate_database_sentiment,
+    update_indexes,
 )
 
 
-def run_threaded(job_func: Callable[[None], None]) -> None:
-    job_thread = threading.Thread(target=job_func)
-    job_thread.start()
+def calculate_aggregate_database_sentiment() -> None:
+    with get_sync() as session:
+        aggregate_database_sentiment(session)
+        aggregate_database_mdf(session)
+        update_indexes(session)
 
 
 def setup() -> None:
-    aggregate_database_sentiment()
-    aggregate_database_mdf()
+    calculate_aggregate_database_sentiment()
     logging.getLogger("schedule")
-    schedule.every().day.do(run_threaded, aggregate_database_sentiment)
-    schedule.every().day.do(run_threaded, aggregate_database_mdf)
+    schedule.every().day.do(calculate_aggregate_database_sentiment)
     while True:
         schedule.run_pending()
 

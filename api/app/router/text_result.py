@@ -12,6 +12,7 @@ router = APIRouter(prefix="/text_result", tags=["text_result"])
 @router.get("/item/{text_id}", response_model=GetTextResult)
 async def get_text_results(text_id: int, db: AsyncSession = Depends(get_session)) -> GetTextResult:
     texts = await get_text_result_items(db, text_id)
+    # todo refactor
     get_text_result = GetTextResult(items=[])
     for text in texts:
         text_result = GetTextResultItem(

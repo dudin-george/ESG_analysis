@@ -69,6 +69,7 @@ async def patch_source(
 @router.get("/type/", response_model=GetSourceTypes)
 async def get_source_types(db: AsyncSession = Depends(get_session)) -> GetSourceTypes:
     source_types = await get_source_types_items(db)
+    # todo refactor
     get_source_type = GetSourceTypes(items=[])
     for source_item in source_types:
         get_source_item = SourceTypes.from_orm(source_item)
