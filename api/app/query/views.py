@@ -1,9 +1,8 @@
 from datetime import date
 from typing import Any
 
-from sqlalchemy import Float, func, select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import cast
 
 from app.database.models import AggregateTableModelResult as TextResultAgg
 from app.schemes.views import AggregateTextResultItem, IndexTypeVal
@@ -11,21 +10,16 @@ from app.schemes.views import AggregateTextResultItem, IndexTypeVal
 
 def get_index(index_type: IndexTypeVal) -> Any:
     match index_type:
-        case IndexTypeVal.default_index:
-            index_val = cast(TextResultAgg.positive - TextResultAgg.negative, Float) / TextResultAgg.total
+        case IndexTypeVal.index_base:
+            return TextResultAgg.index_base
         case IndexTypeVal.index_std:
-            # (POS/(TOTAL-POS)/TOTAL**3+NEG/(TOTAL-NEG)/TOTAL**3)**0.5
-            index_val = func.sqrt(  # type: ignore[assignment]
-                TextResultAgg.positive
-                / (TextResultAgg.total - TextResultAgg.positive + 0.0000001)
-                / func.pow(TextResultAgg.total, 3)
-                + TextResultAgg.negative
-                / (TextResultAgg.total - TextResultAgg.negative + 0.0000001)
-                / func.pow(TextResultAgg.total, 3)
-            )
+            return TextResultAgg.index_std
+        case IndexTypeVal.index_mean:
+            return TextResultAgg.index_mean
+        case IndexTypeVal.index_safe:
+            return TextResultAgg.index_safe
         case _:
             raise ValueError
-    return index_val
 
 
 def aggregate_columns(aggregate_by_year: bool) -> list[Any]:
@@ -40,14 +34,14 @@ def aggregate_columns(aggregate_by_year: bool) -> list[Any]:
 
 
 async def aggregate_text_result(
-        session: AsyncSession,
-        start_year: int,
-        end_year: int,
-        bank_ids: list[int],
-        model_names: list[str],
-        source_types: list[str],
-        aggregate_by_year: bool,
-        index_type: IndexTypeVal,
+    session: AsyncSession,
+    start_year: int,
+    end_year: int,
+    bank_ids: list[int],
+    model_names: list[str],
+    source_types: list[str],
+    aggregate_by_year: bool,
+    index_type: IndexTypeVal,
 ) -> list[AggregateTextResultItem]:
     index_val = get_index(index_type)
     aggregate_cols = aggregate_columns(aggregate_by_year)
@@ -66,7 +60,6 @@ async def aggregate_text_result(
             TextResultAgg.model_name.in_(model_names),
             TextResultAgg.source_type.in_(source_types),
             TextResultAgg.bank_id.in_(bank_ids),
-            TextResultAgg.total > 0,
         )
         .group_by(*aggregate_cols)
         .order_by(TextResultAgg.year, TextResultAgg.quater)

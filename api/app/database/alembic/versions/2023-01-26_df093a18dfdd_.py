@@ -50,7 +50,7 @@ def upgrade() -> None:
             index_base=sa.cast(
                 (aggregate_table_model_result.c.positive - aggregate_table_model_result.c.negative), sa.Float
             )
-                       / aggregate_table_model_result.c.total
+            / aggregate_table_model_result.c.total
         )
     )
     select_mean = sa.select(
@@ -68,8 +68,8 @@ def upgrade() -> None:
     )
     op.execute(
         aggregate_table_model_result.update().values(
-            # # (db.POS / (db.TOTAL - db.POS) / db.TOTAL**3 + db.NEG / (db.TOTAL - db.NEG) / db.TOTAL**3)**0.5
-            index_std=sa.func.sqrt(  # type: ignore[assignment]
+            # (db.POS / (db.TOTAL - db.POS) / db.TOTAL**3 + db.NEG / (db.TOTAL - db.NEG) / db.TOTAL**3)**0.5
+            index_std=sa.func.sqrt(
                 aggregate_table_model_result.c.positive
                 / (aggregate_table_model_result.c.total - aggregate_table_model_result.c.positive + 0.0000001)
                 / sa.func.pow(aggregate_table_model_result.c.total, 3)
@@ -81,24 +81,24 @@ def upgrade() -> None:
     )
 
     # (2 * (db['INDEX'] - db['INDEX_MEAN'] > 0) - 1) * (np.maximum(np.abs(db['INDEX'] - db['INDEX_MEAN']) - db['INDEX_STD'],0))
-    # (2 * (index_base - index_mean > 0) - 1) * (np.maximum(np.abs(index_base - index_mean) - index_std,0))
+    # (2 * (index_base - index_mean > 0) - 1) * (max(abs(index_base - index_mean) - index_std, 0))
     op.execute(
         aggregate_table_model_result.update().values(
             index_safe=(
-                    sa.cast(
-                        2
-                        * sa.cast(
-                            aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean > 0,
-                            sa.Integer,
-                        )
-                        - 1,
-                        sa.Float,
+                sa.cast(
+                    2
+                    * sa.cast(
+                        aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean > 0,
+                        sa.Integer,
                     )
-                    * sa.func.greatest(
-                sa.func.abs(aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean)
-                - aggregate_table_model_result.c.index_std,
-                0,
-            )
+                    - 1,
+                    sa.Float,
+                )
+                * sa.func.greatest(
+                    sa.func.abs(aggregate_table_model_result.c.index_base - aggregate_table_model_result.c.index_mean)
+                    - aggregate_table_model_result.c.index_std,
+                    0,
+                )
             ),
         )
     )
