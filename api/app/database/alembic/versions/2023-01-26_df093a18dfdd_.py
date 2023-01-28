@@ -66,15 +66,17 @@ def upgrade() -> None:
             index_mean=select_mean.c.avg,
         )
     )
+    eps = 1e-5
+    # todo add test for zero division
     op.execute(
         sa.update(aggregate_table_model_result).values(
             # (db.POS / (db.TOTAL - db.POS) / db.TOTAL**3 + db.NEG / (db.TOTAL - db.NEG) / db.TOTAL**3)**0.5
             index_std=sa.func.sqrt(
                 aggregate_table_model_result.c.positive
-                / (aggregate_table_model_result.c.total - aggregate_table_model_result.c.positive + 0.0000001)
+                / (aggregate_table_model_result.c.total - aggregate_table_model_result.c.positive + eps)
                 / sa.func.pow(aggregate_table_model_result.c.total, 3)
                 + aggregate_table_model_result.c.negative
-                / (aggregate_table_model_result.c.total - aggregate_table_model_result.c.negative + 0.0000001)
+                / (aggregate_table_model_result.c.total - aggregate_table_model_result.c.negative + eps)
                 / sa.func.pow(aggregate_table_model_result.c.total, 3)
             ),
         )
