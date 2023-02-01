@@ -9,7 +9,7 @@ from sravni_reviews.queries import get_bank_list
 from tests.mixins import TestMixin
 
 
-class TestBankiRuMfo(TestMixin):
+class TestSravniMfo(TestMixin):
     mfo = SravniBankInfo(
         bank_id=1,
         sravni_id=1,
@@ -38,6 +38,14 @@ class TestBankiRuMfo(TestMixin):
         banki_reviews = SravniMfoReviews()
         reviews = banki_reviews.get_reviews(parsed_time=datetime.fromtimestamp(1), bank_info=self.mfo)
         assert len(reviews) == 10
+        review = reviews[0]
+        assert review.bank_id == 1
+        assert review.source_id == 1
+        assert review.link == "https://www.sravni.ru/zaimy/test/otzyvy/1"
+        assert review.date == datetime(2023, 1, 1)
+        assert review.title == "test"
+        assert review.text == "test"
+        assert review.comments_num is None
 
     def test_parse(self, setup_bank_page):
         banki_reviews = SravniMfoReviews()
