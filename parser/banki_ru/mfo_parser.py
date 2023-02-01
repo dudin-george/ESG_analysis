@@ -5,7 +5,7 @@ from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuMfo
 from banki_ru.queries import create_banks
 from banki_ru.requests_ import get_json_from_url
-from banki_ru.schemes import BankTypes, BankiRuBaseScheme, BankiRuMfoScheme
+from banki_ru.schemes import BankiRuMfoScheme, BankTypes
 from common import api
 from common.schemes import ApiMfo, SourceTypes, Text
 
@@ -71,7 +71,7 @@ class BankiMfo(BankiBase):
                 )
                 for company in microfin
             }
-        ) # some mfo repeats
+        )  # some mfo repeats
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -88,7 +88,7 @@ class BankiMfo(BankiBase):
                     )
                 )
         self.logger.info("finish download mfo list")
-        create_banks(banks_db)
+        create_banks(banks_db)  # type: ignore[arg-type]
 
     def get_page_bank_reviews(self, bank: BankiRuBase, page_num: int, parsed_time: datetime) -> list[Text] | None:
         reviews_json = self.get_mfo_json_reviews(bank, page_num)

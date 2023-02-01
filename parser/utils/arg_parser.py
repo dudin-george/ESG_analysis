@@ -1,5 +1,6 @@
 import argparse
 from enum import Enum
+from time import sleep
 
 from common.base_parser import BaseParser
 
@@ -54,6 +55,7 @@ def _get_class(args: argparse.Namespace) -> type[BaseParser]:
         case ParserType.banki_news:
             from banki_ru.news_parser import BankiNews
 
+            sleep(5)  # if started with reviews parser, then load banks in reviews
             return BankiNews
         case ParserType.banki_insurance:
             from banki_ru.insurance_parser import BankiInsurance

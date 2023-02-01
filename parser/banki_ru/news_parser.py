@@ -1,4 +1,3 @@
-import re
 from datetime import datetime
 from math import ceil
 
@@ -16,8 +15,6 @@ class BankiNews(BankiReviews):
     source_type = SourceTypes.news
 
     def __init__(self) -> None:
-        # sleep(2)  # if started with reviews parser, then load banks in reviews
-        # todo move sleep to arg parse
         super().__init__()
 
     def get_pages_num(self, bank: BankiRuBase) -> int | None:
@@ -74,6 +71,8 @@ class BankiNews(BankiReviews):
         for num_news, url in enumerate(news_urls):
             self.logger.debug(f"[{num_news+1}/{len(news_urls)}] Getting news for {bank.bank_name} from {url}")
             page = get_page_from_url(url)
+            if page is None:
+                continue
             title = page.find("h1", class_="text-header-0")
             date_text = page.find("span", class_="l51e0a7a5")
             news_text_element = page.find("div", {"itemprop": "articleBody"})

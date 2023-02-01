@@ -5,7 +5,7 @@ from banki_ru.banki_base_parser import BankiBase, bank_exists
 from banki_ru.database import BankiRuBase, BankiRuInsurance
 from banki_ru.queries import create_banks
 from banki_ru.requests_ import get_page_from_url
-from banki_ru.schemes import BankTypes, BankiRuInsuranceScheme
+from banki_ru.schemes import BankiRuInsuranceScheme, BankTypes
 from common import api
 from common.schemes import SourceTypes, Text
 
