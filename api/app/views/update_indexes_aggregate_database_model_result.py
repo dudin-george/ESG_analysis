@@ -1,7 +1,11 @@
+import logging
+
 from sqlalchemy import Float, Integer, cast, func, select, update
 from sqlalchemy.orm import Session
 
 from app.database.models import AggregateTableModelResult as TextResultAgg
+
+logger = logging.getLogger(__name__)
 
 
 def update_indexes(session: Session) -> None:
@@ -18,6 +22,7 @@ def calculate_index_base(session: Session) -> None:
         .values(index_base=cast((TextResultAgg.positive - TextResultAgg.negative), Float) / TextResultAgg.total)
     )
     session.commit()
+    logger.info("Calculated index base")
 
 
 def calculate_index_mean(session: Session) -> None:
@@ -35,6 +40,7 @@ def calculate_index_mean(session: Session) -> None:
         )
     )
     session.commit()
+    logger.info("Calculated index mean")
 
 
 def calculate_index_std(session: Session) -> None:
@@ -55,6 +61,7 @@ def calculate_index_std(session: Session) -> None:
         )
     )
     session.commit()
+    logger.info("Calculated index std")
 
 
 def calculate_index_safe(session: Session) -> None:
@@ -82,3 +89,4 @@ def calculate_index_safe(session: Session) -> None:
         )
     )
     session.commit()
+    logger.info("Calculated index safe")

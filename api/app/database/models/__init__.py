@@ -5,6 +5,7 @@ from app.database.models.source import Source, SourceType  # noqa
 from app.database.models.text import Text  # noqa
 from app.database.models.text_result import TextResult  # noqa
 from app.database.models.text_sentence import TextSentence  # noqa
-from app.database.models.views.aggregate_table_model_result import (  # noqa
+from app.database.models.views import (  # noqa
     AggregateTableModelResult,
+    TextSentenceCount,
 )

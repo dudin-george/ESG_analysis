@@ -12,6 +12,15 @@ from app.database import (
     TextResult,
     TextSentence,
 )
+from app.misc.logger import get_logger
+
+logger = get_logger(__name__)
+
+
+def recalculate_aggregate_table(session: Session) -> None:
+    session.execute(delete(AggregateTableModelResult))
+    session.execute("ALTER SEQUENCE aggregate_table_model_result_id_seq RESTART WITH 1")  # type: ignore
+    session.commit()
 
 
 def aggregate_database_sentiment(session: Session) -> None:
@@ -58,8 +67,6 @@ def aggregate_database_sentiment(session: Session) -> None:
     """
     eps = 1e-7
 
-    session.execute(delete(AggregateTableModelResult))
-    session.commit()
     select_log_result = (
         select(
             TextResult.text_sentence_id,
@@ -159,7 +166,7 @@ def aggregate_database_sentiment(session: Session) -> None:
         )
     )
     session.commit()
-    print("Done")
+    logger.info("AggregateTableModelResult table updated sentiment")
 
 
 def aggregate_database_mdf(session: Session) -> None:
@@ -243,4 +250,4 @@ def aggregate_database_mdf(session: Session) -> None:
         )
     )
     session.commit()
-    print("Done")
+    logger.info("AggregateTableModelResult table updated mdf")
