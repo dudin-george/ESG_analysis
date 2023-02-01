@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 import requests_mock
 
@@ -67,6 +69,9 @@ class TestVKParser(TestMixin):
             text.link
             == f"https://vk.com/wall{comment['owner_id']}_{comment['post_id']}?reply={comment['id']}&thread={comment['parents_stack'][0]}"
         )
+        assert text.date == datetime.fromtimestamp(comment["date"])
+        assert text.comments_num is None
+        assert text.bank_id == self.bank.id
 
     def test_get_post_comment(self, setup_bank_page):
         parser = VKBankParser()
