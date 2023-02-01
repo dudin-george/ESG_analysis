@@ -4,6 +4,7 @@ from datetime import datetime
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuInsurance
 from banki_ru.queries import create_banks
+from banki_ru.requests_ import get_page_from_url
 from banki_ru.schemes import BankTypes
 from common import api
 from common.schemes import ApiBank, SourceTypes, Text
@@ -18,7 +19,7 @@ class BankiInsurance(BankiBase):
         super().__init__()
 
     def get_pages_num_insurance_list(self, url: str) -> int:
-        page = self.get_page_from_url(url)
+        page = get_page_from_url(url)
         if page is None:
             return 0
         total_page_elem = page.find("div", {"data-module": "ui.pagination"})
@@ -35,7 +36,7 @@ class BankiInsurance(BankiBase):
         url = "https://www.banki.ru/insurance/companies/"
         total_pages = self.get_pages_num_insurance_list(url)
         for pages in range(1, total_pages + 1):
-            soup = self.get_page_from_url(url, params={"page": pages})
+            soup = get_page_from_url(url, params={"page": pages})
             if soup is None:
                 raise Exception("Can't get page")
             for row in soup.find_all("tr", {"data-test": "list-row"}):

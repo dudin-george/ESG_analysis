@@ -4,6 +4,7 @@ from datetime import datetime
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuBroker
 from banki_ru.queries import create_banks
+from banki_ru.requests_ import get_json_from_url
 from banki_ru.schemes import BankiRuBankScheme, BankTypes
 from common import api
 from common.schemes import SourceTypes, Text
@@ -14,7 +15,7 @@ class BankiBroker(BankiBase):
     source_type = SourceTypes.reviews
 
     def get_broker_licence_from_url(self, url: str) -> str | None:
-        broker_json = self.get_json_from_url(url)
+        broker_json = get_json_from_url(url)
         if broker_json is None or "data" not in broker_json.keys():
             return None
         broker_license_str: str = broker_json["data"]["broker"]["licence"]
@@ -23,7 +24,7 @@ class BankiBroker(BankiBase):
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
         existing_brokers = api.get_broker_list()
-        brokers_json = self.get_json_from_url("https://www.banki.ru/investment/brokers/list/")
+        brokers_json = get_json_from_url("https://www.banki.ru/investment/brokers/list/")
         if brokers_json is None:
             return None
         brokers = []

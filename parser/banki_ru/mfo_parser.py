@@ -4,6 +4,7 @@ from typing import Any
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuMfo
 from banki_ru.queries import create_banks
+from banki_ru.requests_ import get_json_from_url
 from banki_ru.schemes import BankiRuBankScheme, BankTypes, MfoScheme
 from common import api
 from common.schemes import SourceTypes, Text
@@ -27,13 +28,13 @@ class BankiMfo(BankiBase):
             "page_type": "MAINPRODUCT_SEARCH",
             "sponsor_package_id": "4",
         }
-        return self.get_json_from_url("https://www.banki.ru/microloans/ajax/search/", params=params)
+        return get_json_from_url("https://www.banki.ru/microloans/ajax/search/", params=params)
 
     def get_mfo_json_reviews(self, bank: BankiRuBase, page: int = 1) -> dict[str, Any] | None:
         params = self.params.copy()
         params["companyCodes"] = bank.bank_code
         params["page"] = page
-        return self.get_json_from_url(self.url, params=params)
+        return get_json_from_url(self.url, params=params)
 
     def json_total_pages(self, response: dict[str, Any]) -> int:
         page_elem = response["pagination"]

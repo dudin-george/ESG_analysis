@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Any
+
 from math import ceil
 
 import requests
@@ -10,21 +12,21 @@ from sravni_reviews.base_parser import BaseSravniReviews
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks
 from sravni_reviews.schemes import SravniRuItem
+from common.requests_ import get_json_from_url, send_get_request
 
 
 # noinspection PyMethodMayBeStatic
 class SravniReviews(BaseSravniReviews):
     site: str = "sravni.ru"
 
-    def request_bank_list(self) -> Response:
-        params = {"active": True, "limit": 400, "organizationType": "bank", "skip": 0}  # todo request json
-        return requests.get("https://www.sravni.ru/proxy-organizations/organizations", params=params)  # type: ignore
+    def request_bank_list(self) -> dict[str, Any]:
+        params = {"active": True, "limit": 400, "organizationType": "bank", "skip": 0}
+        return get_json_from_url("https://www.sravni.ru/proxy-organizations/organizations", params=params)
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
         self.logger.info("send request to https://www.sravni.ru/proxy-organizations/organizations")
-        request = self.request_bank_list()
-        items = request.json()["items"]
+        items = self.request_bank_list()["items"]
         self.logger.info("finish download bank list")
         existing_banks = api.get_bank_list()
         banks_id = [bank.id for bank in existing_banks]
@@ -46,9 +48,10 @@ class SravniReviews(BaseSravniReviews):
                     bank_official_name=item["fullName"],
                 )
             )
-        banks_db = []
-        for bank in sravni_bank_list:
-            banks_db.append(SravniBankInfo.from_pydantic(bank))
+        banks_db = [
+            SravniBankInfo().from_pydantic(bank)
+            for bank in sravni_bank_list
+        ]
         create_banks(banks_db)
         self.logger.info("create table for sravni banks")
 
@@ -73,7 +76,7 @@ class SravniReviews(BaseSravniReviews):
             reviews.append(parsed_review)
         return reviews
 
-    def get_bank_reviews(self, bank_info: SravniBankInfo, page_num: int = 0, page_size: int = 1000) -> Response:
+    def get_bank_reviews(self, bank_info: SravniBankInfo, page_num: int = 0, page_size: int = 1000) -> dict[str, Any] | None:
         params = {
             "filterBy": "withRates",
             "isClient": False,
@@ -88,17 +91,14 @@ class SravniReviews(BaseSravniReviews):
             "tag": None,
             "withVotes": True,
         }
-        response = self.send_get_request("https://www.sravni.ru/proxy-reviews/reviews", params=params)
-        if response.status_code != 200:
-            self.logger.warning(f"error {response.status_code} for {bank_info.alias}")
-        return response
+        json_response = get_json_from_url("https://www.sravni.ru/proxy-reviews/reviews", params=params)
+        if not json_response:
+            self.logger.warning(f"error for {bank_info.alias}")
+        return json_response
 
     def get_num_reviews(self, bank_info: SravniBankInfo) -> int:
-        response = self.get_bank_reviews(bank_info, page_size=1)
-        if response.status_code != 200:
-            self.logger.warning(f"error {response.status_code} for {bank_info.alias} url {response.url}")
-            return 0
-        reviews_total = int(response.json()["total"])
+        json_response = self.get_bank_reviews(bank_info, page_size=1)
+        reviews_total = int(json_response["total"])
         return ceil(reviews_total / 1000)
 
     def get_reviews(self, parsed_time: datetime, bank_info: SravniBankInfo) -> list[Text]:
@@ -106,11 +106,7 @@ class SravniReviews(BaseSravniReviews):
         page_num = self.get_num_reviews(bank_info)
         for i in range(page_num):
             self.logger.debug(f"[{i + 1}/{page_num}] download page {i + 1} for {bank_info.alias}")
-            response = self.get_bank_reviews(bank_info, i)
-
-            if response.status_code == 500 or response.status_code is None:
-                break
-            reviews_json = self.get_json(response)
+            reviews_json = self.get_bank_reviews(bank_info, i)
             if reviews_json is None:
                 break
             reviews_json_items = reviews_json.get("items", [])

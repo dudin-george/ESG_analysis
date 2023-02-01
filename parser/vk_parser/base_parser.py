@@ -10,6 +10,7 @@ import numpy as np
 
 from common import api
 from common.base_parser import BaseParser
+from common.requests_ import get_json_from_url
 from common.schemes import PatchSource, Source, SourceRequest, Text, TextRequest
 from common.settings import Settings
 from utils import relative_path
@@ -103,8 +104,7 @@ class VKBaseParser(BaseParser):
             params["offset"] = i * 100
             sleep(0.6)
             # https://vk.com/dev/api_requests limited to 3 rps for user token, and for two parsers in ~0.6s
-            response = self.send_get_request("https://api.vk.com/method/wall.getComments", params=params)
-            comments_json = self.get_json(response)
+            comments_json = get_json_from_url("https://api.vk.com/method/wall.getComments", params=params)
             if comments_json is None:
                 continue
             for comment in comments_json["response"]["items"]:
@@ -141,10 +141,9 @@ class VKBaseParser(BaseParser):
                 "count": 1,
                 "offset": 0,
             }
-            response = self.send_get_request(
+            response_json = get_json_from_url(
                 "https://api.vk.com/method/wall.get", params=params_wall_get
             )  # get total number of posts
-            response_json = self.get_json(response)
             if response_json is None:
                 continue
             num_page = ceil(response_json["response"]["count"] / 100)
@@ -156,8 +155,7 @@ class VKBaseParser(BaseParser):
                 params_wall_get["offset"] = i * 100
                 sleep(0.6)
                 # https://vk.com/dev/api_requests limited to 3 rps for user token, and for two parsers in ~0.6s
-                response = self.send_get_request("https://api.vk.com/method/wall.get", params=params_wall_get)
-                response_json = self.get_json(response)
+                response_json = get_json_from_url("https://api.vk.com/method/wall.get", params=params_wall_get)
                 if response_json is None:
                     continue
                 posts_dates = [post["date"] for post in response_json["response"]["items"]]

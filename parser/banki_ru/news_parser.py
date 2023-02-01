@@ -5,6 +5,7 @@ from math import ceil
 from bs4 import BeautifulSoup
 
 from banki_ru.database import BankiRuBase
+from banki_ru.requests_ import send_get_request
 from banki_ru.reviews_parser import BankiReviews
 from banki_ru.schemes import BankTypes
 from common.schemes import SourceTypes, Text
@@ -36,7 +37,7 @@ class BankiNews(BankiReviews):
     def bank_news_page(self, bank: BankiRuBase, page: int = 1) -> BeautifulSoup | None:
         self.logger.debug(f"Getting news page {page} for {bank.bank_name}")
         url = f"https://www.banki.ru/banks/bank/{bank.bank_code}/news/?PAGEN_2={page}"
-        response = self.send_get_request(url)
+        response = send_get_request(url)
         try:
             page_html = BeautifulSoup(response.text, "html.parser")
         except Exception as e:
@@ -72,7 +73,7 @@ class BankiNews(BankiReviews):
         texts = []
         for num_news, url in enumerate(news_urls):
             self.logger.debug(f"[{num_news+1}/{len(news_urls)}] Getting news for {bank.bank_name} from {url}")
-            response = self.send_get_request(url)
+            response = send_get_request(url)
             try:
                 page = BeautifulSoup(response.text, "html.parser")  # todo change get page from url
             except Exception as e:
