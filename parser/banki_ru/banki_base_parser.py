@@ -8,10 +8,11 @@ from bs4 import BeautifulSoup
 from banki_ru.database import BankiRuBase
 from banki_ru.queries import get_bank_list
 from banki_ru.requests_ import get_page_from_url, send_get_request
-from banki_ru.schemes import BankTypes
+from banki_ru.schemes import BankiRuBaseScheme, BankTypes
 from common import api
 from common.base_parser import BaseParser
 from common.schemes import (
+    ApiBank,
     PatchSource,
     Source,
     SourceRequest,
@@ -19,6 +20,13 @@ from common.schemes import (
     Text,
     TextRequest,
 )
+
+
+def bank_exists(bank: BankiRuBaseScheme, bank_list: list[ApiBank]) -> bool:
+    for bank_db in bank_list:
+        if bank_db.licence == bank.bank_id:
+            return True
+    return False
 
 
 class BankiBase(BaseParser):

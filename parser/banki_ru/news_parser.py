@@ -5,7 +5,7 @@ from math import ceil
 from bs4 import BeautifulSoup
 
 from banki_ru.database import BankiRuBase
-from banki_ru.requests_ import send_get_request
+from banki_ru.requests_ import get_page_from_url, send_get_request
 from banki_ru.reviews_parser import BankiReviews
 from banki_ru.schemes import BankTypes
 from common.schemes import SourceTypes, Text
@@ -73,26 +73,19 @@ class BankiNews(BankiReviews):
         texts = []
         for num_news, url in enumerate(news_urls):
             self.logger.debug(f"[{num_news+1}/{len(news_urls)}] Getting news for {bank.bank_name} from {url}")
-            response = send_get_request(url)
-            try:
-                page = BeautifulSoup(response.text, "html.parser")  # todo change get page from url
-            except Exception as e:
-                self.logger.warning(f"{e} on {url}")
-                continue
+            page = get_page_from_url(url)
             title = page.find("h1", class_="text-header-0")
             date_text = page.find("span", class_="l51e0a7a5")
             news_text_element = page.find("div", {"itemprop": "articleBody"})
             if title == "" or title is None or date_text == "" or date_text is None or news_text_element is None:
-                self.logger.warning(f"Can't parse news from {url} real url {response.url}")
+                self.logger.warning(f"Can't parse news from {url}")
                 continue
             paragraphs = [elem.text for elem in news_text_element.find_all("p")]  # type: ignore
             news_text = " ".join(paragraphs)
-            date = re.sub(r"[\n\t]", "", date_text.text)  # todo validator
-            parsed_date = datetime.strptime(date, "%d.%m.%Y %H:%M")
             texts.append(
                 Text(
                     link=url,
-                    date=parsed_date,
+                    date=date_text.text,
                     title=title.text,
                     text=news_text,
                     source_id=self.source.id,

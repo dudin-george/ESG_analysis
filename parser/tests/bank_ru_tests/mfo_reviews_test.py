@@ -19,7 +19,7 @@ class TestBankiRuMfo(TestMixin):
     def setup_insurance_page_with_header(self, setup_test_reviews, mock_banki_ru_mfo_list, mock_mfo_page):
         yield setup_test_reviews
 
-    def test_reviews(self, setup_insurance_page_with_header):
+    def test_load_bank(self, setup_insurance_page_with_header):
         mfo_reviews = BankiMfo()
         assert len(get_bank_list(mfo_reviews.bank_site)) == 3
 

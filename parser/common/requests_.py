@@ -70,5 +70,9 @@ def get_page_from_url(
     url: str, params: dict[str, Any] | None = None, header: dict[str, Any] | None = None
 ) -> BeautifulSoup | None:
     response = send_get_request(url, params, header)
-    page = BeautifulSoup(response.text, "html.parser")
+    try:
+        page = BeautifulSoup(response.text, "html.parser")
+    except Exception as e:
+        logger.warning(f"{e} on {url}")
+        return None
     return page

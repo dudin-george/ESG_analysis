@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     vk_token: str = Field(env="VK_TOKEN")
     selenium_hub: AnyHttpUrl | None = Field(env="SELENIUM_HUB")
     sleep: int = Field(env="SLEEP", default=60)
+    docker: bool = Field(env="DOCKER", default=False)
 
     @property
     def database_settings(self) -> dict[str, Any]:

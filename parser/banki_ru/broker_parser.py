@@ -5,7 +5,7 @@ from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuBroker
 from banki_ru.queries import create_banks
 from banki_ru.requests_ import get_json_from_url
-from banki_ru.schemes import BankiRuBankScheme, BankTypes
+from banki_ru.schemes import BankiRuBrokerScheme, BankTypes
 from common import api
 from common.schemes import SourceTypes, Text
 
@@ -50,7 +50,7 @@ class BankiBroker(BankiBase):
                 continue
 
             brokers.append(
-                BankiRuBankScheme(
+                BankiRuBrokerScheme(
                     bank_id=bank_db.id,
                     bank_name=broker["name"],
                     bank_code=broker["url"].split("/")[-2],
