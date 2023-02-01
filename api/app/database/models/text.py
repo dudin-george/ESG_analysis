@@ -1,6 +1,15 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import (
+    Column,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    extract,
+    func,
+)
 from sqlalchemy.orm import Mapped, relationship
 
 from app.database.models.base import Base
@@ -13,6 +22,11 @@ if TYPE_CHECKING:
 
 class Text(Base):
     __tablename__ = "text"
+    __table_args__ = (
+        Index("ix_text_date_extract_year", extract("year", "date")),
+        Index("ix_text_date_extract_quarter", extract("quarter", "date")),
+        Index("ix_text_date_trunc_month", func.date_trunc("month", "date")),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     link = Column(String)
