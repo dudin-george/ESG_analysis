@@ -14,23 +14,20 @@ class VKOtherIndustriesParser(VKBaseParser):
     type = VKType.other
 
     def load_bank_list(self) -> None:
-        params = {
-            "access_token": self.settings.vk_token,
-            "v": self.VERSION,
-        }
         path = relative_path(os.path.dirname(__file__), self.file)
         if not os.path.exists(path):
             raise FileNotFoundError(f"{self.file} not found")
         bank_arr = np.load(path, allow_pickle=True)
-        params["group_ids"] = ",".join(bank_arr[:, 2])
-        response = self.get_json_from_url("https://api.vk.com/method/groups.getById", params=params)
-        if response is None or "response" not in response:
+        group_ids = ",".join(bank_arr[:, 2])
+        response = self.vk_api.groups_get_by_id(group_ids)
+        if response is None:
             return None
         if bank_arr.shape[0] != len(response["response"]):
             self.logger.error("bank array and response have different length")
             raise Exception("bank array and response have different length")
-        db_banks: list[VKBaseDB] = []
-        for bank, vk_group in zip(bank_arr, response["response"]):
-            db_banks.append(VkOtherIndustries(id=bank[0], name=bank[1], vk_id=-vk_group["id"], domain=bank[2]))
+        db_banks: list[VKBaseDB] = [
+            VkOtherIndustries(id=bank[0], name=bank[1], vk_id=-vk_group["id"], domain=bank[2])
+            for bank, vk_group in zip(bank_arr, response["response"])
+        ]
         create_banks(db_banks)
         self.logger.info("bank list loaded")

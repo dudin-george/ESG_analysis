@@ -8,8 +8,7 @@ from utils.logger import get_logger
 
 
 class BaseParser(ABC):
-    settings = get_settings()
-    logger = get_logger(__name__, settings.logger_level)
+    logger = get_logger(__name__, get_settings().logger_level)
 
     def parse(self) -> None:
         raise NotImplementedError
