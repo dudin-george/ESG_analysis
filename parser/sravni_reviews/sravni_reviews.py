@@ -1,9 +1,7 @@
 from datetime import datetime
-from math import ceil
 from typing import Any
 
 from common import api
-from common.requests_ import get_json_from_url
 from common.schemes import Text
 from sravni_reviews.base_parser import BaseSravniReviews
 from sravni_reviews.database import SravniBankInfo
@@ -14,10 +12,7 @@ from sravni_reviews.schemes import SravniRuItem
 # noinspection PyMethodMayBeStatic
 class SravniReviews(BaseSravniReviews):
     site: str = "sravni.ru"
-
-    def request_bank_list(self) -> dict[str, Any] | None:
-        params = {"active": True, "limit": 400, "organizationType": "bank", "skip": 0}
-        return get_json_from_url("https://www.sravni.ru/proxy-organizations/organizations", params=params)
+    organization_type: str = "bank"
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
@@ -56,50 +51,22 @@ class SravniReviews(BaseSravniReviews):
     ) -> list[Text]:
         reviews = []
         for review in reviews_array:
-            url = f"https://www.sravni.ru/bank/{bank.alias}/otzyvy/{review['id']}"
-            # noinspection PyTypeChecker
             parsed_review = Text(
                 source_id=self.source.id,
                 bank_id=bank.bank_id,
-                link=url,
+                link=self.get_review_link(bank, review),
                 date=review["date"],
                 title=review["title"],
                 text=review["text"],
-                comments_num=int(review["commentsCount"]),
+                comments_num=review["commentsCount"],
             )
             if last_date > parsed_review.date.replace(tzinfo=None):
                 continue
             reviews.append(parsed_review)
         return reviews
 
-    def get_bank_reviews(
-        self, bank_info: SravniBankInfo, page_num: int = 0, page_size: int = 1000
-    ) -> dict[str, Any] | None:
-        params = {
-            "filterBy": "withRates",
-            "isClient": False,
-            "locationRoute": None,
-            "newIds": True,
-            "orderBy": "byDate",
-            "pageIndex": page_num,
-            "pageSize": page_size,
-            "reviewObjectId": bank_info.sravni_id,
-            "reviewObjectType": "bank",
-            "specificProductId": None,
-            "tag": None,
-            "withVotes": True,
-        }
-        json_response = get_json_from_url("https://www.sravni.ru/proxy-reviews/reviews", params=params)
-        if not json_response:
-            self.logger.warning(f"error for {bank_info.alias}")
-        return json_response
-
-    def get_num_reviews(self, bank_info: SravniBankInfo) -> int:
-        json_response = self.get_bank_reviews(bank_info, page_size=1)
-        if json_response is None:
-            return 0
-        reviews_total = int(json_response["total"])
-        return ceil(reviews_total / 1000)
+    def get_review_link(self, bank_info: SravniBankInfo, review: dict[str, Any]) -> str:
+        return f"https://www.sravni.ru/bank/{bank_info.alias}/otzyvy/{review['id']}"
 
     def get_reviews(self, parsed_time: datetime, bank_info: SravniBankInfo) -> list[Text]:
         reviews_array = []
