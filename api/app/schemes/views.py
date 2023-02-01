@@ -11,6 +11,11 @@ class IndexTypeVal(str, Enum):
     index_safe = "index_safe"
 
 
+class SentenceCountAggregate(str, Enum):
+    month = "month"
+    quarter = "quarter"
+
+
 class AggregateTextResultItem(BaseModel):
     year: int
     quarter: int
@@ -30,3 +35,14 @@ class AggregateTextResultItem(BaseModel):
 
 class AggregateTetResultResponse(BaseModel):
     items: list[AggregateTextResultItem]
+
+
+class ReviewsCountItem(BaseModel):
+    date: date
+    source_site: str
+    source_type: str
+    count: int
+
+
+class ReviewsCountResponse(BaseModel):
+    items: list[ReviewsCountItem]

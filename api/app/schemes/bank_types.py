@@ -6,3 +6,6 @@ class BankTypeVal(str, Enum):
     broker = "broker"
     insurance = "insurance"
     mfo = "mfo"
+
+    def __repr__(self) -> str:
+        return f"BankTypeVal({self.value})"

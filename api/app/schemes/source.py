@@ -1,6 +1,27 @@
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel
+
+
+class SourceTypesEnum(str, Enum):
+    reviews = "reviews"
+    news = "news"
+    vk = "vk.com"
+
+
+class SourceSitesEnum(str, Enum):
+    banki_ru_reviews = "banki.ru"
+    banki_ru_brokers = "banki.ru/broker"
+    banki_ru_news = "banki.ru/news"
+    banki_ru_insurance = "banki.ru/insurance"
+    banki_ru_mfo = "banki.ru/mfo"
+    irecommend = "irecommend.ru"
+    sravni_ru = "sravni.ru"
+    sravni_mfo = "sravni.ru/mfo"
+    sravni_insurance = "sravni.ru/insurance"
+    vk_comments = "vk.com/comments"
+    vk_other = "vk.com/other"
 
 
 class Source(BaseModel):

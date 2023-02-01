@@ -1,12 +1,18 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import conlist
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
-from app.query.views import aggregate_text_result
-from app.schemes.views import AggregateTetResultResponse, IndexTypeVal
+from app.query.views import aggregate_text_result, text_reviews_count
+from app.schemes.source import SourceSitesEnum
+from app.schemes.views import (
+    AggregateTetResultResponse,
+    IndexTypeVal,
+    ReviewsCountResponse,
+    SentenceCountAggregate,
+)
 
 router = APIRouter(prefix="/views", tags=["aggregate"])
 
@@ -44,3 +50,26 @@ async def get_aggregate_text_result(
         index_type,
     )
     return AggregateTetResultResponse(items=data)
+
+
+@router.get("/reviews_count", response_model=ReviewsCountResponse)
+async def get_reviews_count(
+    session: AsyncSession = Depends(get_session),
+    start_date: date = Query(
+        default=datetime.fromtimestamp(1).date(),
+        # ge=datetime.fromtimestamp(1).timestamp(),
+        # le=datetime.now().timestamp(),
+        description="Начальная дата рассматриваемого периода",
+    ),
+    end_date: date = Query(
+        default=datetime.now().date(),
+        # ge=datetime.fromtimestamp(1).timestamp(),
+        # le=datetime.now().timestamp(),
+        description="Конечная дата рассматриваемого периода",
+    ),
+    source_sites: list[SourceSitesEnum] | None = Query(description="Список сайтов"),
+    # source_types: conlist(SourceTypesEnum, min_items=1) | None = Query(description="Список типов источников"),  # type: ignore[valid-type]
+    aggregate_by: SentenceCountAggregate = Query(default=SentenceCountAggregate.month, description="Тип агрегации"),
+) -> ReviewsCountResponse:
+    data = await text_reviews_count(session, start_date, end_date, source_sites, aggregate_by)
+    return ReviewsCountResponse(items=data)
