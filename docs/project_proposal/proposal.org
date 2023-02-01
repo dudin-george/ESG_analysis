@@ -1,5 +1,5 @@
 #+STARTUP: latexpreview
-#+TITLE: Site Development for automatic collection analysis and visualization of company ethical behavior
+#+TITLE: Site Development for automatic collection, analysis and visualization of company ethical behavior
 #+AUTHOR: Roman Solomatin
 #+LANGUAGE: EN
 #+LATEX_CLASS: ProjectProposal
@@ -36,7 +36,7 @@ Word2Vec utilizes a vector representation of words, which enables the algorithm 
 
 ELMO, GPT, and BERT, on the other hand, are based on the transformer architecture, in which each sentence is represented by a vector of numbers, commonly known as an embedding. This representation allows for a more comprehensive and holistic understanding of the text, as it takes into account the context of the entire sentence or text.
 
-Of these algorithms, BERT is considered to be the most advanced and powerful, as it is able to consider the context of the entire sentence or text, whereas GPT and ELMO only consider a one-sided context. This allows BERT to achieve state-of-the-art performance in a wide range of NLP tasks, including text classification, named entity recognition, and question answering.
+Of these algorithms, BERT is considered to be the most advanced and powerful[cite:@devlin2018bert], as it is able to consider the context of the entire sentence or text, whereas GPT and ELMO only consider a one-sided context. This allows BERT to achieve state-of-the-art performance in a wide range of NLP tasks, including text classification, named entity recognition, and question answering.
 
 * Results Anticipated
 * Conclusion
