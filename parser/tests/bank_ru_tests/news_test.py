@@ -47,3 +47,9 @@ class TestBankiRuNews(TestMixin):
         bank_news.get_news_links = lambda a, b, c: ["https://www.banki.ru/news/lenta/?id=10978151/"] * 3
         reviews = bank_news.get_page_bank_reviews(self.bank, 1, datetime.fromtimestamp(1))
         assert len(reviews) == 3
+        review = reviews[0]
+        assert review.bank_id == self.bank.bank_id
+        assert review.link == "https://www.banki.ru/news/lenta/?id=10978151/"
+        assert review.date.date() == datetime(2022, 12, 30).date()
+        assert review.comments_num is None
+        assert review.source_id == 1

@@ -31,6 +31,12 @@ class TestBankiRuReviews(TestMixin):
 
     @pytest.fixture
     def setup_reviews_difference_dates(self, setup_test_reviews, bank_reviews_response_freeze) -> requests_mock.Mocker:
+        json = bank_reviews_response_freeze[1]
+        json["data"][0]["dateCreate"] = datetime(2023, 1, 1).isoformat()
+        json["data"][0]["title"] = "test"
+        json["data"][0]["text"] = "test"
+        json["data"][0]["commentCount"] = 1
+        json["data"][0]["id"] = 1
         setup_test_reviews.get(bank_reviews_response_freeze[0], json=bank_reviews_response_freeze[1])
         yield setup_test_reviews
 
@@ -52,6 +58,15 @@ class TestBankiRuReviews(TestMixin):
         banki_reviews = BankiReviews()
         reviews = banki_reviews.get_page_bank_reviews(self.bank, page_num=1, parsed_time=datetime(2022, 1, 1))
         assert len(reviews) == 1
+        review = reviews[0]
+        assert review.bank_id == self.bank.bank_id
+        assert review.text == "test"
+        assert review.title == "test"
+        assert review.link == "https://www.banki.ru/services/responses/bank/response/1"
+        assert review.date == datetime(2023, 1, 1)
+        assert review.source_id == 1
+        assert review.comments_num == 1
+
 
     def test_parse(self, setup_bank_page):
         banki_reviews = BankiReviews()

@@ -55,7 +55,7 @@ class SravniReviews(BaseSravniReviews):
                 source_id=self.source.id,
                 bank_id=bank.bank_id,
                 link=self.get_review_link(bank, review),
-                date=review["date"],
+                date=review["date"],  # todo check created to moscow time
                 title=review["title"],
                 text=review["text"],
                 comments_num=review["commentsCount"],
