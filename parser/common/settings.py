@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = Field(env="POSTGRES_PASSWORD", default="mypassword")
     api_url: AnyHttpUrl = Field(env="API_URL")
     logger_level: int = Field(env="LOGGER_LEVEL", default=10)
-    vk_token: str | None = Field(env="VK_TOKEN")
+    vk_token: str = Field(env="VK_TOKEN")
     selenium_hub: AnyHttpUrl | None = Field(env="SELENIUM_HUB")
     sleep: int = Field(env="SLEEP", default=60)
 

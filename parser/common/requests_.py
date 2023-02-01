@@ -10,6 +10,7 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+
 def send_get_request(
     url: str, params: dict[str, Any] | None = None, header: dict[str, Any] | None = None
 ) -> requests.Response:

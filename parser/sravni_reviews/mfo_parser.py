@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import Any
 
 from common import api
+from common.requests_ import get_json_from_url
 from common.schemes import Text
 from sravni_reviews.base_parser import BaseSravniReviews
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks
 from sravni_reviews.schemes import SravniRuItem
-from common.requests_ import get_json_from_url
 
 
 # noinspection PyMethodMayBeStatic

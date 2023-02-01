@@ -120,7 +120,7 @@ class VKBaseParser(BaseParser):
             self.logger.info(f"[{bank_iter+1}/{len(self.bank_list)}] start parse {bank.name}")
             if bank.id < parsed_bank_id:  # type: ignore
                 continue
-            response_json = self.vk_api.get_wall(bank.vk_id, 0, count=1)  # get total number of posts
+            response_json = self.vk_api.get_wall(bank.vk_id, 0, count=1)  # type: ignore # get total number of posts
             if response_json is None:
                 continue
             num_page = ceil(response_json["response"]["count"] / 100)
@@ -128,7 +128,7 @@ class VKBaseParser(BaseParser):
                 self.logger.info(f"Start parse {bank.name} page [{i+1}/{num_page}]")
                 if i <= page_num:
                     continue
-                response_json = self.vk_api.get_wall(bank.vk_id, i * 100)
+                response_json = self.vk_api.get_wall(bank.vk_id, i * 100)  # type: ignore
                 if response_json is None:
                     continue
                 posts_dates = [post["date"] for post in response_json["response"]["items"]]
