@@ -96,7 +96,7 @@ broker_list_url = "https://www.banki.ru/investment/brokers/list/"
 
 @my_vcr.use_cassette
 def get_broker_list_with_header() -> dict[str, Any]:
-    return requests.get(broker_list_url, headers={"x-requested-with": "XMLHttpRequest"}).json()
+    return requests.get(broker_list_url).json()
 
 
 broker_banki_list = get_broker_list_with_header()

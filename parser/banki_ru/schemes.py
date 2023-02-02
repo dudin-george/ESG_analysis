@@ -34,6 +34,8 @@ class BankiRuBrokerScheme(BankiRuBaseScheme):
             return -1
         broker_license_unparsed = re.sub("-", "", v)
         broker_license_arr = re.findall("\\d{8}100000|\\d{8}300000", broker_license_unparsed)
+        if len(broker_license_arr) == 0:
+            return -1
         return int(broker_license_arr[0])
 
     @validator("bank_code", pre=True)

@@ -19,7 +19,7 @@ class TestBankiRuBroker(TestMixin):
     def setup_broker_page_with_header(self, setup_test_reviews, mock_banki_ru_brokers_license, mock_broker_page):
         yield setup_test_reviews
 
-    def test_reviews(self, setup_broker_page_with_header):
+    def test_bank_list(self, setup_broker_page_with_header):
         broker_reviews = BankiBroker()
         assert len(get_bank_list(broker_reviews.bank_site)) == 3
 
