@@ -1,10 +1,18 @@
 from typing import Any
 
 from common import api
+from common.schemes import ApiMfo
 from sravni_reviews.base_parser import BaseSravniReviews
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks
-from sravni_reviews.schemes import SravniRuItem
+from sravni_reviews.schemes import SravniRuMfoScheme
+
+
+def bank_exists(mfo: SravniRuMfoScheme, existing_mfos: list[ApiMfo]) -> int | None:
+    for existing_bank in existing_mfos:
+        if existing_bank.licence == mfo.bank_id or existing_bank.ogrn == mfo.bank_ogrn:
+            return existing_bank.id
+    return None
 
 
 class SravniMfoReviews(BaseSravniReviews):
@@ -21,28 +29,19 @@ class SravniMfoReviews(BaseSravniReviews):
         self.logger.info("finish download bank list")
         existing_mfos = api.get_mfo_list()
         sravni_bank_list = []
-        # todo refactor
         for sravni_mfo in sravni_mfo_json:
-            bank_db = None
-            for existing_mfo in existing_mfos:
-                if (int(sravni_mfo["license"]) == existing_mfo.licence) or (
-                    int(sravni_mfo["requisites"]["ogrn"]) == existing_mfo.ogrn
-                ):
-                    bank_db = existing_mfo
-                    break
-            if bank_db is None:
-                continue
-
-            sravni_bank_list.append(
-                SravniRuItem(
-                    sravni_id=sravni_mfo["id"],
-                    alias=sravni_mfo["alias"],
-                    bank_id=bank_db.id,
-                    bank_name=sravni_mfo["name"],
-                    bank_full_name=sravni_mfo["fullName"],
-                    bank_official_name=sravni_mfo["genitiveName"],
-                )
+            mfo = SravniRuMfoScheme(
+                sravni_id=sravni_mfo["id"],
+                alias=sravni_mfo["alias"],
+                bank_id=sravni_mfo["license"],
+                bank_name=sravni_mfo["name"],
+                bank_full_name=sravni_mfo["fullName"],
+                bank_official_name=sravni_mfo["genitiveName"],
+                bank_ogrn=sravni_mfo["requisites"]["ogrn"],
             )
+            if (existing_mfo_id := bank_exists(mfo, existing_mfos)) is not None:
+                mfo.bank_id = existing_mfo_id
+                sravni_bank_list.append(mfo)
         banks_db = [SravniBankInfo.from_pydantic(bank) for bank in sravni_bank_list]
         create_banks(banks_db)
         self.logger.info("create table for sravni banks")

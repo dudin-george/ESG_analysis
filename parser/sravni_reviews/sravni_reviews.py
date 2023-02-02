@@ -4,7 +4,7 @@ from common import api
 from sravni_reviews.base_parser import BaseSravniReviews
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks
-from sravni_reviews.schemes import SravniRuItem
+from sravni_reviews.schemes import SravniRuBankScheme
 
 
 class SravniReviews(BaseSravniReviews):
@@ -23,23 +23,18 @@ class SravniReviews(BaseSravniReviews):
         banks_id = [bank.id for bank in existing_banks]
         sravni_bank_list = []
         for item in items:
-            license_id_str = item["license"].split("-")[0]
-            license_id = int(license_id_str)
-            if license_id not in banks_id:
-                continue
-
-            sravni_bank_list.append(
-                SravniRuItem(
-                    sravni_id=item["_id"],
-                    sravni_old_id=item["oldId"],
-                    alias=item["alias"],
-                    bank_id=license_id,
-                    bank_name=item["name"],
-                    bank_full_name=item["prepositionalName"],
-                    bank_official_name=item["fullName"],
-                )
+            sravni_bank = SravniRuBankScheme(
+                sravni_id=item["_id"],
+                sravni_old_id=item["oldId"],
+                alias=item["alias"],
+                bank_id=item["license"],
+                bank_name=item["name"],
+                bank_full_name=item["prepositionalName"],
+                bank_official_name=item["fullName"],
             )
-        banks_db = [SravniBankInfo().from_pydantic(bank) for bank in sravni_bank_list]
+            if sravni_bank.bank_id in banks_id:
+                sravni_bank_list.append(sravni_bank)
+        banks_db = [SravniBankInfo.from_pydantic(bank) for bank in sravni_bank_list]
         create_banks(banks_db)
         self.logger.info("create table for sravni banks")
 

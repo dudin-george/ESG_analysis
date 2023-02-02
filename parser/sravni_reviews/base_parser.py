@@ -6,9 +6,17 @@ from typing import Any
 from common import api
 from common.base_parser import BaseParser
 from common.requests_ import get_json_from_url
-from common.schemes import PatchSource, SourceRequest, Text, TextRequest
+from common.schemes import ApiBank, PatchSource, SourceRequest, Text, TextRequest
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import get_bank_list
+from sravni_reviews.schemes import SravniRuBaseScheme
+
+
+def bank_exists(bank: SravniRuBaseScheme, bank_list: list[ApiBank]) -> bool:
+    for bank_db in bank_list:
+        if bank_db.licence == bank.bank_id:
+            return True
+    return False
 
 
 class BaseSravniReviews(BaseParser):
@@ -61,7 +69,7 @@ class BaseSravniReviews(BaseParser):
         raise NotImplementedError
 
     def parse_reviews(
-            self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
+        self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
     ) -> list[Text]:
         reviews = []
         for review in reviews_array:

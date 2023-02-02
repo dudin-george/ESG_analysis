@@ -6,12 +6,27 @@ from tests.mixins import TestMixin
 
 
 class TestSravniQueries(TestMixin):
-
     def test_create_banks(self):
-        bank = SravniBankInfo(id=1, bank_id=1, sravni_id="test", sravni_old_id=1, alias="test", bank_name="test",
-                              bank_full_name="test", bank_official_name="test")
-        bank_2 = SravniBankInfo(id=2, bank_id=2, sravni_id="test", sravni_old_id=2, alias="test", bank_name="test",
-                              bank_full_name="test", bank_official_name="test")
+        bank = SravniBankInfo(
+            id=1,
+            bank_id=1,
+            sravni_id="test",
+            sravni_old_id=1,
+            alias="test",
+            bank_name="test",
+            bank_full_name="test",
+            bank_official_name="test",
+        )
+        bank_2 = SravniBankInfo(
+            id=2,
+            bank_id=2,
+            sravni_id="test",
+            sravni_old_id=2,
+            alias="test",
+            bank_name="test",
+            bank_full_name="test",
+            bank_official_name="test",
+        )
 
         create_banks([bank, bank_2])
         assert self.session.query(SravniBankInfo).count() == 2
