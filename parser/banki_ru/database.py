@@ -91,7 +91,7 @@ class BankiRuBroker(BankiRuBase):
         )
 
     @staticmethod
-    def from_pydantic(bank: schemes.BankiRuBaseScheme) -> "BankiRuBroker":
+    def from_pydantic(bank: schemes.BankiRuBrokerScheme) -> "BankiRuBroker":
         return BankiRuBroker(
             bank_name=bank.bank_name,
             bank_code=bank.bank_code,

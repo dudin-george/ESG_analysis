@@ -28,7 +28,17 @@ class BankiRuBankScheme(BankiRuBaseScheme):
 
 
 class BankiRuBrokerScheme(BankiRuBaseScheme):
-    pass
+    @validator("bank_id", pre=True)
+    def bank_id_validator(cls, v: str | None) -> int:
+        if v is None:
+            return -1
+        broker_license_unparsed = re.sub("-", "", v)
+        broker_license_arr = re.findall("\\d{8}100000|\\d{8}300000", broker_license_unparsed)
+        return int(broker_license_arr[0])
+
+    @validator("bank_code", pre=True)
+    def bank_code_validator(cls, v: str) -> str:
+        return v.split("/")[-2]
 
 
 class BankiRuInsuranceScheme(BankiRuBaseScheme):

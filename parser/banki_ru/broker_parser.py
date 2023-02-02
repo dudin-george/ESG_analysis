@@ -1,11 +1,10 @@
-import re
 from datetime import datetime
 
-from banki_ru.banki_base_parser import BankiBase
+from banki_ru.banki_base_parser import BankiBase, bank_exists
 from banki_ru.database import BankiRuBase, BankiRuBroker
 from banki_ru.queries import create_banks
 from banki_ru.requests_ import get_json_from_url
-from banki_ru.schemes import BankiRuBrokerScheme, BankTypes
+from banki_ru.schemes import BankTypes, BankiRuBrokerScheme
 from common import api
 from common.schemes import SourceTypes, Text
 
@@ -34,28 +33,15 @@ class BankiBroker(BankiBase):
             name_arr = broker["name"].split()
             if len(name_arr) == 0 or name_arr[0] == "Заявка":
                 continue
-            broker_license_unparsed = self.get_broker_licence_from_url(broker["url"])
             # broker_license_unparsed = broker["license"] # todo send request without x-requested-with header to get licenses
-            if broker_license_unparsed is None:
-                continue
-            broker_license_unparsed = re.sub("-", "", broker_license_unparsed)
-            broker_license_arr = re.findall("\\d{8}100000|\\d{8}300000", broker_license_unparsed)
-            broker_license = int(broker_license_arr[0])  # todo to validator
-            bank_db = None
-            for existing_bank in existing_brokers:  # todo to different func (try any)
-                if existing_bank.licence == broker_license:
-                    bank_db = existing_bank
-                    break
-            if bank_db is None:
-                continue
-
-            brokers.append(
-                BankiRuBrokerScheme(
-                    bank_id=bank_db.id,
-                    bank_name=broker["name"],
-                    bank_code=broker["url"].split("/")[-2],
-                )
+            broker = BankiRuBrokerScheme(
+                bank_name=broker["name"],
+                bank_code=broker["url"],
+                bank_id=self.get_broker_licence_from_url(broker["url"]),
             )
+
+            if bank_exists(broker, existing_brokers):
+                brokers.append(broker)
         self.logger.info("finish download broker list")
         banks_db: list[BankiRuBase] = [BankiRuBroker.from_pydantic(bank) for bank in brokers]
         create_banks(banks_db)
