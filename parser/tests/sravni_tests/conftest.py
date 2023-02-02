@@ -55,7 +55,7 @@ def bank_sravni_reviews_response() -> tuple[str, dict]:
 def mock_sravni_bank_reviews_response(mock_request, bank_sravni_reviews_response) -> requests_mock.Mocker:
     json = bank_sravni_reviews_response[1]
     json["items"][0]["id"] = "1"
-    json["items"][0]["date"] = datetime(2023, 1, 1).isoformat()
+    json["items"][0]["createdToMoscow"] = datetime(2023, 1, 1).isoformat()
     json["items"][0]["title"] = "test"
     json["items"][0]["text"] = "test"
     json["items"][0]["commentsCount"] = 1
