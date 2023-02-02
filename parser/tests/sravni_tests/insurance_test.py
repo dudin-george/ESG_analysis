@@ -45,7 +45,7 @@ class TestSravniInsurance(TestMixin):
         assert review.date == datetime(2023, 1, 1)
         assert review.title == "test"
         assert review.text == "test"
-        assert review.comments_num is None
+        assert review.comments_num == 1
 
     def test_parse(self, setup_bank_page):
         banki_reviews = SravniInsuranceReviews()

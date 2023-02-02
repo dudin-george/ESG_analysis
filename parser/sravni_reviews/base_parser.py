@@ -11,7 +11,6 @@ from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import get_bank_list
 
 
-# noinspection PyMethodMayBeStatic
 class BaseSravniReviews(BaseParser):
     site: str
     organization_type: str
@@ -61,9 +60,40 @@ class BaseSravniReviews(BaseParser):
     def load_bank_list(self) -> None:
         raise NotImplementedError
 
-    # todo combine from classes
+    def parse_reviews(
+            self, reviews_array: list[dict[str, str]], last_date: datetime, bank: SravniBankInfo
+    ) -> list[Text]:
+        reviews = []
+        for review in reviews_array:
+            parsed_review = Text(
+                source_id=self.source.id,
+                bank_id=bank.bank_id,
+                link=self.get_review_link(bank, review),
+                date=review["createdToMoscow"],
+                title=review["title"],
+                text=review["text"],
+                comments_num=review["commentsCount"],
+            )
+            if last_date > parsed_review.date.replace(tzinfo=None):
+                continue
+            reviews.append(parsed_review)
+        return reviews
+
     def get_reviews(self, parsed_time: datetime, bank_info: SravniBankInfo) -> list[Text]:
-        raise NotImplementedError
+        reviews_array = []
+        page_num = self.get_num_reviews(bank_info)
+        for i in range(page_num):
+            self.logger.debug(f"[{i + 1}/{page_num}] download page {i + 1} for {bank_info.alias}")
+            reviews_json = self.get_bank_reviews(bank_info, i)
+            if reviews_json is None or len(reviews_json.get("items", [])) == 0:
+                break
+            reviews_json_items = reviews_json["items"]
+            parsed_reviews = self.parse_reviews(reviews_json_items, parsed_time, bank_info)
+            reviews_array.extend(parsed_reviews)
+            times = [review.date for review in parsed_reviews]
+            if len(times) == 0 or min(times).replace(tzinfo=None) <= parsed_time:
+                break
+        return reviews_array
 
     def get_review_link(self, bank_info: SravniBankInfo, review: dict[str, Any]) -> str:
         raise NotImplementedError
