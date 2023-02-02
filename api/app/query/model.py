@@ -9,6 +9,7 @@ from app.schemes.model import PostModel
 async def get_model_items(db: AsyncSession) -> list[Model]:
     return await db.scalars(select(Model).options(selectinload(Model.model_type)))  # type: ignore
 
+
 # todo refactor
 async def create_model(db: AsyncSession, post_model: PostModel) -> int:
     model: Model = await db.scalar(select(Model).filter(Model.name == post_model.model_name).limit(1))
