@@ -3,9 +3,9 @@ from datetime import datetime
 from banki_ru.banki_base_parser import BankiBase, bank_exists
 from banki_ru.database import BankiRuBase, BankiRuBroker
 from banki_ru.queries import create_banks
-from common.requests_ import get_json_from_url
-from banki_ru.schemes import BankTypes, BankiRuBrokerScheme
+from banki_ru.schemes import BankiRuBrokerScheme, BankTypes
 from common import api
+from common.requests_ import get_json_from_url
 from common.schemes import SourceTypes, Text
 
 

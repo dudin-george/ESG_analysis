@@ -52,7 +52,7 @@ def get_json(response: Response) -> dict[str, Any] | None:
     except Exception as error:
         logger.warning(f"Bad json on {response.url} {error=} {response.text=}")
         return None
-    if type(json_response) is not list and "error" in json_response.keys() and json_response["error"] is not None:
+    if type(json_response) is not list and "error" in json_response.keys() and json_response["error"] is not None:  # type: ignore
         logger.warning(f"Error in json {json_response} Error: {response.json()['error']}")
         sleep(5)
         return None
