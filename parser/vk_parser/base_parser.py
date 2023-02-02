@@ -3,7 +3,6 @@ import os
 import re
 from datetime import datetime, timedelta
 from math import ceil
-from time import sleep
 from typing import Any
 
 import numpy as np
@@ -17,6 +16,7 @@ from utils.logger import get_logger
 from vk_parser.database import VkBank, VKBaseDB
 from vk_parser.queries import create_banks, get_bank_list
 from vk_parser.schemes import VKType
+from vk_parser.vk_api import VKApi
 
 
 def clean_text_from_vk_url(match: re.Match[str]) -> str:
@@ -49,7 +49,7 @@ emoji_pattern = re.compile(
 
 class VKBaseParser(BaseParser):
     logger = get_logger(__name__, Settings().logger_level)
-    VERSION = "5.131"
+    vk_api = VKApi()
     file: str
     type: VKType
 
@@ -89,22 +89,8 @@ class VKBaseParser(BaseParser):
     ) -> list[Text]:
         comments_pages = ceil(comments_num / 100)
         comments = []
-        params = {
-            "access_token": self.settings.vk_token,
-            "v": self.VERSION,
-            "count": 100,
-            "owner_id": owner_id,
-            "post_id": post_id,
-            "start_comment_id": None,
-            "sort": "desc",
-            "thread_items_count": 10,
-        }
         for i in range(comments_pages):
-            params["offset"] = i * 100
-            sleep(0.6)
-            # https://vk.com/dev/api_requests limited to 3 rps for user token, and for two parsers in ~0.6s
-            response = self.send_get_request("https://api.vk.com/method/wall.getComments", params=params)
-            comments_json = self.get_json(response)
+            comments_json = self.vk_api.get_comments(owner_id, post_id, offset=i * 100)
             if comments_json is None:
                 continue
             for comment in comments_json["response"]["items"]:
@@ -134,30 +120,15 @@ class VKBaseParser(BaseParser):
             self.logger.info(f"[{bank_iter+1}/{len(self.bank_list)}] start parse {bank.name}")
             if bank.id < parsed_bank_id:  # type: ignore
                 continue
-            params_wall_get = {
-                "access_token": self.settings.vk_token,
-                "v": self.VERSION,
-                "owner_id": bank.vk_id,
-                "count": 1,
-                "offset": 0,
-            }
-            response = self.send_get_request(
-                "https://api.vk.com/method/wall.get", params=params_wall_get
-            )  # get total number of posts
-            response_json = self.get_json(response)
+            response_json = self.vk_api.get_wall(bank.vk_id, 0, count=1)  # type: ignore # get total number of posts
             if response_json is None:
                 continue
             num_page = ceil(response_json["response"]["count"] / 100)
-            params_wall_get["count"] = 100
             for i in range(num_page):
                 self.logger.info(f"Start parse {bank.name} page [{i+1}/{num_page}]")
                 if i <= page_num:
                     continue
-                params_wall_get["offset"] = i * 100
-                sleep(0.6)
-                # https://vk.com/dev/api_requests limited to 3 rps for user token, and for two parsers in ~0.6s
-                response = self.send_get_request("https://api.vk.com/method/wall.get", params=params_wall_get)
-                response_json = self.get_json(response)
+                response_json = self.vk_api.get_wall(bank.vk_id, i * 100)  # type: ignore
                 if response_json is None:
                     continue
                 posts_dates = [post["date"] for post in response_json["response"]["items"]]

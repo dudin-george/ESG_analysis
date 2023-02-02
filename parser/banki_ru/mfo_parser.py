@@ -4,9 +4,17 @@ from typing import Any
 from banki_ru.banki_base_parser import BankiBase
 from banki_ru.database import BankiRuBase, BankiRuMfo
 from banki_ru.queries import create_banks
-from banki_ru.schemes import BankiRuBankScheme, BankTypes, MfoScheme
+from banki_ru.requests_ import get_json_from_url
+from banki_ru.schemes import BankiRuMfoScheme, BankTypes
 from common import api
-from common.schemes import SourceTypes, Text
+from common.schemes import ApiMfo, SourceTypes, Text
+
+
+def bank_exists(mfo: BankiRuMfoScheme, existing_mfos: list[ApiMfo]) -> int | None:
+    for existing_bank in existing_mfos:
+        if existing_bank.licence == mfo.bank_id or existing_bank.ogrn == mfo.bank_ogrn:
+            return existing_bank.id
+    return None
 
 
 class BankiMfo(BankiBase):
@@ -27,13 +35,13 @@ class BankiMfo(BankiBase):
             "page_type": "MAINPRODUCT_SEARCH",
             "sponsor_package_id": "4",
         }
-        return self.get_json_from_url("https://www.banki.ru/microloans/ajax/search/", params=params)
+        return get_json_from_url("https://www.banki.ru/microloans/ajax/search/", params=params)
 
     def get_mfo_json_reviews(self, bank: BankiRuBase, page: int = 1) -> dict[str, Any] | None:
         params = self.params.copy()
         params["companyCodes"] = bank.bank_code
         params["page"] = page
-        return self.get_json_from_url(self.url, params=params)
+        return get_json_from_url(self.url, params=params)
 
     def json_total_pages(self, response: dict[str, Any]) -> int:
         page_elem = response["pagination"]
@@ -41,13 +49,11 @@ class BankiMfo(BankiBase):
         total = int(page_elem["total"])
         return total // per_page + 1
 
-    def load_bank_list(self) -> None:
-        self.logger.info("start download bank list")
-        existing_mfos = api.get_mfo_list()
+    def get_microfin_list(self) -> list[BankiRuMfoScheme]:
         microfin = []
         first_page = self.get_mfo_json()
         if first_page is None:
-            return None
+            return []
         total_pages = self.json_total_pages(first_page)
         results = [self.get_mfo_json(i) for i in range(2, total_pages + 1)]
         microfin.extend(first_page["data"])
@@ -55,39 +61,34 @@ class BankiMfo(BankiBase):
             if arr is None:
                 continue
             microfin.extend(arr["data"])
-        unique_mfos: list[MfoScheme] = list(
+        return list(
             {
-                MfoScheme(
-                    name=company["mfo"]["name"],
-                    license=company["mfo"]["certificate"],
-                    ogrn=company["mfo"]["ogrn"],
-                    code=company["mfo"]["code"],
+                BankiRuMfoScheme(
+                    bank_name=company["mfo"]["name"],
+                    bank_id=company["mfo"]["certificate"],
+                    bank_ogrn=company["mfo"]["ogrn"],
+                    bank_code=company["mfo"]["code"],
                 )
                 for company in microfin
-                if company["mfo"]["certificate"].isnumeric()
             }
-        )
-        # todo check if licence or ogrn is numeric in scheme
-        return_microfin = []
-        for mfo in unique_mfos:
-            bank_db = None
-            for existing_bank in existing_mfos:  # todo to different func
-                if existing_bank.licence == mfo.license or existing_bank.ogrn == mfo.ogrn:
-                    bank_db = existing_bank
-                    break
-            if bank_db is None:
-                continue
+        )  # some mfo repeats
 
-            return_microfin.append(
-                BankiRuBankScheme(
-                    bank_id=bank_db.id,
-                    bank_name=mfo.name,
-                    bank_code=mfo.code,
+    def load_bank_list(self) -> None:
+        self.logger.info("start download bank list")
+        existing_mfos = api.get_mfo_list()
+        microfin = self.get_microfin_list()
+        banks_db = []
+        for mfo in microfin:
+            if (existing_mfo_id := bank_exists(mfo, existing_mfos)) is not None:
+                banks_db.append(
+                    BankiRuMfo(
+                        bank_id=existing_mfo_id,
+                        bank_name=mfo.bank_name,
+                        bank_code=mfo.bank_code,
+                    )
                 )
-            )
         self.logger.info("finish download mfo list")
-        banks_db: list[BankiRuBase] = [BankiRuMfo.from_pydantic(bank) for bank in return_microfin]
-        create_banks(banks_db)
+        create_banks(banks_db)  # type: ignore[arg-type]
 
     def get_page_bank_reviews(self, bank: BankiRuBase, page_num: int, parsed_time: datetime) -> list[Text] | None:
         reviews_json = self.get_mfo_json_reviews(bank, page_num)

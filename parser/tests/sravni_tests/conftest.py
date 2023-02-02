@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 import requests
 import requests_mock
@@ -51,7 +53,13 @@ def bank_sravni_reviews_response() -> tuple[str, dict]:
 
 @pytest.fixture
 def mock_sravni_bank_reviews_response(mock_request, bank_sravni_reviews_response) -> requests_mock.Mocker:
-    mock_request.get(bank_sravni_reviews_response[0], json=bank_sravni_reviews_response[1])
+    json = bank_sravni_reviews_response[1]
+    json["items"][0]["id"] = "1"
+    json["items"][0]["createdToMoscow"] = datetime(2023, 1, 1).isoformat()
+    json["items"][0]["title"] = "test"
+    json["items"][0]["text"] = "test"
+    json["items"][0]["commentsCount"] = 1
+    mock_request.get(bank_sravni_reviews_response[0], json=json)
     yield mock_request
 
 
@@ -83,7 +91,13 @@ def insurance_sravni_reviews_response() -> tuple[str, dict]:
 
 @pytest.fixture
 def mock_sravni_insurance_reviews_response(mock_request, insurance_sravni_reviews_response) -> requests_mock.Mocker:
-    mock_request.get(insurance_sravni_reviews_response[0], json=insurance_sravni_reviews_response[1])
+    json = insurance_sravni_reviews_response[1]
+    json["items"][0]["id"] = "1"
+    json["items"][0]["createdToMoscow"] = datetime(2023, 1, 1).isoformat()
+    json["items"][0]["title"] = "test"
+    json["items"][0]["text"] = "test"
+    json["items"][0]["commentsCount"] = 1
+    mock_request.get(insurance_sravni_reviews_response[0], json=json)
     yield mock_request
 
 
@@ -121,5 +135,11 @@ def mock_sravni_mfo_list(mock_request, sravni_mfo_list) -> requests_mock.Mocker:
 
 @pytest.fixture
 def mock_sravni_mfo_reviews_response(mock_request, mfo_sravni_reviews_response) -> requests_mock.Mocker:
-    mock_request.get(mfo_sravni_reviews_response[0], json=mfo_sravni_reviews_response[1])
+    json = mfo_sravni_reviews_response[1]
+    json["items"][0]["id"] = "1"
+    json["items"][0]["createdToMoscow"] = datetime(2023, 1, 1).isoformat()
+    json["items"][0]["title"] = "test"
+    json["items"][0]["text"] = "test"
+    json["items"][0]["commentsCount"] = 1
+    mock_request.get(mfo_sravni_reviews_response[0], json=json)
     yield mock_request

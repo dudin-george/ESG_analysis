@@ -38,6 +38,14 @@ class TestSravniInsurance(TestMixin):
         banki_reviews = SravniInsuranceReviews()
         reviews = banki_reviews.get_reviews(parsed_time=datetime.fromtimestamp(1), bank_info=self.insurance)
         assert len(reviews) == 40
+        review = reviews[0]
+        assert review.bank_id == 1
+        assert review.source_id == 1
+        assert review.link == "https://www.sravni.ru/strakhovaja-kompanija/test/otzyvy/1"
+        assert review.date == datetime(2023, 1, 1)
+        assert review.title == "test"
+        assert review.text == "test"
+        assert review.comments_num == 1
 
     def test_parse(self, setup_bank_page):
         banki_reviews = SravniInsuranceReviews()

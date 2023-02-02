@@ -11,7 +11,7 @@ beautifulsoup4 = "^4.11.1"
 requests = "^2.28.1"
 selenium = "^4.4.3"
 schedule = "^1.1.0"
-SQLAlchemy = "^1.4.41"
+SQLAlchemy = "^1.4"
 pydantic = "^1.10.2"
 SQLAlchemy-Utils = "^0.38.3"
 webdriver-manager = "^3.8.3"
@@ -20,7 +20,7 @@ psycopg2-binary = "^2.9.5"
 
 
 [tool.poetry.group.dev.dependencies]
-SQLAlchemy = {extras = ["mypy"], version = "^1.4.41"}
+SQLAlchemy = {extras = ["mypy"], version = "^1.4"}
 flake8 = "^5.0.4"
 black = "^22.8.0"
 isort = "^5.10.1"

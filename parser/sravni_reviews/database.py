@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 
 from common.database import Base
-from sravni_reviews.schemes import SravniRuItem
+from sravni_reviews.schemes import SravniRuBaseScheme
 
 
 class SravniBankInfo(Base):
@@ -17,7 +17,7 @@ class SravniBankInfo(Base):
     bank_official_name: str = Column(String)
 
     @staticmethod
-    def from_pydantic(bank: SravniRuItem) -> "SravniBankInfo":
+    def from_pydantic(bank: SravniRuBaseScheme) -> "SravniBankInfo":
         return SravniBankInfo(
             sravni_id=bank.sravni_id,
             sravni_old_id=bank.sravni_old_id,  # type: ignore

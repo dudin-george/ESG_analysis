@@ -33,3 +33,9 @@ class TestBankiRuInsurance(TestMixin):
         insurance_reviews = BankiInsurance()
         reviews = insurance_reviews.get_page_bank_reviews(self.insurance, 1, datetime.fromtimestamp(1))
         assert len(reviews) == 25
+        review = reviews[0]
+        assert review.bank_id == self.insurance.bank_id
+        assert review.link == "https://www.banki.ru/insurance/responses/company/response/71133/"
+        assert review.date.date() == datetime(2023, 1, 11).date()
+        assert review.comments_num is None
+        assert review.source_id == 1

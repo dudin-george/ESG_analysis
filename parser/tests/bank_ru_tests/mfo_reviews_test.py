@@ -19,7 +19,7 @@ class TestBankiRuMfo(TestMixin):
     def setup_insurance_page_with_header(self, setup_test_reviews, mock_banki_ru_mfo_list, mock_mfo_page):
         yield setup_test_reviews
 
-    def test_reviews(self, setup_insurance_page_with_header):
+    def test_load_bank(self, setup_insurance_page_with_header):
         mfo_reviews = BankiMfo()
         assert len(get_bank_list(mfo_reviews.bank_site)) == 3
 
@@ -32,3 +32,9 @@ class TestBankiRuMfo(TestMixin):
         mfo_reviews = BankiMfo()
         reviews = mfo_reviews.get_page_bank_reviews(self.mfo, 1, datetime.fromtimestamp(1))
         assert len(reviews) == 10
+        review = reviews[0]
+        assert review.bank_id == self.mfo.bank_id
+        assert review.link == "https://www.banki.ru/microloans/responses/response/1/"
+        assert review.date == datetime(2023, 1, 1)
+        assert review.comments_num == 1
+        assert review.source_id == 1

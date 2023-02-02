@@ -1,94 +1,50 @@
-from datetime import datetime
 from typing import Any
 
 from common import api
-from common.schemes import Text
+from common.schemes import ApiMfo
 from sravni_reviews.base_parser import BaseSravniReviews
 from sravni_reviews.database import SravniBankInfo
 from sravni_reviews.queries import create_banks
-from sravni_reviews.schemes import SravniRuItem
+from sravni_reviews.schemes import SravniRuMfoScheme
 
 
-# noinspection PyMethodMayBeStatic
+def bank_exists(mfo: SravniRuMfoScheme, existing_mfos: list[ApiMfo]) -> int | None:
+    for existing_bank in existing_mfos:
+        if existing_bank.licence == mfo.bank_id or existing_bank.ogrn == mfo.bank_ogrn:
+            return existing_bank.id
+    return None
+
+
 class SravniMfoReviews(BaseSravniReviews):
     site: str = "sravni.ru/mfo"
-
-    def request_bank_list(self) -> dict[str, Any]:
-        params = {"active": True, "limit": 200, "organizationType": "mfo", "skip": 0}
-        # todo move to base sravni class
-        return self.get_json_from_url("https://www.sravni.ru/proxy-organizations/organizations", params=params)  # type: ignore
+    organization_type = "mfo"
+    tag = "microcredits"
 
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
         sravni_mfo_json_full = self.request_bank_list()
+        if sravni_mfo_json_full is None:
+            return None
         sravni_mfo_json = sravni_mfo_json_full["items"]
         self.logger.info("finish download bank list")
         existing_mfos = api.get_mfo_list()
         sravni_bank_list = []
-
         for sravni_mfo in sravni_mfo_json:
-            bank_db = None
-            for existing_mfo in existing_mfos:
-                if (int(sravni_mfo["license"]) == existing_mfo.licence) or (
-                    int(sravni_mfo["requisites"]["ogrn"]) == existing_mfo.ogrn
-                ):
-                    bank_db = existing_mfo
-                    break
-            if bank_db is None:
-                continue
-
-            sravni_bank_list.append(
-                SravniRuItem(
-                    sravni_id=sravni_mfo["id"],
-                    alias=sravni_mfo["alias"],
-                    bank_id=bank_db.id,
-                    bank_name=sravni_mfo["name"],
-                    bank_full_name=sravni_mfo["fullName"],
-                    bank_official_name=sravni_mfo["genitiveName"],
-                )
+            mfo = SravniRuMfoScheme(
+                sravni_id=sravni_mfo["id"],
+                alias=sravni_mfo["alias"],
+                bank_id=sravni_mfo["license"],
+                bank_name=sravni_mfo["name"],
+                bank_full_name=sravni_mfo["fullName"],
+                bank_official_name=sravni_mfo["genitiveName"],
+                bank_ogrn=sravni_mfo["requisites"]["ogrn"],
             )
+            if (existing_mfo_id := bank_exists(mfo, existing_mfos)) is not None:
+                mfo.bank_id = existing_mfo_id
+                sravni_bank_list.append(mfo)
         banks_db = [SravniBankInfo.from_pydantic(bank) for bank in sravni_bank_list]
         create_banks(banks_db)
         self.logger.info("create table for sravni banks")
 
-    def load_mfo_reviews(self, bank_info: SravniBankInfo, page: int = 0) -> dict[str, Any]:
-        url = "https://www.sravni.ru/proxy-reviews/reviews"
-        # todo move to base sravni class
-        params = {
-            "filterBy": "withRates",
-            "fingerPrint": "9be16a8e68e64e948f4465306f63c9ec",
-            "isClient": False,
-            "locationRoute": "",
-            "newIds": True,
-            "orderBy": "byDate",
-            "pageIndex": page,
-            "pageSize": 1000,
-            "reviewObjectId": bank_info.sravni_id,
-            "reviewObjectType": "mfo",
-            "specificProductId": "",
-            "tag": "microcredits",
-            "withVotes": True,
-        }
-        return self.get_json_from_url(url, params=params)  # type: ignore
-
-    def get_reviews(self, parsed_time: datetime, bank_info: SravniBankInfo) -> list[Text]:
-        reviews_json = self.load_mfo_reviews(bank_info)
-        total_pages = int(reviews_json["total"]) // 1000 + 1
-        reviews = []
-        for page in range(total_pages):
-            if page != 0:
-                reviews_json = self.load_mfo_reviews(bank_info, page)
-            reviews_list = reviews_json["items"]
-            for review in reviews_list:
-                text = Text(
-                    bank_id=bank_info.bank_id,
-                    title=review["title"],
-                    text=review["text"],
-                    date=review["createdToMoscow"],
-                    source_id=self.source.id,
-                    link=f"https://www.sravni.ru/zaimy/{bank_info.alias}/otzyvy/{review['id']}",
-                )
-                if text.date < parsed_time:
-                    break
-                reviews.append(text)
-        return reviews
+    def get_review_link(self, bank_info: SravniBankInfo, review: dict[str, Any]) -> str:
+        return f"https://www.sravni.ru/zaimy/{bank_info.alias}/otzyvy/{review['id']}"

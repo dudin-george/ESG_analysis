@@ -19,7 +19,7 @@ class BankiRuBase(Base):
         )
 
     @staticmethod
-    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuBase":
+    def from_pydantic(bank: schemes.BankiRuBaseScheme) -> "BankiRuBase":
         raise NotImplementedError
 
 
@@ -27,7 +27,7 @@ class BankiRuBank(BankiRuBase):
     __tablename__ = "banki_ru"
 
     @staticmethod
-    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuBank":
+    def from_pydantic(bank: schemes.BankiRuBaseScheme) -> "BankiRuBank":
         return BankiRuBank(
             bank_name=bank.bank_name,
             bank_code=bank.bank_code,
@@ -51,7 +51,7 @@ class BankiRuInsurance(BankiRuBase):
         )
 
     @staticmethod
-    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuInsurance":
+    def from_pydantic(bank: schemes.BankiRuBaseScheme) -> "BankiRuInsurance":
         return BankiRuInsurance(
             bank_name=bank.bank_name,
             bank_code=bank.bank_code,
@@ -71,7 +71,7 @@ class BankiRuMfo(BankiRuBase):
         )
 
     @staticmethod
-    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuMfo":
+    def from_pydantic(bank: schemes.BankiRuBaseScheme) -> "BankiRuMfo":
         return BankiRuMfo(
             bank_name=bank.bank_name,
             bank_code=bank.bank_code,
@@ -91,7 +91,7 @@ class BankiRuBroker(BankiRuBase):
         )
 
     @staticmethod
-    def from_pydantic(bank: schemes.BankiRuBankScheme) -> "BankiRuBroker":
+    def from_pydantic(bank: schemes.BankiRuBaseScheme) -> "BankiRuBroker":
         return BankiRuBroker(
             bank_name=bank.bank_name,
             bank_code=bank.bank_code,

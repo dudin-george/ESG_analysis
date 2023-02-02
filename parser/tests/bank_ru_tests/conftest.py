@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import Any
 
 import pytest
@@ -95,7 +96,7 @@ broker_list_url = "https://www.banki.ru/investment/brokers/list/"
 
 @my_vcr.use_cassette
 def get_broker_list_with_header() -> dict[str, Any]:
-    return requests.get(broker_list_url, headers={"x-requested-with": "XMLHttpRequest"}).json()
+    return requests.get(broker_list_url).json()
 
 
 broker_banki_list = get_broker_list_with_header()
@@ -217,7 +218,7 @@ def mock_banki_ru_mfo_list(mock_request, banki_mfo_list_with_header) -> requests
 
 @pytest.fixture(scope="session")
 @my_vcr.use_cassette
-def mfo_page() -> str:
+def mfo_page() -> dict[str, Any]:
     params = {"perPage": 200, "grade": "all", "status": "all", "companyCodes": "bistrodengi"}
     return requests.get(
         "https://www.banki.ru/microloans/responses/ajax/responses/",
@@ -229,7 +230,15 @@ def mfo_page() -> str:
 @pytest.fixture
 def mock_mfo_page(mock_request, mfo_page) -> requests_mock.Mocker:
     pattern = re.compile(r"https://www.banki.ru/microloans/responses/ajax/responses/(.+)(/)?")
-    mock_request.get(pattern, json=mfo_page)
+    json = mfo_page
+    json["responses"]["data"][0] = {
+        "id": 1,
+        "title": "test",
+        "text": "test",
+        "createdAt": datetime(2023, 1, 1).isoformat(),
+        "commentsCount": 1,
+    }
+    mock_request.get(pattern, json=json)
     yield mock_request
 
 

@@ -1,11 +1,11 @@
-import re
 from datetime import datetime
 
-from banki_ru.banki_base_parser import BankiBase
+from banki_ru.banki_base_parser import BankiBase, bank_exists
 from banki_ru.database import BankiRuBase, BankiRuBroker
 from banki_ru.queries import create_banks
-from banki_ru.schemes import BankiRuBankScheme, BankTypes
+from banki_ru.schemes import BankiRuBrokerScheme, BankTypes
 from common import api
+from common.requests_ import get_json_from_url
 from common.schemes import SourceTypes, Text
 
 
@@ -14,7 +14,7 @@ class BankiBroker(BankiBase):
     source_type = SourceTypes.reviews
 
     def get_broker_licence_from_url(self, url: str) -> str | None:
-        broker_json = self.get_json_from_url(url)
+        broker_json = get_json_from_url(url)
         if broker_json is None or "data" not in broker_json.keys():
             return None
         broker_license_str: str = broker_json["data"]["broker"]["licence"]
@@ -23,38 +23,23 @@ class BankiBroker(BankiBase):
     def load_bank_list(self) -> None:
         self.logger.info("start download bank list")
         existing_brokers = api.get_broker_list()
-        brokers_json = self.get_json_from_url("https://www.banki.ru/investment/brokers/list/")
+        brokers_json: list[dict[str, str]] = get_json_from_url("https://www.banki.ru/investment/brokers/list/")  # type: ignore
         if brokers_json is None:
             return None
         brokers = []
-        total_brokers = len(brokers_json["data"])
-        for i, broker in enumerate(brokers_json["data"]):
-            self.logger.info(f"[{i+1}/{total_brokers}] start download broker {broker['name']}")
+        for i, broker in enumerate(brokers_json):
             name_arr = broker["name"].split()
             if len(name_arr) == 0 or name_arr[0] == "Заявка":
+                # remove Заявка на консультацию по инвестициям
                 continue
-            broker_license_unparsed = self.get_broker_licence_from_url(broker["url"])
-            # broker_license_unparsed = broker["license"] # todo send request without x-requested-with header to get licenses
-            if broker_license_unparsed is None:
-                continue
-            broker_license_unparsed = re.sub("-", "", broker_license_unparsed)
-            broker_license_arr = re.findall("\\d{8}100000|\\d{8}300000", broker_license_unparsed)
-            broker_license = int(broker_license_arr[0])  # todo to validator
-            bank_db = None
-            for existing_bank in existing_brokers:  # todo to different func (try any)
-                if existing_bank.licence == broker_license:
-                    bank_db = existing_bank
-                    break
-            if bank_db is None:
-                continue
-
-            brokers.append(
-                BankiRuBankScheme(
-                    bank_id=bank_db.id,
-                    bank_name=broker["name"],
-                    bank_code=broker["url"].split("/")[-2],
-                )
+            broker_scheme = BankiRuBrokerScheme(
+                bank_name=broker["name"],
+                bank_code=broker["url"],
+                bank_id=broker["license"],
             )
+
+            if bank_exists(broker_scheme, existing_brokers):
+                brokers.append(broker_scheme)
         self.logger.info("finish download broker list")
         banks_db: list[BankiRuBase] = [BankiRuBroker.from_pydantic(bank) for bank in brokers]
         create_banks(banks_db)

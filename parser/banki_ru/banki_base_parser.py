@@ -3,15 +3,16 @@ import re
 from datetime import datetime
 from typing import Any
 
-import requests
 from bs4 import BeautifulSoup
 
 from banki_ru.database import BankiRuBase
 from banki_ru.queries import get_bank_list
-from banki_ru.schemes import BankTypes
+from banki_ru.requests_ import get_page_from_url, send_get_request
+from banki_ru.schemes import BankiRuBaseScheme, BankTypes
 from common import api
 from common.base_parser import BaseParser
 from common.schemes import (
+    ApiBank,
     PatchSource,
     Source,
     SourceRequest,
@@ -21,8 +22,14 @@ from common.schemes import (
 )
 
 
+def bank_exists(bank: BankiRuBaseScheme, bank_list: list[ApiBank]) -> bool:
+    for bank_db in bank_list:
+        if bank_db.licence == bank.bank_id:
+            return True
+    return False
+
+
 class BankiBase(BaseParser):
-    headers = {"X-Requested-With": "XMLHttpRequest"}
     bank_site: BankTypes
     source_type: SourceTypes
 
@@ -42,7 +49,7 @@ class BankiBase(BaseParser):
         raise NotImplementedError
 
     def get_pages_num_html(self, url: str, params: dict[str, Any] | None = None) -> int | None:
-        response = self.send_get_request(url, params)
+        response = send_get_request(url, params)
         if response.status_code != 200:
             return None
         page = BeautifulSoup(response.text, "html.parser")
@@ -53,36 +60,6 @@ class BankiBase(BaseParser):
         # items num text pattern 1-10 из 100 -> [1, 10, 100] -> 100 / (10 - 1)
         total_pages = items_num[2] // (items_num[1] - items_num[0] + 1) + 1
         return total_pages if items_num[2] > 25 else 1
-
-    def send_get_request(
-        self, url: str, params: dict[str, Any] | None = None, header: dict[str, Any] | None = None
-    ) -> requests.Response:
-        if params is None:
-            params = {}
-        if header is None:
-            header = {}
-        header |= self.headers
-        return super().send_get_request(url, params, header)
-
-    def get_json_from_url(
-        self, url: str, params: dict[str, Any] | None = None, header: dict[str, Any] | None = None
-    ) -> dict[str, Any] | None:
-        if params is None:
-            params = {}
-        if header is None:
-            header = {}
-        header |= {"x-requested-with": "XMLHttpRequest"}
-        return super().get_json_from_url(url, params, header)
-
-    def get_page_from_url(
-        self, url: str, params: dict[str, Any] | None = None, header: dict[str, Any] | None = None
-    ) -> BeautifulSoup | None:
-        if params is None:
-            params = {}
-        if header is None:
-            header = {}
-        header |= self.headers
-        return super().get_page_from_url(url, params, header)
 
     def parse(self) -> None:
         self.logger.info(f"start parse banki.ru {self.source_type} {self.bank_site}")
@@ -130,7 +107,7 @@ class BankiBase(BaseParser):
     ) -> list[Text]:
         if params is None:
             params = {}
-        soup = self.get_page_from_url(url, params=params)
+        soup = get_page_from_url(url, params=params)
         if soup is None:
             return []
         texts = []

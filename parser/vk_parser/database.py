@@ -17,8 +17,17 @@ class VkBank(VKBaseDB):
 
     id = Column(Integer, primary_key=True, index=True)
 
+    def __repr__(self) -> str:
+        return f"<VkBank(id={self.id}, vk_id={self.vk_id}, name={self.name}, domain={self.domain})>"
+
 
 class VkOtherIndustries(VKBaseDB):
     __tablename__ = "vk_other_industries"
 
     real_id = Column(Integer, primary_key=True, index=True)
+
+    def __repr__(self) -> str:
+        return (
+            f"<VkOtherIndustries(id={self.id}, read_id={self.real_id}, vk_id={self.vk_id}, name={self.name},"
+            f" domain={self.domain})>"
+        )
