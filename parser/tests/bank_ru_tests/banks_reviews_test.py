@@ -67,7 +67,6 @@ class TestBankiRuReviews(TestMixin):
         assert review.source_id == 1
         assert review.comments_num == 1
 
-
     def test_parse(self, setup_bank_page):
         banki_reviews = BankiReviews()
         banki_reviews.get_pages_num = lambda x: 1

@@ -7,7 +7,6 @@ from tests.mixins import TestMixin
 
 
 class TestBankiRuQueries(TestMixin):
-
     def test_create_banks(self):
         bank = BankiRuBank(bank_id=1, bank_name="test", bank_code="test")
         broker = BankiRuBroker(bank_id=1, bank_name="test", bank_code="test")

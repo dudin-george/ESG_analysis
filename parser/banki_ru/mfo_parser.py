@@ -79,7 +79,7 @@ class BankiMfo(BankiBase):
         microfin = self.get_microfin_list()
         banks_db = []
         for mfo in microfin:
-            if existing_mfo_id := bank_exists(mfo, existing_mfos):
+            if (existing_mfo_id := bank_exists(mfo, existing_mfos)) is not None:
                 banks_db.append(
                     BankiRuMfo(
                         bank_id=existing_mfo_id,

@@ -7,7 +7,6 @@ from vk_parser.schemes import VKType
 
 
 class TestVKQueries(TestMixin):
-
     def test_create_banks(self):
         bank = VkBank(vk_id=1, name="test", domain="test")
         bank_2 = VkOtherIndustries(real_id=1, vk_id=1, name="test", domain="test")
