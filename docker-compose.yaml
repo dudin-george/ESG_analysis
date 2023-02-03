@@ -2,9 +2,8 @@ services:
   database:
     image: postgres:14.4
     restart: always
-    environment:
-      POSTGRES_USER: example
-      POSTGRES_PASSWORD: example
+    env_file:
+      - .env
     volumes:
       - /ESGdata:/var/lib/postgresql/data
     ports:
@@ -36,24 +35,17 @@ services:
     image: selenium/node-firefox:105.0
     depends_on:
       - selenium-hub
-    environment:
-      - SE_EVENT_BUS_HOST=selenium-hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_MAX_SESSIONS=4
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+    env_file:
+      - .env
 
   api:
     depends_on:
       - database
     build: api
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: example
-      POSTGRES_PASSWORD: example
-      POSTGRES_DB: database
-      POSTGRES_HOST: database
-      POSTGRES_PORT: 5432
-      ECHO: False
+      POSTGRES_DB: "database"
     ports:
       - 8000:8000
 
@@ -61,103 +53,101 @@ services:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: ["python", "main.py", "--site", "sravni_reviews"]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/sravni"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "sravni"
 
   sravni-mfo-reviews-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: [ "python", "main.py", "--site", "sravni_mfo_reviews" ]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/sravni_mfo"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "sravni_mfo"
 
   sravni-insurance-reviews-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: ["python", "main.py", "--site", "sravni_insurance_reviews"]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/sravni_insurance"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "sravni_insurance"
 
   banki-reviews-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: ["python", "main.py", "--site", "banki_reviews"]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "banki"
 
   banki-news-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: [ "python", "main.py", "--site", "banki_news" ]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "banki"
 
   banki-insurance-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: [ "python", "main.py", "--site", "banki_insurance" ]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki_insurance"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "banki_insurance"
 
   banki-mfo-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: [ "python", "main.py", "--site", "banki_mfo" ]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki_mfo"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "banki_mfo"
 
   banki-broker-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: [ "python", "main.py", "--site", "banki_broker" ]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/banki_broker"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
+      POSTGRES_DB: "banki_broker"
 
   vk-comments-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: ["python", "main.py", "--site", "vk_comments"]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/vk_comments"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
-      VK_TOKEN: ""
+      POSTGRES_DB: "vk_comments"
 
   vk-other-comments-parser:
     depends_on:
       - api
     build: parser
+    env_file:
+      - .env
     command: [ "python", "main.py", "--site", "vk_other" ]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/vk_other"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
-      VK_TOKEN: ""
+      POSTGRES_DB: "vk_other"
 
   irecommend-reviews-parser:
     depends_on:
@@ -166,22 +156,14 @@ services:
     build: parser
     command: [ "python", "main.py", "--site", "irecommend_reviews" ]
     environment:
-      DATABASE_URL: "postgresql+psycopg2://example:example@database/irecommend_reviews"
-      DOCKER: "true"
-      API_URL: "http://api:8000"
-      SELENIUM_HUB: "http://selenium-hub:4444/wd/hub"
+      POSTGRES_DB: "irecommend_reviews"
 
   views:
     depends_on:
       - api
       - database
+    env_file:
+      - .env
     build:
       context: api
       dockerfile: Dockerfile.view
-    environment:
-      POSTGRES_USER: example
-      POSTGRES_PASSWORD: example
-      POSTGRES_DB: database
-      POSTGRES_HOST: database
-      POSTGRES_PORT: 5432
-      ECHO: False

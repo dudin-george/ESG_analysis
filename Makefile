@@ -32,5 +32,9 @@ up:
 up-api:
 	docker compose up -d --build api database --remove-orphans
 
+.PHONY: env
+env:
+	cp .env.example .env
+
 .PHONY: all
 all: format
