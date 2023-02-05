@@ -50,6 +50,7 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
 
 
 async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[str]) -> None:
+    # todo make in one query
     text_result_subq = select(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
         select(TextSentence.id)
