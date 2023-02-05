@@ -8,7 +8,7 @@
 #+cite_export: biblatex
 #+OPTIONS: toc:nil H:4 ':t
 
-Abstarct
+Abstract
 
 * Introduction
 *Background.* The ethics of companies have long been of concern to stakeholders, particularly with regard to their actions in contentious situations and their delivery of customer-centric services. In recent years, there has been a growing emphasis on evaluating the ethical standards of companies, particularly in the banking sector and through the lens of Environmental, Social and Governance (ESG) factors[cite:@mure_esg_2021; @miralles-quiros_esg_2019; @climent_ethical_2018]. The need for such assessments has become increasingly urgent as society continues to grapple with the consequences of corporate misconduct and the broader impact of corporate activities on society as a whole.
@@ -17,7 +17,7 @@ Assessing a company's ethical standards is a complex process that involves evalu
 
 *Problem statement.* Currently, there are a number of services that claim to evaluate a company's ethics, but these evaluations are often based on court cases and other official records rather than customer feedback. This has resulted in a scenario where individuals must conduct their own research to determine the ethics of a particular company. This research often involves reviewing customer feedback from various websites, which can be time-consuming and may not always provide a comprehensive or accurate picture of a company's ethical practices.
 
-To address this issue, there have been recent calls for the development of a system that would collect and analyze customer feedback from multiple websites to provide a more comprehensive view, and this system could also incorporate other data sources such as financial reports, sustainability reports, and news articles to provide a more holistic view of a company's ethical practices. The system could also incorporate machine learning algorithms, such as sentiment analysis and topic modeling, to analyze customer feedback and extract valuable insights. These insights could then be used to generate a score or rating that provides an overall assessment of a company's ethical practices. In order to accomplish this task, methods of natural language processing will be used.
+To address this issue, there have been recent calls for the development of a system that would collect and analyze customer feedback from multiple websites to provide a more comprehensive view, and this system could also incorporate other data sources such as financial reports, sustainability reports, and news articles to provide a more holistic view of a company's ethical practices. The system could also incorporate machine learning algorithms, such as sentiment analysis, to analyze customer feedback and extract valuable insights. These insights could then be used to generate a score or rating that provides an overall assessment of a company's ethical practices. In order to accomplish this task, methods of natural language processing will be used.
 
 *Aim and objectives.* The aim of this project is to develop a neural network capable of analyzing texts for ethics measurement. To accomplish this goal, the following objectives should be achieved:
 1. Analyze existing approaches to ethics measurement
@@ -31,26 +31,39 @@ To address this issue, there have been recent calls for the development of a sys
 
 *Professional significance.* The study aims to provide valuable insights into a company's ethical practices through the analysis of customer feedback and other data sources. These insights can help stakeholders make informed decisions about their investments and interactions with companies.
 * Literature Review
-** Etics measurment
+** Ethics measurement
 The importance of ethical behavior in business cannot be overstated. As evidenced by various studies and research [cite:@climent_ethical_2018; @mure_esg_2021], companies that prioritize ethical behavior tend to achieve greater financial success and better business performance over the long term than those that engage in unethical practices.
 
 Evaluating a company's ethical standards can be approached from several perspectives. From the perspective of the company itself, various factors can be considered, including the level of capitalization to ensure that it is not at risk of bankruptcy, the impact it has on the surrounding environment, and the direction of its investments [cite:@harvey1995ethical]. On the other hand, customers may focus on the quality of customer service [cite:@brunk2010exploring] and the degree to which a company's services are intrusive [cite:@mitchell1992bank].
 
 It is important to note that evaluating a company's ethics is not a one-time endeavor. Rather, it is an ongoing process that requires continuous monitoring and evaluation of the company's actions, policies and practices over time. This is particularly important given the constantly evolving nature of business conduct and the need to stay abreast of emerging issues and trends. In addition, it is important to consider the broader societal impacts of corporate activities and to evaluate companies not only on their financial performance, but also on their environmental, social and governance (ESG) factors.
-** Text analyis
+** Text analysis
 The field of natural language processing has seen a significant advancement in recent years, largely due to the emergence of neural network-based algorithms. These algorithms represent text data in a more nuanced and complex manner, allowing for a deeper understanding of the underlying semantics and meaning. They can help to analyze semantics of texts.
 
 Machine learning algorithms for text analysis have been widely used to extract information from unstructured data using large annotated datasets. Among the various methods used, several algorithms have proven to be particularly effective in this area. These include the bag of words [cite:@doi:10.1080/00437956.1954.11659520], TF-IDF [cite:@jones1972statistical], Word2Vec[cite:@mikolov2013distributed] , ELMO [cite:@elmo], GPT [cite:@radford2019language], and BERT [cite:@devlin2018bert]. Each of these algorithms has unique characteristics that make it well suited for specific applications.
 
-The bag of words model represents text data by assigning a unique number to each word in a document. This method is easy to implement, but does not take into account the order of words in a sentence. On the other hand, the TF-IDF model represents text data by considering both the frequency of a word in a document (TF) and its rarity across all documents in the corpus (IDF). This approach can be used to determine the importance of a word in a given document and is commonly used in information retrieval and natural language processing tasks, but these algorithm do not understand full context of words.
+The bag of words model represents text data by assigning a unique number to each word in a document. This method is easy to implement, but does not take into account the order of words in a sentence. On the other hand, the TF-IDF model represents text data by considering both the Term Frequency(TF) in a document and its Inverse Documents Frequency(IDF) in the corpus. This approach can be used to determine the importance of a word in a given document and is commonly used in information retrieval and natural language processing tasks, but these algorithm do not understand full context of words.
 
 Word2Vec utilizes a vector representation of words, which enables the algorithm to capture the meaning of words in similar contexts. This allows for a more accurate and sophisticated representation of the relationships between words, leading to improved performance in tasks such as text classification and sentiment analysis.
 
 ELMO, GPT, and BERT, on the other hand, are based on the transformer architecture, in which each sentence is represented by a vector of numbers, commonly known as an embedding. This representation allows for a more comprehensive and holistic understanding of the text, as it takes into account the context of the entire sentence or text.
 
-Of these algorithms, BERT is considered to be the most advanced and powerful[cite:@devlin2018bert], as it is able to consider the context of the entire sentence or text, whereas GPT and ELMO only consider a one-sided context. This allows BERT to achieve state-of-the-art performance in a wide range of NLP tasks, including text classification, named entity recognition, and question answering.
-** Methods
+Of these algorithms, BERT is considered to be the most advanced and powerful[cite:@devlin2018bert], as it is able to consider the context of the entire sentence or text, whereas GPT and ELMO only consider a one-sided context. This allows BERT to achieve state-of-the-art performance in a wide range of nature language processing (NLP) tasks, including text classification, named entity recognition, and question answering.
 
+For speeding up process of text analysis will be using Sentence-Bert[cite:@reimers-2019-sentence-bert]. The superiority of the proposed model over conventional BERT models is due to its innovative approach to sentence embedding comparison. Unlike traditional BERT models, which require recomputation of each pair of sentence embeddings to perform comparisons, this model allows independent comparison of sentence embeddings. This greatly improves computational efficiency, as the following example illustrates.
+
+In traditional BERT models, searching for similar sentences among 10,000 requires 50 million calculations of different sentence pairs, a process that can take up to 50 hours. In contrast, Sentence BERT computes the embedding of each sentence individually before performing a comparison. This results in a significant acceleration of the program execution, reducing the time to only 5 seconds.
+
+Therefore, the proposed model represents a major advance in the field of NLP, enabling more efficient and effective sentence comparisons. This is due to its unique approach of computing sentence embeddings independently, which provides a distinct advantage over traditional BERT models.
+** Methods
+*** Collecting dataset
+This will be accomplished by using web scraping and application programming interfaces (APIs) to collect reviews about companies from websites. The data collected will be analyzed to understand consumer perceptions of companies.
+*** Neural net development
+For text analysis, Sentence-BERT[cite:@reimers-2019-sentence-bert] for sentiment analysis will be implemented. The model will be fine-tuned for the task of analyzing reviews, allowing it to perform with high accuracy on the specific types of text encountered in this study. This fine-tuning process involves adjusting the parameters of the model to better fit the data, and it is essential for achieving high accuracy in sentiment analysis.
+
+The fine-tuned Sentence BERT model will be used to analyze the reviews collected from web sites. The model will be used to classify each review into one of several sentiment categories, such as positive, negative, or neutral. The results of this analysis will provide valuable insight into the overall sentiment of the reviews, allowing for a more comprehensive assessment of the companies under consideration.
+*** Text analysis
+All company reviews would be analyzed and each company would receive a score based on the reviews.
 * Results Anticipated
 * Conclusion
 #+latex: %\nocite{*}
