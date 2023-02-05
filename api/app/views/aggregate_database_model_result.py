@@ -179,7 +179,7 @@ def aggregate_database_mdf(session: Session) -> None:
             func.log(TextResult.result[1] + eps).label("log_positive"),
             func.log(TextResult.result[2] + eps).label("log_negative"),
         )
-        .where(TextResult.model_id == 1)
+        .where(TextResult.model_id == 2)
         .subquery()
     )
     select_pos_neut_neg = select(
