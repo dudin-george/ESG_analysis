@@ -150,7 +150,7 @@
   defernumbers=true,% Нумерация начинается как только встречается группа.
   sorting=none,
   url=false,
-  doi=false,
+  doi=true,
   isbn=false,
   movenames=false,
   maxnames=100
