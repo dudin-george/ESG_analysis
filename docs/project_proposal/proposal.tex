@@ -1,4 +1,4 @@
-% Created 2023-02-07 Вт 00:43
+% Created 2023-02-07 Вт 12:24
 % Intended LaTeX compiler: pdflatex
 \documentclass[PI]{ProjectProposal}
          \usepackage{array,tabularx,tabulary,booktabs,longtable,multirow}
@@ -36,22 +36,23 @@
 Abstract
 
 \chapter{Introduction}
-\label{sec:orgb51bfdb}
+\label{sec:orge0c4354}
 \textbf{Background.} The ethics of companies have long been of concern to stakeholders, particularly with regard to their actions in contentious situations and their delivery of customer-centric services. In recent years, there has been a growing emphasis on evaluating the ethical standards of companies, particularly in the banking sector and through the lens of Environmental, Social and Governance (ESG) factors\autocites{mure_esg_2021}[][]{miralles-quiros_esg_2019}[][]{climent_ethical_2018}. The need for such assessments has become increasingly urgent as society continues to grapple with the consequences of corporate misconduct and the broader impact of corporate activities on society as a whole.
 
 Assessing a company's ethical standards is a complex process that involves evaluating various aspects of a company's operations, such as its business practices, policies, and overall culture. In addition to traditional financial metrics, ESG factors play a critical role in determining a company's overall ethical standing. All of this provides valuable insight into a company's ethical standards.
 
 \textbf{Problem statement.} Currently, there are a number of services that claim to evaluate a company's ethics, but these evaluations are often based on court cases and other official records rather than customer feedback. This has resulted in a scenario where individuals must conduct their own research to determine the ethics of a particular company. This research often involves reviewing customer feedback from various websites, which can be time-consuming and may not always provide a comprehensive or accurate picture of a company's ethical practices.
 
-To address this issue, there have been recent calls for the development of a system that would collect and analyze customer feedback from multiple websites to provide a more comprehensive view, and this system could also incorporate other data sources such as financial reports, sustainability reports, and news articles to provide a more holistic view of a company's ethical practices. The system could also incorporate machine learning algorithms, such as sentiment analysis, to analyze customer feedback and extract valuable insights. These insights could then be used to generate a score or rating that provides an overall assessment of a company's ethical practices. In order to accomplish this task, methods of natural language processing will be used.
+To address this issue, there have been recent calls for the development of a system that would collect and analyze customer feedback from multiple websites to provide a more comprehensive view and news articles to provide a more holistic view of a company's ethical practices. The system could also incorporate machine learning algorithms, such as sentiment analysis, to analyze customer feedback and extract valuable insights. These insights could then be used to generate a score or rating that provides an overall assessment of a company's ethical practices. In order to accomplish this task, methods of natural language processing will be used.
 
 \textbf{Aim and objectives.} The aim of this project is to develop a neural network capable of analyzing texts for ethics measurement. To accomplish this goal, the following objectives should be achieved:
 \begin{enumerate}
 \item Analyze existing approaches to ethics measurement
-\item Select neural network architecture
-\item Collect data to fine-tune and analyze
+\item Select neural network architecture that is suitable for solving the problem
+\item Create program that collects reviews
 \item Development of neural network
-\item Analyzing texts
+\item Fine-tune neural network
+\item Analyzing texts with neural network
 \item Ethics calculation
 \end{enumerate}
 
@@ -59,16 +60,16 @@ To address this issue, there have been recent calls for the development of a sys
 
 \textbf{Professional significance.} The study aims to provide valuable insights into a company's ethical practices through the analysis of customer feedback and other data sources. These insights can help stakeholders make informed decisions about their investments and interactions with companies.
 \chapter{Literature Review}
-\label{sec:orgc4c87b1}
+\label{sec:orgb760b38}
 \section{Ethics measurement}
-\label{sec:org5fd7d85}
+\label{sec:orgd14e181}
 The importance of ethical behavior in business cannot be overstated. As evidenced by various studies \autocites{climent_ethical_2018}[][]{mure_esg_2021}, companies that prioritize ethical behavior tend to achieve greater financial success and better business performance over the long term than those that engage in unethical practices.
 
 Evaluating a company's ethical standards can be approached from several perspectives. From the perspective of the company itself, various factors can be considered, including the level of capitalization to ensure that it is not at risk of bankruptcy, the impact it has on the surrounding environment, and the direction of its investments \autocite{harvey1995ethical}. On the other hand, customers may focus on the quality of customer service \autocite{brunk2010exploring} and the degree to which a company's services are intrusive \autocite{mitchell1992bank}.
 
 It is important to note that evaluating a company's ethics is not a one-time endeavor. Rather, it is an ongoing process that requires continuous monitoring and evaluation of the company's actions, policies and practices over time. This is particularly important given the constantly evolving nature of business conduct and the need to stay abreast of emerging issues and trends. In addition, it is important to consider the broader societal impacts of corporate activities and to evaluate companies not only on their financial performance, but also on their environmental, social and governance (ESG) factors.
 \section{Text analysis}
-\label{sec:org5d89fd7}
+\label{sec:org667b440}
 The field of natural language processing has seen a significant advancement in recent years\autocites{devlin2018bert}[][]{wang2018glue}, largely due to the emergence of neural network-based algorithms. These algorithms represent text data in a more nuanced and complex manner, allowing for a deeper understanding of the underlying semantics and meaning. They can help to analyze semantics of texts.
 
 Machine learning algorithms for text analysis have been widely used to extract information from unstructured data using large annotated datasets. Among the various methods used, several algorithms have proven to be particularly effective in this area. These include the bag of words \autocite{doi:10.1080/00437956.1954.11659520}, TF-IDF \autocite{jones1972statistical}, Word2Vec\autocite{mikolov2013distributed} , ELMO \autocite{elmo}, GPT \autocite{radford2019language}, and BERT \autocite{devlin2018bert}. Each of these algorithms has unique characteristics that make it well suited for specific applications.
@@ -87,17 +88,17 @@ In traditional BERT models, searching for similar sentences among 10,000 require
 
 Therefore, the proposed model represents a major advance in the field of NLP, enabling more efficient and effective sentence comparisons. This is due to its unique approach of computing sentence embeddings independently, which provides a distinct advantage over traditional BERT models.
 \section{Methods}
-\label{sec:orgf28ba23}
+\label{sec:orgcc088cb}
 The purpose of this study is to provide a comprehensive analysis of consumer perceptions of different companies by collecting and analyzing reviews from websites. The first step is to collect reviews using web scraping and application programming interfaces (APIs).
 
 The sentiment analysis of the collected reviews is performed using a fine-tuned Sentence BERT \autocite{reimers-2019-sentence-bert} model. The fine-tuning process is crucial for achieving high accuracy in sentiment analysis, and involves adjusting the parameters of the model to better fit the specific data encountered in this study. The model is trained specifically for the task of analyzing reviews. The fine-tuned Sentence BERT model will classify each review into one of several sentiment categories, such as positive, negative, or neutral, providing valuable insight into the overall sentiment of the reviews.
 
 The final step is to analyze all of the company reviews, resulting in a score for each company based on the reviews. This approach provides a comprehensive assessment of the companies under consideration and a basis for making informed decisions.
 \chapter{Results Anticipated}
-\label{sec:org665f33b}
-The primary objective of this study is to collect a dataset of customer reviews for companies and to create and train a model for text analysis. The final outcome of the research will be the analysis of the textual data and the calculation of the ethical standing of the companies under consideration.
+\label{sec:orgea5774a}
+The primary objective of this study is to create a program that collects a dataset of customer reviews for companies and to create and train a model for text analysis. The final outcome of the research will be the analysis of the textual data and the calculation of the ethical standing of the companies under consideration.
 \chapter{Conclusion}
-\label{sec:orgd402fd1}
+\label{sec:org36f3857}
 
 %\nocite{*}
 \putbibliography
