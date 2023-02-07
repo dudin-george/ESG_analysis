@@ -8,7 +8,7 @@
 #+cite_export: biblatex
 #+OPTIONS: toc:nil H:4 ':t
 
-Abstract
+Stakeholders have long been concerned about the ethics of companies, particularly how they behave in contentious situations and how they deliver customer-focused services. This project proposes a machine learning algorithm to assess the ethics of companies. I am conducting experiments with BERT by using sentiment analysis of the customer reviews.
 
 * Introduction
 *Background.* The ethics of companies have long been of concern to stakeholders, particularly with regard to their actions in contentious situations and their delivery of customer-centric services. In recent years, there has been a growing emphasis on evaluating the ethical standards of companies, particularly in the banking sector and through the lens of Environmental, Social and Governance (ESG) factors[cite:@mure_esg_2021; @miralles-quiros_esg_2019; @climent_ethical_2018]. The need for such assessments has become increasingly urgent as society continues to grapple with the consequences of corporate misconduct and the broader impact of corporate activities on society as a whole.
@@ -50,6 +50,7 @@ Word2Vec utilizes a vector representation of words, which enables the algorithm 
 
 ELMO, GPT, and BERT, on the other hand, are based on the transformer architecture, in which each sentence is represented by a vector of numbers, commonly known as an embedding. This representation allows for a more comprehensive and holistic understanding of the text, as it takes into account the context of the entire sentence or text.
 
+#+COMMENT: расписать берт, лучший потому что он обучался на таких задачах
 Of these algorithms, BERT is considered to be the most advanced and powerful[cite:@devlin2018bert], as it is able to consider the context of the entire sentence or text, whereas GPT and ELMO only consider a one-sided context. This allows BERT to achieve state-of-the-art performance in a wide range of nature language processing (NLP) tasks, including text classification, named entity recognition, and question answering.
 
 For speeding up process of text analysis will be using Sentence-Bert[cite:@reimers-2019-sentence-bert]. The superiority of the proposed model over conventional BERT models is due to its innovative approach to sentence embedding comparison. Unlike traditional BERT models, which require recomputation of each pair of sentence embeddings to perform comparisons, this model allows independent comparison of sentence embeddings. This greatly improves computational efficiency, as the following example illustrates.
@@ -58,8 +59,9 @@ In traditional BERT models, searching for similar sentences among 10,000 require
 
 Therefore, the proposed model represents a major advance in the field of NLP, enabling more efficient and effective sentence comparisons. This is due to its unique approach of computing sentence embeddings independently, which provides a distinct advantage over traditional BERT models.
 ** Methods
-The purpose of this study is to provide a comprehensive analysis of consumer perceptions of different companies by collecting and analyzing reviews from websites. The first step is to collect reviews using web scraping and application programming interfaces (APIs).
+The purpose of this study is to provide a comprehensive analysis of consumer perceptions of different companies by collecting and analyzing reviews from websites. The first step is to collect reviews using web scraping technics and application programming interfaces (APIs). For this .........
 
+#+COMMENT: дописать про то как fine tune
 The sentiment analysis of the collected reviews is performed using a fine-tuned Sentence BERT [cite:@reimers-2019-sentence-bert] model. The fine-tuning process is crucial for achieving high accuracy in sentiment analysis, and involves adjusting the parameters of the model to better fit the specific data encountered in this study. The model is trained specifically for the task of analyzing reviews. The fine-tuned Sentence BERT model will classify each review into one of several sentiment categories, such as positive, negative, or neutral, providing valuable insight into the overall sentiment of the reviews.
 
 The final step is to analyze all of the company reviews, resulting in a score for each company based on the reviews. This approach provides a comprehensive assessment of the companies under consideration and a basis for making informed decisions.
