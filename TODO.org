@@ -95,3 +95,5 @@ https://youtu.be/RfN0B7L4SuM?list=PLEwK9wdS5g0riA4Q_fqcjkv0zYf6HgRGJ
 ** Json
 - https://github.com/ultrajson/ultrajson
 - https://github.com/ijl/orjson
+* Docs
+** =citar-export-local-bib-file=
