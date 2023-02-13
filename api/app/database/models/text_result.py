@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any, TYPE_CHECKING
 
 from sqlalchemy import ARRAY, Boolean, Column, Float, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, relationship
@@ -14,7 +14,7 @@ class TextResult(Base):
     __tablename__ = "text_result"
 
     id = Column(Integer, primary_key=True, index=True)
-    text_sentence_id = Column(Integer, ForeignKey("text_sentence.id"), index=True)
+    text_sentence_id = Column(Integer, ForeignKey("text_sentence.id", ondelete="CASCADE"), index=True)
     text_sentence: Mapped["TextSentence"] = relationship("TextSentence", back_populates="text_results")
     model_id = Column(Integer, ForeignKey("model.id"), index=True)
     model: Mapped["Model"] = relationship("Model", back_populates="text_results")

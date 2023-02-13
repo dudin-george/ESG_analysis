@@ -14,7 +14,7 @@ class TextSentence(Base):
     __tablename__ = "text_sentence"
 
     id = Column(Integer, primary_key=True)
-    text_id = Column(Integer, ForeignKey("text.id"), index=True)
+    text_id = Column(Integer, ForeignKey("text.id", ondelete="CASCADE"), index=True)
     text: Mapped["Text"] = relationship("Text", back_populates="text_sentences")
     sentence = Column(String)
     sentence_num = Column(Integer)
