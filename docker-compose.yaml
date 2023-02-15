@@ -167,3 +167,27 @@ services:
     build:
       context: api
       dockerfile: Dockerfile.view
+
+  mdf:
+    build:
+      context: models/mdf
+      dockerfile: Dockerfile
+    command: [ "python", "app/main.py", "--model", "mdf" ]
+    env_file:
+      - .env
+
+  mdf-adjusted:
+    build:
+      context: models/mdf
+      dockerfile: Dockerfile
+    command: [ "python", "app/main.py", "--model", "mdf_adjusted" ]
+    env_file:
+      - .env
+
+  mdf-combined:
+    build:
+      context: models/mdf
+      dockerfile: Dockerfile
+    command: [ "python", "app/main.py", "--model", "mdf_combined" ]
+    env_file:
+      - .env
