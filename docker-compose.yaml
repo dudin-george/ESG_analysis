@@ -47,6 +47,7 @@ services:
     environment:
       POSTGRES_DB: "database"
     ports:
+      - 443:8000
       - 8000:8000
 
   sravni-reviews-parser:
