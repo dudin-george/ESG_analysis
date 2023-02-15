@@ -44,11 +44,23 @@ services:
     build: api
     env_file:
       - .env
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      POSTGRES_DB: "database"
+    ports:
+      - 8000:8000
+
+  api-https:
+    depends_on:
+      - database
+    build: api
+    env_file:
+      - .env
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "privkey.pem", "--ssl-certfile", "fullchain.pem"]
     environment:
       POSTGRES_DB: "database"
     ports:
       - 443:8000
-      - 8000:8000
 
   sravni-reviews-parser:
     depends_on:
