@@ -59,6 +59,7 @@ async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[st
         .join(text_result_subq, TextSentence.id == text_result_subq.c.text_sentence_id, isouter=True)
         .filter(Source.site.in_(sources))
         .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
+        .limit(100_000)
     )
     sentence_ids = await db.execute(query)
     text_results = [
