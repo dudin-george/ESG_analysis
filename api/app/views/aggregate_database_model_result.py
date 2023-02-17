@@ -250,4 +250,4 @@ def aggregate_database_mdf(session: Session, model_name: str) -> None:
         )
     )
     session.commit()
-    logger.info("AggregateTableModelResult table updated mdf")
+    logger.info(f"AggregateTableModelResult table updated {model_name}")

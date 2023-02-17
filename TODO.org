@@ -91,6 +91,21 @@ https://youtu.be/RfN0B7L4SuM?list=PLEwK9wdS5g0riA4Q_fqcjkv0zYf6HgRGJ
 - https://medium.com/cuddle-ai/async-architecture-with-fastapi-celery-and-rabbitmq-c7d029030377
 - https://github.com/tiangolo/full-stack-fastapi-postgresql
 - https://github.com/tiangolo/full-stack-fastapi-couchbase
+* Models
+** MDF
+- fix
+#+begin_example
+Traceback (most recent call last):
+  File "/app/app/main.py", line 47, in <module>
+    main()
+  File "/app/app/main.py", line 40, in main
+    sentences = get_sentences(sources, model_class.model_id)
+  File "/app/app/api.py", line 43, in get_sentences
+    return [Sentence(**text) for text in response.json()["items"]]
+  File "/usr/local/lib/python3.10/site-packages/requests/models.py", line 975, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+#+end_example
 * Libs
 ** Json
 - https://github.com/ultrajson/ultrajson

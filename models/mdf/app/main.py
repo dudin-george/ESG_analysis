@@ -24,7 +24,7 @@ def main() -> None:
     model_class = parse_args()
     logger.info(f"Using model {model_class.name}")
     while True:
-        for _ in range(10_000):
+        for _ in range(1_000_000):
             sources = [
                 "banki.ru/broker",
                 "banki.ru/mfo",

@@ -1,11 +1,10 @@
-import logging
-
 from sqlalchemy import Float, Integer, cast, func, select, update
 from sqlalchemy.orm import Session
 
 from app.database.models import AggregateTableModelResult as TextResultAgg
+from app.misc.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def update_indexes(session: Session) -> None:

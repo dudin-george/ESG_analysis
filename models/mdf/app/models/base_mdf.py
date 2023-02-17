@@ -17,8 +17,8 @@ class BaseMDF:
     def __init__(self) -> None:
         self.model_id = post_model(self.name)
         data = self.load_data()
-        self.positive_pattern = self.create_pattern(data[data["positive"]][["word"]])
-        self.negative_pattern = self.create_pattern(data[~data["positive"]][["word"]])
+        self.positive_pattern = self.create_pattern(data[data["positive"]]["word"])
+        self.negative_pattern = self.create_pattern(data[~data["positive"]]["word"])
 
     def get_path(self) -> str:
         path = os.path.join(os.path.dirname(__file__)+"/../../data/", self.file_path)
@@ -31,7 +31,7 @@ class BaseMDF:
         return words
 
     def create_pattern(self, words: pd.Series) -> re.Pattern[str]:
-        return re.compile("(" + "|".join(words["word"].values) + ")")
+        return re.compile("(" + "|".join(words) + ")")
 
     def word_count(self, sentence: str) -> tuple[int, int]:
         positive = len(self.positive_pattern.findall(sentence))
