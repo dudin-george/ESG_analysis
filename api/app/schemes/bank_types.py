@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum  # in python 3.11 replace with StrEnum
 
 
 class BankTypeVal(str, Enum):

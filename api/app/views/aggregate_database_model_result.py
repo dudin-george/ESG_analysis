@@ -169,9 +169,9 @@ def aggregate_database_sentiment(session: Session) -> None:
     logger.info("AggregateTableModelResult table updated sentiment")
 
 
-def aggregate_database_mdf(session: Session) -> None:
+def aggregate_database_mdf(session: Session, model_name: str) -> None:
     eps = 1e-7
-
+    model_id = select(Model.id).where(Model.name == model_name).scalar_subquery()
     select_log_result = (
         select(
             TextResult.text_sentence_id,
@@ -179,7 +179,7 @@ def aggregate_database_mdf(session: Session) -> None:
             func.log(TextResult.result[1] + eps).label("log_positive"),
             func.log(TextResult.result[2] + eps).label("log_negative"),
         )
-        .where(TextResult.model_id == 2)
+        .where(TextResult.model_id == model_id)
         .subquery()
     )
     select_pos_neut_neg = select(

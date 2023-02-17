@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import Enum
+from enum import Enum  # in python 3.11 replace with StrEnum
 
 from pydantic import BaseModel
 
