@@ -373,13 +373,13 @@
 % Available options for the specialiazation
 % PI -- Software Engeneers
 \DeclareVoidOption{PI}{
-  \def\@facultyString{Факультет социально-экономических и компьютерных науки}
+  \def\@facultyString{Факультет социально-экономических и компьютерных наук}
   \def\@specName{Программная инженерия}
   \def\@specCode{09.03.04 Программная инженерия}
 }
 % BI -- Бизнес информатика
 \DeclareVoidOption{BI}{
-  \def\@facultyString{Факультет социально-экономических и компьютерных науки}
+  \def\@facultyString{Факультет социально-экономических и компьютерных наук}
   \def\@specName{Бизнес информатика}
   \def\@specCode{09.03.04 Программная инженерия}
 }
