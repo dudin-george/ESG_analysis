@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi.logger import logger
-from sqlalchemy import func, select
+from sqlalchemy import insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -50,10 +50,9 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
 
 
 async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[str]) -> None:
-    # todo make in one query
     text_result_subq = select(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
-        select(TextSentence.id)
+        select(TextSentence.id, model_id, False)
         .join(TextSentence.text)
         .join(Text.source)
         .join(text_result_subq, TextSentence.id == text_result_subq.c.text_sentence_id, isouter=True)
@@ -61,33 +60,36 @@ async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[st
         .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
         .limit(100_000)
     )
-    sentence_ids = await db.execute(query)
-    text_results = [
-        TextResult(text_sentence_id=sentence_id.id, model_id=model_id, is_processed=False)
-        for sentence_id in sentence_ids
-    ]
-    db.add_all(text_results)
+    await db.execute(
+        insert(TextResult).from_select(
+            [TextResult.text_sentence_id, TextResult.model_id, TextResult.is_processed], query
+        )
+    )
     await db.commit()
 
 
-async def get_text_sentences(
-    db: AsyncSession, model_id: int, sources: list[str], limit: int
-) -> list[GetTextSentencesItem]:
-    unused_model_sentences = await db.scalar(
-        select(func.count(TextResult.id))
-        .filter(TextResult.model_id == model_id)
-        .filter(TextResult.is_processed == False)  # noqa: E712
-    )
-    if unused_model_sentences == 0:
-        await insert_new_sentences(db, model_id, sources)
+async def select_sentences(db: AsyncSession, model_id: int, limit: int) -> list[tuple[int, str]]:
     select_unused_sentence_ids = (
         select(TextResult.text_sentence_id)
         .filter(TextResult.model_id == model_id)
         .filter(TextResult.is_processed == False)  # noqa: E712
         .limit(limit)
+    ).subquery()
+    query = select(TextSentence.id, TextSentence.sentence).join(
+        select_unused_sentence_ids, TextSentence.id == select_unused_sentence_ids.c.text_sentence_id
     )
-    query = select(TextSentence.id, TextSentence.sentence).filter(TextSentence.id.in_(select_unused_sentence_ids))
+    return (await db.execute(query)).all()  # type: ignore
+
+
+async def get_text_sentences(
+    db: AsyncSession, model_id: int, sources: list[str], limit: int
+) -> list[GetTextSentencesItem]:
+    selected_sentences = await select_sentences(db, model_id, limit)
+    if len(selected_sentences) == 0:
+        await insert_new_sentences(db, model_id, sources)
+        selected_sentences = await select_sentences(db, model_id, limit)
+
     return [
-        GetTextSentencesItem(sentence_id=sentence.id, sentence=sentence.sentence)
-        for sentence in await db.execute(query)
+        GetTextSentencesItem(sentence_id=sentence_id, sentence=sentence)
+        for (sentence_id, sentence) in selected_sentences
     ]
