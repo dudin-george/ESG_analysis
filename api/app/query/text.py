@@ -70,12 +70,12 @@ async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[st
 
 async def select_sentences(db: AsyncSession, model_id: int, limit: int) -> list[tuple[int, str]]:
     select_unused_sentence_ids = (
-        select(TextResult.text_sentence_id)
+        select(TextResult.text_sentence_id, TextResult.id)
         .filter(TextResult.model_id == model_id)
         .filter(TextResult.is_processed == False)  # noqa: E712
         .limit(limit)
     ).subquery()
-    query = select(TextSentence.id, TextSentence.sentence).join(
+    query = select(TextSentence.id, TextSentence.sentence, select_unused_sentence_ids.c.id).join(
         select_unused_sentence_ids, TextSentence.id == select_unused_sentence_ids.c.text_sentence_id
     )
     return (await db.execute(query)).all()  # type: ignore
@@ -88,7 +88,7 @@ async def get_text_sentences(
     if len(selected_sentences) == 0:
         await insert_new_sentences(db, model_id, sources)
         selected_sentences = await select_sentences(db, model_id, limit)
-
+    # todo insert texts by id
     return [
         GetTextSentencesItem(sentence_id=sentence_id, sentence=sentence)
         for (sentence_id, sentence) in selected_sentences
