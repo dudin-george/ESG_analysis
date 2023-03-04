@@ -1,4 +1,4 @@
-% Created 2023-02-14 Вт 16:11
+% Created 2023-03-01 Ср 13:53
 % Intended LaTeX compiler: pdflatex
 \documentclass[PI]{ProjectProposal}
          \usepackage{array,tabularx,tabulary,booktabs,longtable,multirow}
@@ -26,17 +26,18 @@
  pdftitle={Site Development for automatic collection, analysis and visualization of company ethical behavior},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 28.2 (Org mode 9.6)},
+ pdfcreator={Emacs 28.2 (Org mode 9.6.1)},
  pdflang={En}}
 \usepackage{biblatex}
-\addbibresource{/home/samoed/Desktop/ESGanalysis/docs/library.bib}
+\addbibresource{~/Desktop/notes/org/bibliography.bib}
 \begin{document}
 
 \maketitle
+\#bibliography: ../library.bib
 Stakeholders have long been concerned about the ethics of companies, particularly how they behave in contentious situations and how they deliver customer-focused services. The aim of this project is to develop a system for evaluating the ethical standards of companies through the analysis of customer feedback. The system uses fine-tuned Sentence BERT to predict the sentiment of customer feedback and extract valuable insights that can be used to generate a score or rating assessing a company's ethical practices. The main expected outcome of the project is an algorithm capable of accurately analyzing text for ethics measurement. This project can help stakeholders, such as customers, employees, regulators and managers, to assess the ethical practices of companies.
 
 \chapter{Introduction}
-\label{sec:org327d2f7}
+\label{sec:orga20f02b}
 \textbf{Background.} The ethics of companies have long been of concern to stakeholders, particularly with regard to their actions in contentious situations and their delivery of customer-centric services. In recent years, there has been a growing emphasis on evaluating the ethical standards of companies, particularly in the banking sector and through the lens of Environmental, Social and Governance (ESG) factors\autocites{mure_esg_2021}[][]{miralles-quiros_esg_2019}[][]{climent_ethical_2018}. The need for such assessments has become increasingly urgent as society continues to grapple with the consequences of corporate misconduct and the broader impact of corporate activities on society as a whole.
 
 Assessing a company's ethical standards is a complex process that involves evaluating various aspects of a company's operations, such as its business practices, policies, and overall culture. In addition to traditional financial metrics, ESG factors play a critical role in determining a company's overall ethical standing. All these metrics provide valuable insight into a company's ethical standards.
@@ -60,16 +61,16 @@ To address this issue, there have been recent attempts to develop a system that 
 
 \textbf{Professional significance.} The study aims to provide valuable insights into a company's ethical practices through the analysis of customer feedback and other data sources. These insights can help stakeholders make informed decisions about their investments and interactions with companies.
 \chapter{Literature Review}
-\label{sec:orged30991}
+\label{sec:org87d8007}
 \section{Ethics measurement}
-\label{sec:orgefb8cc4}
+\label{sec:orgdd630e9}
 It is important to note that evaluating a company's ethics is not a one-time endeavor, but an ongoing process that requires continuous monitoring and evaluation of the company's actions, policies and practices over time. This is particularly important given the constantly evolving nature of business conduct and the need to stay ahead of emerging issues and trends. In addition, it is important to consider the broader societal impacts of corporate activities and to evaluate companies not only on their financial performance\autocite{brunk2010exploring}, but also on their environmental, social and governance (ESG) factors.
 
 The importance of ethical behavior in business cannot be overstated. As evidenced by various studies \autocites{climent_ethical_2018}[][]{mure_esg_2021}, companies that prioritize ethical behavior tend to achieve greater financial success and better business performance over the long term than those that engage in unethical practices.
 
 Evaluating a company's ethical standards can be approached from several perspectives. From the perspective of the company itself, various factors can be considered to impact ethics, including the level of capitalization to ensure that it is not at risk of bankruptcy, the impact it has on the surrounding environment, and the direction of its investments \autocite{harvey1995ethical}. On the other hand, customers can measure ethics by the quality of customer service \autocite{brunk2010exploring} and the degree to which a company's services are intrusive \autocite{mitchell1992bank}, these metrics will be considered in this project.
 \section{Text analysis}
-\label{sec:orgd2fe240}
+\label{sec:org89e27ec}
 The field of NLP has seen a significant advancement in recent years\autocites{devlin2018bert}[][]{wang2018glue}, largely due to the emergence of neural network-based algorithms. These algorithms represent text data in a more nuanced and complex manner, allowing for a deeper understanding of the underlying semantics and meaning. They can help analyze the semantics of texts in order to assess ethics later.
 
 Machine learning algorithms for text analysis have been widely used to extract information from unstructured data using large annotated datasets. Among the various methods used, several algorithms have proven to be particularly effective in this area. These include the bag of words \autocite{doi:10.1080/00437956.1954.11659520}, TF-IDF \autocite{jones1972statistical}, Word2Vec\autocite{mikolov2013distributed}, ELMO \autocite{elmo}, GPT \autocite{radford2019language}, and BERT \autocite{devlin2018bert}.
@@ -88,10 +89,10 @@ Second, BERT is trained on the next sentence prediction task, which involves pre
 
 To speed up the process of text analysis, Sentence-Bert will be used \autocite{reimers-2019-sentence-bert}. The superiority of the proposed model over conventional BERT models is due to its innovative approach to sentence embedding comparison. Unlike traditional BERT models, which require recomputation of each pair of sentence embeddings to perform comparisons, this model allows independent comparison of sentence embeddings. This greatly improves computational efficiency. In traditional BERT models, searching for similar sentences among 10,000 requires 50 million calculations of different sentence pairs, a process that can take up to 50 hours. In contrast, Sentence BERT computes the embedding of each sentence individually before performing a comparison. This results in a significant acceleration of the program execution, reducing the time to only 5 seconds.
 \section{Conclusion}
-\label{sec:orgb9b2f2b}
+\label{sec:org5d4733d}
 In conclusion, the importance of ethical behavior in business has been emphasized by various studies. Evaluating a company's ethical standards is an ongoing process and should consider not only financial performance, but also customer feedback. In the field of NLP, advances in algorithms have led to improved text analysis techniques. Among these techniques, BERT is considered the most advanced and powerful because it considers both word and sentence context in its processing. The use of Sentence-Bert is proposed to speed up the text analysis process.
 \section{Methods}
-\label{sec:orgb256a66}
+\label{sec:org91649eb}
 The aim of this project is to provide a score based on an in-depth examination of consumer attitudes toward various companies through the systematic collection and analysis of online reviews. This will be achieved through the use of Web scraping techniques, and Application Programming Interfaces (APIs) will be used to achieve this. For this purpose, APIs will be implemented that can collect data and store it in a database, and parsers that would collect data from different sources.
 
 The collected reviews will be analyzed with sentiment analysis methods using a fine-tuned Sentence BERT model \autocite{reimers-2019-sentence-bert}. The fine-tuning process is essential to improve the accuracy of the sentiment analysis, and involves adjusting the parameters of the model to better fit the specific dataset used in this study. The model will be trained specifically for the task of sentiment analysis using a methodology similar to the training process of the original BERT model. The model will be fed pairs of sentences and labels indicating whether the sentences belong to the same text.
@@ -100,10 +101,10 @@ The fine-tuned Sentence BERT model will classify each review into one of several
 
 The final stage of the study involves the analysis of all company reviews, resulting in a score for each company based on the aggregated reviews. This approach provides a thorough evaluation of the companies being researched and serves as a basis for making decisions.
 \chapter{Results Anticipated}
-\label{sec:orgadf5067}
+\label{sec:org07255c3}
 In this project, customer reviews from different sources will be collected with the use of parsers. For this, parsers will be adapted to each site to extract data, and a program will be responsible for receiving, transforming, and storing the collected information in a database. Then Sentence BERT will be fine-tuned and trained on the collected texts specifically for sentiment analysis. After that, the model will predict scores for each sentence of the texts, and the scores will be aggregated for each month for each company, reflecting dynamics of changes in customer perception over time.
 \chapter{Conclusion}
-\label{sec:orga3bf4ad}
+\label{sec:org2410cb5}
 This project aims to improve the complex issue of assessing a company's ethical standards by developing a neural network to analyze customer feedback. The use of NLP algorithms, such as sentiment analysis, will play a critical role in extracting valuable insights and generating a score that provides an overall assessment of a company's ethical practices. The results of this project can potentially provide valuable information to customers about which companies are best to work with, to managers about the interaction between employees and customers, and to regulators about the state of affairs within companies.
 
 \putbibliography
