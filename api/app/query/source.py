@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database.models.source import Source, SourceType
-from app.schemes.source import CreateSource, PatchSource
+from app.schemes.sourcе import CreateSource, PatchSource
 
 
 async def get_source_items(db: AsyncSession) -> list[Source]:
@@ -18,7 +18,7 @@ async def create_source(db: AsyncSession, model: CreateSource) -> Source:
         .filter(Source.site == model.site)
     )
     if source:
-        return source  # type: ignore
+        return source
 
     source_type = await db.scalar(select(SourceType).filter(SourceType.name == model.source_type))
     if source_type is None:
@@ -26,7 +26,7 @@ async def create_source(db: AsyncSession, model: CreateSource) -> Source:
     source = Source(site=model.site, source_type=source_type)
     db.add(source)
     await db.commit()
-    return source  # type: ignore
+    return source
 
 
 async def get_source_item_by_id(db: AsyncSession, source_id: int) -> Source | None:
@@ -41,7 +41,7 @@ async def patch_source_by_id(db: AsyncSession, source_id: int, patch_source: Pat
     source = await get_source_item_by_id(db, source_id)
     if source is None:
         return None
-    source.parser_state = patch_source.parser_state
-    source.last_update = patch_source.last_update
+    source.parser_state = patch_source.parser_state  # type: ignore
+    source.last_update = patch_source.last_update  # type: ignore
     await db.commit()
     return source

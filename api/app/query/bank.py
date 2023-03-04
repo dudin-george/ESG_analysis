@@ -7,13 +7,13 @@ from app.schemes.bank_types import BankTypeVal
 
 
 async def create_bank_element_type(db: AsyncSession, bank_type_name: BankTypeVal) -> BankType:
-    bank_type = await db.scalar(select(BankType).filter(BankType.name == bank_type_name))
+    bank_type: BankType | None = await db.scalar(select(BankType).filter(BankType.name == bank_type_name))
     if bank_type:
-        return bank_type  # type: ignore
+        return bank_type
     bank_type = BankType(name=bank_type_name)
     db.add(bank_type)
     await db.commit()
-    return bank_type  # type: ignore
+    return bank_type
 
 
 async def create_bank_type(db: AsyncSession) -> BankType:

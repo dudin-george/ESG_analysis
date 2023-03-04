@@ -57,6 +57,5 @@ async def startup() -> None:
     await load_data()
 
 
-
 if __name__ == "__main__":
     uvicorn.run(app)

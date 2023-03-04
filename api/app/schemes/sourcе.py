@@ -24,7 +24,7 @@ class SourceSitesEnum(str, Enum):
     vk_other = "vk.com/other"
 
 
-class Source(BaseModel):
+class SourceModel(BaseModel):
     id: int
     site: str
     source_type_id: int
@@ -35,12 +35,12 @@ class Source(BaseModel):
         orm_mode = True
 
 
-class GetSourceItem(Source):
+class GetSourceItemModel(SourceModel):
     source_type: str
 
 
 class GetSource(BaseModel):
-    items: list[Source]
+    items: list[SourceModel]
 
 
 class CreateSource(BaseModel):

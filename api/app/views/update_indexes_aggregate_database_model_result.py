@@ -28,7 +28,7 @@ def calculate_index_mean(session: Session) -> None:
     select_mean = select(
         TextResultAgg.id,
         func.avg(TextResultAgg.index_base)
-        .over(partition_by=[TextResultAgg.source_type, TextResultAgg.model_name])
+        .over(partition_by=[TextResultAgg.source_type, TextResultAgg.model_name])  # type: ignore
         .label("avg"),
     ).subquery("select_mean")
     session.execute(

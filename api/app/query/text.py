@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi.logger import logger
-from sqlalchemy import insert, select
+from sqlalchemy import false, insert, literal_column, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -45,24 +45,26 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
     if len(texts) == 0 or len(ids) == 0:
         return None
     time = datetime.now()
-    await transform_texts(ids, texts, db)  # type: ignore
+    await transform_texts(ids, texts, db)
     logger.info(f"time for transform {len(ids)} sentences: {datetime.now() - time}")
 
 
 async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[str]) -> None:
     text_result_subq = select(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
-        select(TextSentence.id, model_id, False)
+        select(TextSentence.id, literal_column(str(model_id)).label("model_id"), false().label("is_processed"))
         .join(TextSentence.text)
         .join(Text.source)
         .join(text_result_subq, TextSentence.id == text_result_subq.c.text_sentence_id, isouter=True)
         .filter(Source.site.in_(sources))
         .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
         .limit(100_000)
+        .subquery()
     )
+    print(query)
     await db.execute(
         insert(TextResult).from_select(
-            [TextResult.text_sentence_id, TextResult.model_id, TextResult.is_processed], query
+            [TextResult.text_sentence_id.name, TextResult.model_id.name, TextResult.is_processed.name], query
         )
     )
     await db.commit()
@@ -75,7 +77,7 @@ async def select_sentences(db: AsyncSession, model_id: int, limit: int) -> list[
         .filter(TextResult.is_processed == False)  # noqa: E712
         .limit(limit)
     ).subquery()
-    query = select(TextSentence.id, TextSentence.sentence, select_unused_sentence_ids.c.id).join(
+    query = select(TextSentence.id, TextSentence.sentence).join(
         select_unused_sentence_ids, TextSentence.id == select_unused_sentence_ids.c.text_sentence_id
     )
     return (await db.execute(query)).all()  # type: ignore
