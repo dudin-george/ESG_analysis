@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
 from app.query.views import aggregate_text_result, text_reviews_count
-from app.schemes.sourcе import SourceSitesEnum
+from app.schemes.source import SourceSitesEnum
 from app.schemes.views import (
     AggregateTetResultResponse,
     IndexTypeVal,

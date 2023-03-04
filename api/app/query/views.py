@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import TextSentenceCount
 from app.database.models import AggregateTableModelResult as TextResultAgg
-from app.schemes.sourcе import SourceSitesEnum
+from app.schemes.source import SourceSitesEnum
 from app.schemes.views import (
     AggregateTextResultItem,
     IndexTypeVal,

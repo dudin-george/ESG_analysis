@@ -10,7 +10,7 @@ from app.query.source import (
     get_source_types_items,
     patch_source_by_id,
 )
-from app.schemes.sourcе import (
+from app.schemes.source import (
     CreateSource,
     GetSource,
     GetSourceItemModel,

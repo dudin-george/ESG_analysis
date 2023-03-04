@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database.models.source import Source, SourceType
-from app.schemes.sourcе import CreateSource, PatchSource
+from app.schemes.source import CreateSource, PatchSource
 
 
 async def get_source_items(db: AsyncSession) -> list[Source]:
