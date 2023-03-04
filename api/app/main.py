@@ -1,11 +1,13 @@
 import fastapi
+import uvicorn
 from alembic.command import upgrade
 from alembic.config import Config
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy_utils import create_database, database_exists
 from starlette.middleware.gzip import GZipMiddleware
 
+from app.database import SessionManager
 from app.dataloader import load_data
 from app.router import (
     bank_router,
@@ -15,7 +17,7 @@ from app.router import (
     text_router,
     views_router,
 )
-from app.settings import Settings, get_settings
+from app.settings import Settings
 
 app = fastapi.FastAPI(
     title="Texts API",
@@ -49,15 +51,12 @@ async def startup() -> None:
     # Base.metadata.create_all(bind=engine)
     config = Config("alembic.ini")
     config.attributes["configure_logger"] = False
-    engine = create_async_engine(get_settings().database_uri, echo=True, future=True)
+    engine = SessionManager().engine
     async with engine.begin() as conn:
         await conn.run_sync(run_upgrade, config)
     await load_data()
 
 
-def main() -> None:
-    pass
-
 
 if __name__ == "__main__":
-    main()
+    uvicorn.run(app)
