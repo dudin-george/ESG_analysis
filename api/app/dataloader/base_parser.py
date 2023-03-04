@@ -18,7 +18,7 @@ class BaseParser:
 
     async def load_banks(self) -> None:
         self.bank_type = await self.create_bank_type()
-        count = await query.get_bank_count(self.db, self.bank_type.id)  # type: ignore
+        count = await query.get_bank_count(self.db, self.bank_type.id)
         if count == 0:
             await self.parse()
         self.logger.info(f"finish download {self.bank_type.name} list")

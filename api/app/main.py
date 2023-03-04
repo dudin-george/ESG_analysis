@@ -1,12 +1,13 @@
-import os
-
 import fastapi
+import uvicorn
 from alembic.command import upgrade
 from alembic.config import Config
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy_utils import create_database, database_exists
 from starlette.middleware.gzip import GZipMiddleware
 
+from app.database import SessionManager
 from app.dataloader import load_data
 from app.router import (
     bank_router,
@@ -38,22 +39,23 @@ app.include_router(views_router)
 #     return PlainTextResponse(str(exc), status_code=400)
 
 
+def run_upgrade(connection: AsyncEngine, cfg: Config) -> None:
+    cfg.attributes["connection"] = connection
+    upgrade(cfg, "head")
+
+
 @app.on_event("startup")
 async def startup() -> None:
     if not database_exists(Settings().database_uri_sync):
         create_database(Settings().database_uri_sync)
     # Base.metadata.create_all(bind=engine)
-    path = os.path.join(os.getcwd(), "app/database/alembic.ini")
-    config = Config(file_=path)
+    config = Config("alembic.ini")
     config.attributes["configure_logger"] = False
-    config.set_main_option("script_location", "app/database/alembic")
-    upgrade(config, "head")
+    engine = SessionManager().engine
+    async with engine.begin() as conn:
+        await conn.run_sync(run_upgrade, config)
     await load_data()
 
 
-def main() -> None:
-    pass
-
-
 if __name__ == "__main__":
-    main()
+    uvicorn.run(app)

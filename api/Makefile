@@ -45,19 +45,19 @@ test:
 
 .PHONY: migrate
 migrate:
-	cd app/database/ && ENV=migrate PYTHONPATH=../../ python3.10 -m alembic revision --autogenerate
+	alembic revision --autogenerate
 
 .PHONY: downgrade
 downgrade:
-	cd app/database/ && ENV=migrate PYTHONPATH=../../ python3.10 -m alembic downgrade -1
+	alembic downgrade -1
 
 .PHONY: upgrade
 upgrade:
-	cd app/database/ && ENV=migrate PYTHONPATH=../../ python3.10 -m alembic upgrade +1
+	alembic upgrade +1
 
 .PHONY: upgrade-offline
 upgrade-offline:
-	cd app/database/ && ENV=migrate PYTHONPATH=../../ python3.10 -m alembic upgrade head --sql
+	alembic upgrade head --sql
 
 .PHONY: all
 all: format export-dependencies

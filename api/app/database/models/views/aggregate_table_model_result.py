@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.models.base import Base
 
@@ -6,22 +6,22 @@ from app.database.models.base import Base
 class AggregateTableModelResult(Base):
     __tablename__ = "aggregate_table_model_result"
 
-    id = Column(Integer, primary_key=True)
-    year = Column(Integer, index=True)
-    quater = Column(Integer, index=True)  # todo rename
-    model_name = Column(String)
-    source_site = Column(String)
-    source_type = Column(String)
-    bank_name = Column(String)
-    bank_id = Column(Integer)
-    neutral = Column(Integer)
-    positive = Column(Integer)
-    negative = Column(Integer)
-    total = Column(Integer)
-    index_base = Column(Float, default=0)
-    index_mean = Column(Float, default=0)
-    index_std = Column(Float, default=0)
-    index_safe = Column(Float, default=0)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    year: Mapped[int] = mapped_column(index=True)
+    quater: Mapped[int] = mapped_column(index=True)
+    model_name: Mapped[str]
+    source_site: Mapped[str]
+    source_type: Mapped[str]
+    bank_name: Mapped[str]
+    bank_id: Mapped[int]
+    neutral: Mapped[int]
+    positive: Mapped[int]
+    negative: Mapped[int]
+    total: Mapped[int]
+    index_base: Mapped[float] = mapped_column(default=0)
+    index_mean: Mapped[float] = mapped_column(default=0)
+    index_std: Mapped[float] = mapped_column(default=0)
+    index_safe: Mapped[float] = mapped_column(default=0)
 
     def __repr__(self) -> str:
         return (

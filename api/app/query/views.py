@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import TextSentenceCount
 from app.database.models import AggregateTableModelResult as TextResultAgg
-from app.schemes.source import SourceSitesEnum
+from app.schemes.sourcе import SourceSitesEnum
 from app.schemes.views import (
     AggregateTextResultItem,
     IndexTypeVal,
@@ -35,7 +35,12 @@ def aggregate_columns(aggregate_by_year: bool) -> list[Any]:
     else:
         aggregate_cols = [TextResultAgg.quater, TextResultAgg.year]
     aggregate_cols.extend(
-        [TextResultAgg.source_type, TextResultAgg.model_name, TextResultAgg.bank_name, TextResultAgg.bank_id]
+        [
+            TextResultAgg.source_type.name,
+            TextResultAgg.model_name.name,
+            TextResultAgg.bank_name.name,
+            TextResultAgg.bank_id.name,
+        ]
     )
     return aggregate_cols
 
@@ -71,19 +76,21 @@ async def aggregate_text_result(
         .group_by(*aggregate_cols)
         .order_by(TextResultAgg.year, TextResultAgg.quater)
     )
+    for row in await session.execute(query):
+        print(row)
     return [
         AggregateTextResultItem.construct(  # don't validate data
             _fields_set=AggregateTextResultItem.__fields_set__,
-            year=row["year"],
-            quarter=row["quater"],
-            date=date(row["year"], row["quater"] * 3, 1),
-            bank_id=row["bank_id"],
-            bank_name=row["bank_name"],
-            model_name=row["model_name"],
-            source_type=row["source_type"],
-            index=row["index"],
+            year=year,
+            quarter=quarter,
+            date=date(year, quarter * 3, 1),
+            bank_id=bank_id,
+            bank_name=bank_name,
+            model_name=model_name,
+            source_type=source_type,
+            index=index,
         )
-        for row in await session.execute(query)
+        for (year, quarter, bank_name, bank_id, model_name, source_type, index) in await session.execute(query)
     ]
 
 
@@ -123,10 +130,10 @@ async def text_reviews_count(
     return [
         ReviewsCountItem.construct(  # don't validate data
             _fields_set=ReviewsCountItem.__fields_set__,
-            date=row[date_label],
-            source_site=row["source_site"],
-            source_type=row["source_type"],
-            count=row["count_reviews"],
+            date=date_,
+            source_site=source_site,
+            source_type=source_type,
+            count=count_reviews,
         )
-        for row in await session.execute(query)
+        for (date_, source_site, source_type, count_reviews) in await session.execute(query)
     ]

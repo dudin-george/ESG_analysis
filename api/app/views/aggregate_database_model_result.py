@@ -1,4 +1,4 @@
-from sqlalchemy import and_, case, delete, extract, func, insert, select
+from sqlalchemy import and_, case, delete, extract, func, insert, select, text
 from sqlalchemy.orm import Session
 
 from app.database import (
@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 
 def recalculate_aggregate_table(session: Session) -> None:
     session.execute(delete(AggregateTableModelResult))
-    session.execute("ALTER SEQUENCE aggregate_table_model_result_id_seq RESTART WITH 1")  # type: ignore
+    session.execute(text("ALTER SEQUENCE aggregate_table_model_result_id_seq RESTART WITH 1"))
     session.commit()
 
 
@@ -150,17 +150,17 @@ def aggregate_database_sentiment(session: Session) -> None:
     session.execute(
         insert(AggregateTableModelResult).from_select(
             [
-                AggregateTableModelResult.bank_id,
-                AggregateTableModelResult.bank_name,
-                AggregateTableModelResult.quater,
-                AggregateTableModelResult.year,
-                AggregateTableModelResult.model_name,
-                AggregateTableModelResult.source_site,
-                AggregateTableModelResult.source_type,
-                AggregateTableModelResult.positive,
-                AggregateTableModelResult.neutral,
-                AggregateTableModelResult.negative,
-                AggregateTableModelResult.total,
+                AggregateTableModelResult.bank_id.name,
+                AggregateTableModelResult.bank_name.name,
+                AggregateTableModelResult.quater.name,
+                AggregateTableModelResult.year.name,
+                AggregateTableModelResult.model_name.name,
+                AggregateTableModelResult.source_site.name,
+                AggregateTableModelResult.source_type.name,
+                AggregateTableModelResult.positive.name,
+                AggregateTableModelResult.neutral.name,
+                AggregateTableModelResult.negative.name,
+                AggregateTableModelResult.total.name,
             ],
             query,
         )
@@ -235,16 +235,16 @@ def aggregate_database_mdf(session: Session, model_name: str) -> None:
     session.execute(
         insert(AggregateTableModelResult).from_select(
             [
-                AggregateTableModelResult.bank_id,
-                AggregateTableModelResult.bank_name,
-                AggregateTableModelResult.quater,
-                AggregateTableModelResult.year,
-                AggregateTableModelResult.model_name,
-                AggregateTableModelResult.source_site,
-                AggregateTableModelResult.source_type,
-                AggregateTableModelResult.positive,
-                AggregateTableModelResult.negative,
-                AggregateTableModelResult.total,
+                AggregateTableModelResult.bank_id.name,
+                AggregateTableModelResult.bank_name.name,
+                AggregateTableModelResult.quater.name,
+                AggregateTableModelResult.year.name,
+                AggregateTableModelResult.model_name.name,
+                AggregateTableModelResult.source_site.name,
+                AggregateTableModelResult.source_type.name,
+                AggregateTableModelResult.positive.name,
+                AggregateTableModelResult.negative.name,
+                AggregateTableModelResult.total.name,
             ],
             query,
         )

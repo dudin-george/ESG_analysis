@@ -1,4 +1,7 @@
-from sqlalchemy import Column, DateTime, Integer, String
+from datetime import datetime
+
+from sqlalchemy import DateTime
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.models.base import Base
 
@@ -6,12 +9,12 @@ from app.database.models.base import Base
 class TextSentenceCount(Base):
     __tablename__ = "text_reviews_count"
 
-    id = Column(Integer, primary_key=True)
-    date = Column(DateTime, index=True)
-    quarter = Column(Integer, index=True)
-    source_site = Column(String, index=True)
-    source_type = Column(String, index=True)
-    count_reviews = Column(Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    date: Mapped[datetime] = mapped_column(DateTime, index=True)
+    quarter: Mapped[int] = mapped_column(index=True)
+    source_site: Mapped[str] = mapped_column(index=True)
+    source_type: Mapped[str] = mapped_column(index=True)
+    count_reviews: Mapped[int]
 
     def __repr__(self) -> str:
         return (

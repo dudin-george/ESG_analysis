@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import DateTime, ForeignKey, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.models.base import Base
 
@@ -12,8 +13,8 @@ if TYPE_CHECKING:
 class SourceType(Base):
     __tablename__ = "source_type"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, index=True, unique=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True)
+    name: Mapped[str] = mapped_column(index=True, unique=True)
     sources: Mapped[list["Source"]] = relationship("Source", back_populates="source_type")
 
     def __repr__(self) -> str:
@@ -23,12 +24,12 @@ class SourceType(Base):
 class Source(Base):
     __tablename__ = "source"
 
-    id = Column(Integer, primary_key=True)
-    site = Column(String, index=True, unique=True)
-    source_type_id = Column(Integer, ForeignKey("source_type.id"), index=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True, unique=True)
+    site: Mapped[str] = mapped_column(index=True, unique=True)
+    source_type_id: Mapped[int] = mapped_column(ForeignKey("source_type.id"), index=True)
     source_type: Mapped["SourceType"] = relationship("SourceType", back_populates="sources")
-    parser_state = Column(String, nullable=True)
-    last_update = Column(DateTime, nullable=True)
+    parser_state: Mapped[str] = mapped_column(nullable=True)
+    last_update: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     texts: Mapped[list["Text"]] = relationship("Text", back_populates="source")
 
     def __repr__(self) -> str:

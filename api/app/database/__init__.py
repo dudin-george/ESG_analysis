@@ -10,6 +10,7 @@ from app.database.models.views import (  # noqa: F401
 )
 from app.database.session_manager import (  # noqa: F401
     SessionManager,
+    SyncSessionManager,
     get_session,
     get_sync,
 )

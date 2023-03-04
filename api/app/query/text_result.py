@@ -18,16 +18,15 @@ async def create_text_results(db: AsyncSession, texts: list[PostTextResultItem])
         # model = await db.get(Model, text.model_id)
         # if text_sentence is None or model is None:
         #     raise IdNotFoundError("Source or bank not found")
-        text_result = TextResult(
-            text_sentence_id=text.text_sentence_id,
-            result=text.text_result,
-            model_id=text.model_id,
-            is_processed=True,
-        )
         await db.execute(
             update(TextResult)
             .filter(TextResult.text_sentence_id == text.text_sentence_id)
             .filter(TextResult.model_id == text.model_id)
-            .values(text_result.dict())
+            .values(
+                text_sentence_id=text.text_sentence_id,
+                result=text.text_result,
+                model_id=text.model_id,
+                is_processed=True,
+            )
         )
     await db.commit()

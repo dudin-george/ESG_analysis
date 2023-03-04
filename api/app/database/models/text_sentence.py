@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import ForeignKey, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.models.base import Base
 
@@ -13,11 +13,11 @@ if TYPE_CHECKING:
 class TextSentence(Base):
     __tablename__ = "text_sentence"
 
-    id = Column(Integer, primary_key=True)
-    text_id = Column(Integer, ForeignKey("text.id", ondelete="CASCADE"), index=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    text_id: Mapped[int] = mapped_column(Integer, ForeignKey("text.id", ondelete="CASCADE"), index=True)
     text: Mapped["Text"] = relationship("Text", back_populates="text_sentences")
-    sentence = Column(String)
-    sentence_num = Column(Integer)
+    sentence: Mapped[str]
+    sentence_num: Mapped[int]
     text_results: Mapped[list["TextResult"]] = relationship("TextResult", back_populates="text_sentence")
 
     def __repr__(self) -> str:

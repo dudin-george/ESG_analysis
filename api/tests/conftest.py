@@ -12,8 +12,12 @@ from alembic.config import Config
 from bs4 import BeautifulSoup
 from configargparse import Namespace
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.database import SessionManager
@@ -34,6 +38,7 @@ def make_alembic_config(cmd_opts: Namespace | SimpleNamespace, base_path: Path =
         cmd_opts.config = os.path.join(base_path, cmd_opts.config + "alembic.ini")
 
     config = Config(file_=cmd_opts.config, ini_section=cmd_opts.name, cmd_opts=cmd_opts)
+    config.attributes["configure_logger"] = False
 
     # Change path to alembic folder to absolute
     alembic_location = "alembic"  # config.get_main_option("script_location")
@@ -113,8 +118,8 @@ async def engine_async(postgres) -> AsyncEngine:
 
 
 @pytest.fixture
-def session_factory_async(engine_async) -> sessionmaker:
-    return sessionmaker(engine_async, class_=AsyncSession, expire_on_commit=False)
+def session_factory_async(engine_async) -> async_sessionmaker[AsyncSession]:
+    return async_sessionmaker(engine_async, expire_on_commit=False)
 
 
 @pytest.fixture

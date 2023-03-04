@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.models.base import Base
 
@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 class BankType(Base):
     __tablename__ = "bank_type"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(index=True)
     banks: Mapped["Bank"] = relationship("Bank", back_populates="bank_type")
 
     def __repr__(self) -> str:
@@ -23,12 +23,12 @@ class BankType(Base):
 class Bank(Base):
     __tablename__ = "bank"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    licence = Column(String, index=True)
-    bank_type_id = Column(Integer, ForeignKey("bank_type.id"), index=True, nullable=True, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
+    licence: Mapped[str] = mapped_column(index=True)
+    bank_type_id: Mapped[int] = mapped_column(ForeignKey("bank_type.id"), index=True, nullable=True)
     bank_type: Mapped["BankType"] = relationship("BankType", back_populates="banks")
-    bank_name = Column(String)
-    description = Column(String, nullable=True)
+    bank_name: Mapped[str]
+    description: Mapped[str] = mapped_column(nullable=True)
     texts: Mapped[list["Text"]] = relationship("Text", back_populates="bank")
 
     def __repr__(self) -> str:
