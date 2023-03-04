@@ -7,15 +7,15 @@ authors = ["Samoed <samoed.roman@gmail.com>"]
 [tool.poetry.dependencies]
 python = "~3.10"
 requests = "^2.28.0"
-fastapi = "^0.85.0"
+fastapi = "^0.92.0"
 pydantic = { extras = ["dotenv"], version = "^1.10.2" }
-SQLAlchemy = { extras = ["asyncio"], version = "^1.4.42" }
+sqlalchemy = "^2.0.4"
 uvicorn = "^0.18.3"
-SQLAlchemy-Utils = "^0.38.3"
+sqlalchemy-utils = "^0.40.0"
 beautifulsoup4 = "^4.11.1"
 #  celery = "^5.2.7"
 nltk = "^3.7"
-alembic = "^1.8.1"
+alembic = "^1.9.4"
 asyncpg = "^0.26.0"
 pandas = "^1.5.1"
 openpyxl = "^3.0.10"
@@ -25,13 +25,11 @@ schedule = "^1.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "^4.0.1"
-black = "^22.3.0"
-mypy = "^0.991"
-isort = "^5.10.1"
-SQLAlchemy = {extras = ["mypy"], version = "^1.4.41"}
-#  celery-types = "^0.14.0"
-pyupgrade = "^2.38.2"
+flake8 = "^6.0.0"
+black = "^23.1.0"
+isort = "^5.12.0"
+mypy = "^1.0.1"
+pyupgrade = "^3.3.1"
 types-beautifulsoup4 = "^4.11.6.7"
 
 
@@ -70,7 +68,6 @@ warn_unused_ignores = true
 warn_return_any = true
 strict_equality = true
 plugins = [
-    "sqlalchemy.ext.mypy.plugin",
     "pydantic.mypy",
 ]
 ignore_missing_imports = false
@@ -85,7 +82,7 @@ module = [
     "nltk",
     "pandas",
     "schedule",
-
+    "uvicorn",
 ]
 ignore_missing_imports = true
 
