@@ -56,7 +56,7 @@ def upgrade() -> None:
     select_mean = sa.select(
         aggregate_table_model_result.c.id,
         sa.func.avg(aggregate_table_model_result.c.index_base)
-        .over(partition_by=[aggregate_table_model_result.c.source_type, aggregate_table_model_result.c.model_name])
+        .over(partition_by=[aggregate_table_model_result.c.source_type, aggregate_table_model_result.c.model_name])  # type: ignore
         .label("avg"),
     ).subquery("select_mean")
     op.execute(
