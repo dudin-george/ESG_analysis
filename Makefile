@@ -1,18 +1,5 @@
 # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
 .DEFAULT_GOAL := all
-isort = isort .
-black = black .
-mypy = mypy .
-flake8  = flake8 .
-
-.PHONY: install-linting
-install-linting:
-	poetry add flake8 black isort mypy -D
-	pre-commit install
-
-.PHONY: install
-install: install-linting
-	@echo 'installed development requirements'
 
 .PHONY: lint
 lint:
@@ -31,6 +18,30 @@ up:
 .PHONY: up-api
 up-api:
 	docker compose up -d --build api database --remove-orphans
+
+.PHONY: up-parsers
+up-parsers:
+	docker compose --profile parsers up -d
+
+.PHONY: up-banki
+up-banki:
+	docker compose --profile banki up -d
+
+.PHONY: up-sravni
+up-sravni:
+	docker compose --profile sravni up -d
+
+.PHONY: up-vk
+up-vk:
+	docker compose --profile vk up -d
+
+.PHONY: up-mdf
+up-mdf:
+	docker compose --profile mdf up -d
+
+.PHONY: up-views
+up-views:
+	docker compose --profile views up -d
 
 .PHONY: env
 env:
