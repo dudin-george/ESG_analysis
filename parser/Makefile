@@ -5,6 +5,7 @@ black = black .
 mypy = mypy .
 flake8  = flake8 .
 pyupgrade = pyupgrade --py310-plus
+poetry = poetry run
 
 .PHONY: install-linting
 install-linting:
@@ -23,11 +24,11 @@ lint: install-linting
 
 .PHONY: format
 format:
-	$(pyupgrade)
-	$(isort)
-	$(black)
-	$(mypy)
-	$(flake8)
+	$(poetry) $(pyupgrade)
+	$(poetry) $(isort)
+	$(poetry) $(black)
+	$(poetry) $(mypy)
+	$(poetry) $(flake8)
 
 .PHONY: export-dependencies
 export-dependencies:

@@ -1,10 +1,13 @@
 # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
 .DEFAULT_GOAL := all
+poetry = poetry run
 isort = isort app/ tests/
 black = black app/ tests/
 mypy = mypy app/
 flake8  = flake8 app/ tests/
 pyupgrade = pyupgrade --py310-plus
+
+# args := $(wordlist 2, 100, $(MAKECMDGOALS))
 
 .PHONY: install-linting
 install-linting:
@@ -23,11 +26,11 @@ lint: install-linting
 
 .PHONY: format
 format:
-	$(pyupgrade)
-	$(isort)
-	$(black)
-	$(mypy)
-	$(flake8)
+	$(poetry) $(pyupgrade)
+	$(poetry) $(isort)
+	$(poetry) $(black)
+	$(poetry) $(mypy)
+	$(poetry) $(flake8)
 
 .PHONY: export-dependencies
 export-dependencies:
