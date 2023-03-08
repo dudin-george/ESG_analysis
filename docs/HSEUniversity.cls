@@ -150,13 +150,19 @@
   defernumbers=true,% Нумерация начинается как только встречается группа.
   sorting=none,
   url=false,
-  doi=true,
+  doi=false,
   isbn=false,
   movenames=false,
   maxnames=100
-]{biblatex}
-\renewcommand*{\multicitedelim}{\addcomma\space}
+  ]{biblatex}
 
+%%%%%%%% для форматирования под гост 2011
+%%% https://github.com/AndreyAkinshin/Russian-Phd-LaTeX-Dissertation-Template/blob/dbd175fb59fe5d1d29df3048ce4aded671fb7db9/Readme/Bibliography.md#%D1%81%D1%82%D1%80%D0%BE%D0%B3%D0%BE%D1%81%D1%82%D1%8C-%D1%81%D0%BE%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D1%81%D1%82%D0%B2%D0%B8%D1%8F-%D0%B3%D0%BE%D1%81%D1%82
+\renewcommand*{\multicitedelim}{\addcomma\space}
+\ltx@iffilelater{biblatex-gost.def}{2017/05/03}%
+{\toggletrue{bbx:gostbibliography}%
+
+\renewcommand*{\revsdnamepunct}{\addcomma}}{}
 % Настройки языка в списке литературы.
 \DeclareSourcemap{
   \maps[datatype=bibtex,overwrite=false]{
@@ -177,12 +183,27 @@
 \NewBibliographyString{langjapanese}
 \NewBibliographyString{fromjapanese}
 
+% TODO change to printbibliography and \renewcommand{\bibname}{Whatever floats your boat} \renewcommand{\bibsection}{\section{\bibname}}
+% \printbibliography[title={Articles},type=article,sorting=nyt,heading=subbibnumbered]
 \newcommand{\putbibliography}{
   \chapter**{Библиографический список}
   \addcontentsline{toc}{chapter}{Библиографический список}
   \printbibliography[heading=none] %title={Библиографический список}, env=gostbibliography,
 }
 
+
+%%% Счётчики
+\RequirePackage{xassoccnt}
+% счетчик иллюстраций
+\NewTotalDocumentCounter{totalfigures}
+\DeclareAssociatedCounters{figure}{totalfigures}
+\DeclareAssociatedCounters{FIGURE}{totalfigures}
+
+% счетчик таблиц
+\NewTotalDocumentCounter{totaltables}
+\DeclareAssociatedCounters{table}{totaltables}
+\DeclareAssociatedCounters{TABLE}{totaltables}
+\DeclareAssociatedCounters{longtblr}{totaltables}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Установка основных характеристик текста
 
@@ -404,15 +425,17 @@
 
 \def\@year{\the\year{}}
 \def\@supervisorTitle{}
+\def\@supervisorAcademic{}
 \def\@supervisorName{I.I.~Ivanov}
 \def\@reviewerTitle{}
 \def\@reviewerName{I.I.~Ivanov}
 \def\@abstract{TODO}
 
 \newcommand{\Year}[1]{\def\@year{#1}}
-\newcommand{\supervisor}[2]{
+\newcommand{\supervisor}[3]{
   \def\@supervisorTitle{#1}
-  \def\@supervisorName{#2}
+  \def\@supervisorAcademic{#2}
+  \def\@supervisorName{#3}
 }
 \newcommand{\reviewer}[2]{
   \def\@reviewerTitle{#1}
@@ -463,26 +486,30 @@
   \vfill
 
   \ifHasReviewer
-  \begin{minipage}[t]{0.4\textwidth}
-    Рецензент \\
-    \nohyphens{\@reviewerTitle}
+    \begin{minipage}[t]{0.4\textwidth}
+      \begin{flushleft}
+        Рецензент \\
+        \nohyphens{\@reviewerTitle}
 
-    \vspace{2mm}
+        \vspace{2mm}
 
-    \@reviewerName
-  \end{minipage}
+        \@reviewerName
+      \end{flushleft}
+    \end{minipage}
   \fi
   \hfill
   \begin{minipage}[t]{0.4\textwidth}
-    Руководитель \\
-    \nohyphens{\@supervisorTitle}
+    \begin{flushleft}
+      Руководитель \\
+      \nohyphens{\@supervisorTitle}, \nohyphens{\@supervisorAcademic}
 
-    \vspace{10mm}
+      \vspace{10mm}
 
-    \hrule
-    \vspace{3mm}
+      \hrule
+      \vspace{3mm}
 
-    \@supervisorName
+      \@supervisorName
+    \end{flushleft}
   \end{minipage}
 
   \vfill
@@ -547,6 +574,7 @@
 \newcommand\originalappendix{}
 \let\originalappendix\appendix
 \renewcommand{\appendix}{%
+  \label{pg:end} % для указания на номер последней страницы
   \originalappendix
   %\renewcommand{\thechapter}{\Asbuk{chapter}}
   \renewcommand{\thechapter}{\cyrtoc{\value{chapter}}}
