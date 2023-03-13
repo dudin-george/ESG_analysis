@@ -14,7 +14,7 @@ class TextSentenceCount(Base):
     quarter: Mapped[int] = mapped_column(index=True)
     source_site: Mapped[str] = mapped_column(index=True)
     source_type: Mapped[str] = mapped_column(index=True)
-    count_reviews: Mapped[int]
+    count_reviews: Mapped[int] = mapped_column(default=0)
 
     def __repr__(self) -> str:
         return (

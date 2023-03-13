@@ -14,10 +14,10 @@ class AggregateTableModelResult(Base):
     source_type: Mapped[str]
     bank_name: Mapped[str]
     bank_id: Mapped[int]
-    neutral: Mapped[int]
-    positive: Mapped[int]
-    negative: Mapped[int]
-    total: Mapped[int]
+    neutral: Mapped[int] = mapped_column(default=0)
+    positive: Mapped[int] = mapped_column(default=0)
+    negative: Mapped[int] = mapped_column(default=0)
+    total: Mapped[int] = mapped_column(default=0)
     index_base: Mapped[float] = mapped_column(default=0)
     index_mean: Mapped[float] = mapped_column(default=0)
     index_std: Mapped[float] = mapped_column(default=0)
