@@ -14,7 +14,7 @@ class AggregateTableModelResult(Base):
     source_type: Mapped[str]
     bank_name: Mapped[str]
     bank_id: Mapped[int]
-    neutral: Mapped[int] = mapped_column(default=0)
+    neutral: Mapped[int] = mapped_column(default=0, nullable=True)
     positive: Mapped[int] = mapped_column(default=0)
     negative: Mapped[int] = mapped_column(default=0)
     total: Mapped[int] = mapped_column(default=0)
