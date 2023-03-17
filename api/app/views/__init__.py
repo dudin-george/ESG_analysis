@@ -8,5 +8,6 @@ from app.views.count_sentences_per_month import (  # noqa: F401
     recalculate_count_sentences_table,
 )
 from app.views.update_indexes_aggregate_database_model_result import (  # noqa: F401
+    calculate_percentiles,
     update_indexes,
 )

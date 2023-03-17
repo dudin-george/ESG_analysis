@@ -11,6 +11,7 @@ from app.views import (
     aggregate_count_sentences,
     aggregate_database_mdf,
     aggregate_database_sentiment,
+    calculate_percentiles,
     recalculate_aggregate_table,
     recalculate_count_sentences_table,
     update_indexes,
@@ -28,6 +29,7 @@ def calculate_aggregate_database_sentiment() -> None:
             logger.info(f"start {mdf_model_name.value} aggregate")
             aggregate_database_mdf(session, mdf_model_name.value)
         update_indexes(session)
+        calculate_percentiles(session)
 
 
 def count_sentences() -> None:
