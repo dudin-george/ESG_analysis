@@ -99,4 +99,6 @@ https://youtu.be/RfN0B7L4SuM?list=PLEwK9wdS5g0riA4Q_fqcjkv0zYf6HgRGJ
 - https://github.com/ultrajson/ultrajson
 - https://github.com/ijl/orjson
 * Docs
-** =citar-export-local-bib-file=
+** DONE =citar-export-local-bib-file=
+CLOSED: [2023-03-15 Ср 20:44]
+* Спросить про то как обучалась модель и про сайт будет или нет
