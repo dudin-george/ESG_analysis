@@ -25,6 +25,8 @@ class AggregateTextResultItem(BaseModel):
     model_name: str
     source_type: str
     index: float | None
+    index_10_percentile: float | None
+    index_90_percentile: float | None
 
     def __repr__(self) -> str:
         return (
