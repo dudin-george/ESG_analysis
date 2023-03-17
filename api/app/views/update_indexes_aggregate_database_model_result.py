@@ -89,3 +89,45 @@ def calculate_index_safe(session: Session) -> None:
     )
     session.commit()
     logger.info("Calculated index safe")
+
+
+def calculate_percentiles(session: Session) -> None:
+    base_1 = "base_1"
+    base_9 = "base_9"
+    mean_1 = "mean_1"
+    mean_9 = "mean_9"
+    safe_1 = "safe_1"
+    safe_9 = "safe_9"
+    std_1 = "std_1"
+    std_9 = "std_9"
+    p_year = "p_year"
+    p_quarter = "p_quarter"
+    percentiles_query = select(
+        func.percentile_disc(0.1).within_group(TextResultAgg.index_base).label(base_1),  # type: ignore[no-untyped-call]
+        func.percentile_disc(0.9).within_group(TextResultAgg.index_base).label(base_9),  # type: ignore[no-untyped-call]
+        func.percentile_disc(0.1).within_group(TextResultAgg.index_mean).label(mean_1),  # type: ignore[no-untyped-call]
+        func.percentile_disc(0.9).within_group(TextResultAgg.index_mean).label(mean_9),  # type: ignore[no-untyped-call]
+        func.percentile_disc(0.1).within_group(TextResultAgg.index_std).label(std_1),  # type: ignore[no-untyped-call]
+        func.percentile_disc(0.9).within_group(TextResultAgg.index_std).label(std_9),  # type: ignore[no-untyped-call]
+        func.percentile_disc(0.1).within_group(TextResultAgg.index_safe).label(safe_1),  # type: ignore[no-untyped-call]
+        func.percentile_disc(0.9).within_group(TextResultAgg.index_safe).label(safe_9),  # type: ignore[no-untyped-call]
+        TextResultAgg.year.label(p_year),
+        TextResultAgg.quater.label(p_quarter),
+    ).group_by(TextResultAgg.year, TextResultAgg.quater)
+    session.execute(
+        update(TextResultAgg)
+        .where(TextResultAgg.year == percentiles_query.c.p_year)
+        .where(TextResultAgg.quater == percentiles_query.c.p_quarter)
+        .values(
+            index_base_1=percentiles_query.c.base_1,
+            index_base_9=percentiles_query.c.base_9,
+            index_mean_1=percentiles_query.c.mean_1,
+            index_mean_9=percentiles_query.c.mean_9,
+            index_std_1=percentiles_query.c.std_1,
+            index_std_9=percentiles_query.c.std_9,
+            index_safe_1=percentiles_query.c.safe_1,
+            index_safe_9=percentiles_query.c.safe_9,
+        )
+    )
+    session.commit()
+    logger.info("Calculated percentiles")

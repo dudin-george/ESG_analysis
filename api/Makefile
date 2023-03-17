@@ -48,7 +48,7 @@ test:
 
 .PHONY: migrate
 migrate:
-	alembic revision --autogenerate
+	poetry run alembic revision --autogenerate
 
 .PHONY: downgrade
 downgrade:
