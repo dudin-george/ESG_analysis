@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,21 +16,35 @@ from app.schemes.views import (
 )
 
 
-def get_index(index_type: IndexTypeVal) -> tuple[InstrumentedAttribute, InstrumentedAttribute, InstrumentedAttribute]:
+def get_index(
+    index_type: IndexTypeVal,
+) -> tuple[InstrumentedAttribute[Any], InstrumentedAttribute[Any], InstrumentedAttribute[Any]]:
     match index_type:
         case IndexTypeVal.index_base:
-            return TextResultAgg.index_base, TextResultAgg.index_base_10_percentile, TextResultAgg.index_base_90_percentile
+            return (
+                TextResultAgg.index_base,
+                TextResultAgg.index_base_10_percentile,
+                TextResultAgg.index_base_90_percentile,
+            )
         case IndexTypeVal.index_std:
             return TextResultAgg.index_std, TextResultAgg.index_std_10_percentile, TextResultAgg.index_std_90_percentile
         case IndexTypeVal.index_mean:
-            return TextResultAgg.index_mean, TextResultAgg.index_mean_10_percentile, TextResultAgg.index_mean_90_percentile
+            return (
+                TextResultAgg.index_mean,
+                TextResultAgg.index_mean_10_percentile,
+                TextResultAgg.index_mean_90_percentile,
+            )
         case IndexTypeVal.index_safe:
-            return TextResultAgg.index_safe, TextResultAgg.index_safe_10_percentile, TextResultAgg.index_safe_90_percentile
+            return (
+                TextResultAgg.index_safe,
+                TextResultAgg.index_safe_10_percentile,
+                TextResultAgg.index_safe_90_percentile,
+            )
         case _:
             raise ValueError
 
 
-def aggregate_columns(aggregate_by_year: bool) -> list[InstrumentedAttribute]:
+def aggregate_columns(aggregate_by_year: bool) -> list[InstrumentedAttribute[Any]]:
     if aggregate_by_year:
         aggregate_cols = [TextResultAgg.year, TextResultAgg.quater]
     else:
@@ -46,14 +61,14 @@ def aggregate_columns(aggregate_by_year: bool) -> list[InstrumentedAttribute]:
 
 
 async def aggregate_text_result(
-        session: AsyncSession,
-        start_year: int,
-        end_year: int,
-        bank_ids: list[int],
-        model_names: list[str],
-        source_types: list[str],
-        aggregate_by_year: bool,
-        index_type: IndexTypeVal,
+    session: AsyncSession,
+    start_year: int,
+    end_year: int,
+    bank_ids: list[int],
+    model_names: list[str],
+    source_types: list[str],
+    aggregate_by_year: bool,
+    index_type: IndexTypeVal,
 ) -> list[AggregateTextResultItem]:
     index_val, index_10_percentile, index_90_percentile = get_index(index_type)
     aggregate_cols = aggregate_columns(aggregate_by_year)
@@ -92,17 +107,27 @@ async def aggregate_text_result(
             index_10_percentile=index_10,
             index_90_percentile=index_90,
         )
-        for (year, quarter, bank_name, bank_id, model_name, source_type, index, index_10, index_90) in await session.execute(query)
+        for (
+            year,
+            quarter,
+            bank_name,
+            bank_id,
+            model_name,
+            source_type,
+            index,
+            index_10,
+            index_90,
+        ) in await session.execute(query)
     ]
 
 
 async def text_reviews_count(
-        session: AsyncSession,
-        start_date: date,
-        end_date: date,
-        source_sites: list[SourceSitesEnum] | None,
-        # sources_types: list[SourceTypesEnum],
-        aggregate_by_year: SentenceCountAggregate,
+    session: AsyncSession,
+    start_date: date,
+    end_date: date,
+    source_sites: list[SourceSitesEnum] | None,
+    # sources_types: list[SourceTypesEnum],
+    aggregate_by_year: SentenceCountAggregate,
 ) -> list[ReviewsCountItem]:
     date_label = "date_"
     match aggregate_by_year:
