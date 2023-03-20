@@ -222,6 +222,7 @@
 % Попись таблицы и рисунка
 \captionsetup[table]{position=t, singlelinecheck=false, justification=raggedleft, labelsep=endash, name=Таблица}
 \captionsetup[figure]{labelfont={bf, it}, textfont={bf, it}, position=b, singlelinecheck=false, labelsep=endash, justification=centering, name=Рисунок}
+\RequirePackage{rotating} % Переворачивание таблиц и картинок
 
 %%% Главы и разделы %%%
 \titleformat{\chapter}%[display]
@@ -247,9 +248,8 @@
 \renewcommand\labelitemiii{--}
 \renewcommand\labelitemiv{--}
 \RequirePackage{enumitem}
-\setlist[enumerate]{label={\arabic*.}, ref={\arabic*}} % все уровни нумерованого списка арабские цифры
-\setlist{leftmargin=15mm}
-\setlist{nosep}
+\setlist[enumerate]{label={\arabic*.}, ref={\arabic*}, leftmargin={20mm}, nosep} % все уровни нумерованого списка арабские цифры
+\setlist[itemize]{leftmargin={20mm}, nosep}
 
 
 %%% Оглавление %%%
