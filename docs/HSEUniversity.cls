@@ -12,6 +12,7 @@
 \RequirePackage{csquotes}
 \RequirePackage[main=russian,english]{babel}  % Языки: русский, английский
 
+\RequirePackage{comment}
 \RequirePackage{listings}
 \RequirePackage{xcolor}
 
