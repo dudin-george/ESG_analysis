@@ -52,6 +52,7 @@ CLOSED: [2022-11-01 Вт 16:32]
 ** DONE speed up tests
 CLOSED: [2022-10-19 Ср 00:40]
 ** TODO make .env file with common variables
+** TODO check mfo parser licence
 * Doc
 ** детализация актуальности
 + не понятно какие сервисы

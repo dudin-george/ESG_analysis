@@ -26,7 +26,7 @@ class MFOParser(BaseParser):
             df["Unnamed: 5"]
             + df["Unnamed: 4"] * 1e6
             + df["Unnamed: 3"] * 1e8
-            + df["Unnamed: 2"] * 1e11
+            + df["Unnamed: 2"] * 1e11  # todo should be +1 or + append all values
             + df["Регистрационный номер записи"] * 1e12
         )
         df["licence"] = df["licence"].astype(int)
