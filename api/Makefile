@@ -48,7 +48,8 @@ test:
 
 .PHONY: migrate
 migrate:
-	poetry run alembic revision --autogenerate
+	@read -p "Enter migration message: " message; \
+	poetry run alembic revision --autogenerate -m "$$message"
 
 .PHONY: downgrade
 downgrade:
