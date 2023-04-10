@@ -23,6 +23,10 @@
 #+COMMENT: Header extra иначе не генерит нормально previews
 #+COMMENT: Написать аннотацию. Как-то сделать ограничения (упор) на отзывы клиентов
 
+#+begin_comment
+Эксперты предметной области оценивали .
+#+end_comment
+
 * Введение
 :PROPERTIES:
 :UNNUMBERED: t
