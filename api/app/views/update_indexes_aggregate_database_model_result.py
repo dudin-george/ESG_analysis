@@ -119,14 +119,14 @@ def calculate_percentiles(session: Session) -> None:
         .where(TextResultAgg.year == percentiles_query.c.p_year)
         .where(TextResultAgg.quater == percentiles_query.c.p_quarter)
         .values(
-            index_base_1=percentiles_query.c.base_1,
-            index_base_9=percentiles_query.c.base_9,
-            index_mean_1=percentiles_query.c.mean_1,
-            index_mean_9=percentiles_query.c.mean_9,
-            index_std_1=percentiles_query.c.std_1,
-            index_std_9=percentiles_query.c.std_9,
-            index_safe_1=percentiles_query.c.safe_1,
-            index_safe_9=percentiles_query.c.safe_9,
+            index_base_10_percentile=percentiles_query.c.base_1,
+            index_base_90_percentile=percentiles_query.c.base_9,
+            index_mean_10_percentile=percentiles_query.c.mean_1,
+            index_mean_90_percentile=percentiles_query.c.mean_9,
+            index_std_10_percentile=percentiles_query.c.std_1,
+            index_std_90_percentile=percentiles_query.c.std_9,
+            index_safe_10_percentile=percentiles_query.c.safe_1,
+            index_safe_90_percentile=percentiles_query.c.safe_9,
         )
     )
     session.commit()

@@ -243,7 +243,7 @@ services:
       context: api
       dockerfile: Dockerfile.view
     profiles:
-      - "view"
+      - "views"
 
   mdf:
     build:
