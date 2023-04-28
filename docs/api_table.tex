@@ -1,6 +1,6 @@
 \begin{longtblr}[caption={Запросы API\label{tbl:api_doc} }]{colspec={|X[l]|X[l]|X[l]|X[l]|},rowhead = 1,hlines}
 \textbf{Путь}&\textbf{Параметры запроса}&\textbf{Тело запроса}&\textbf{Результат запроса}\\\par
-GET /text/sentences&sources: array\par
+GET\par/text/sentences&sources: array\par
 model\_id: integer\par
 limit: integer&&\{\par
 	items: [\{\par
@@ -8,7 +8,7 @@ limit: integer&&\{\par
 	sentence: string\par
 \}]\par
 \}\\\par
-POST /text/&&\{\par
+POST\par/text/&&\{\par
 	items: [\{\par
 	source\_id: integer\par
 	date: string\par
@@ -21,7 +21,7 @@ POST /text/&&\{\par
 	parser\_state: string\par
 	date: string\par
 \}&\\\par
-GET /model/&&&\{\par
+GET\par/model/&&&\{\par
 	items: [\{\par
 	id: integer\par
 	name: string\par
@@ -29,19 +29,19 @@ GET /model/&&&\{\par
 	model\_type: string\par
 \}]\par
 \}\\\par
-POST /model/&&\{\par
+POST\par/model/&&\{\par
 	model\_name: string\par
 	model\_type: string\par
 \}&\{\par
 	model\_id: integer\par
 \}\\\par
-GET /model/type/&&&\{\par
+GET\par/model/type/&&&\{\par
 	items: [\{\par
 	id: integer\par
 	model\_type: string\par
 \}]\par
 \}\\\par
-GET /text\_result/item/\{text\_id\}&text\_id: integer&&\{\par
+GET\par/text\_result/item/\{text\_id\}&text\_id: integer&&\{\par
 	items: [\{\par
 	id: integer\par
 	text\_sentence\_id: integer\par
@@ -49,14 +49,14 @@ GET /text\_result/item/\{text\_id\}&text\_id: integer&&\{\par
 	model\_id: integer\par
 \}]\par
 \}\\\par
-POST /text\_result/&&\{\par
+POST\par/text\_result/&&\{\par
 	items: [\{\par
 	text\_result: array[number]\par
 	model\_id: integer\par
 	text\_sentence\_id: integer\par
 \}]\par
 \}&\\\par
-GET /source/&&&\{\par
+GET\par/source/&&&\{\par
 	items: [\{\par
 	id: integer\par
 	site: string\par
@@ -65,7 +65,7 @@ GET /source/&&&\{\par
 	last\_update: string\par
 \}]\par
 \}\\\par
-POST /source/&&\{\par
+POST\par/source/&&\{\par
 	site: string\par
 	source\_type: string\par
 \}&\{\par
@@ -75,14 +75,14 @@ POST /source/&&\{\par
 	parser\_state: string\par
 	last\_update: string\par
 \}\\\par
-GET /source/item/\{source\_id\}&source\_id: integer&&\{\par
+GET\par/source/item/\{source\_id\}&source\_id: integer&&\{\par
 	id: integer\par
 	site: string\par
 	source\_type\_id: integer\par
 	parser\_state: string\par
 	last\_update: string\par
 \}\\\par
-PATCH /source/item/\{source\_id\}&source\_id: integer&\{\par
+PATCH\par/source/item/\{source\_id\}&source\_id: integer&\{\par
 	parser\_state: string\par
 	last\_update: string\par
 \}&\{\par
@@ -92,13 +92,13 @@ PATCH /source/item/\{source\_id\}&source\_id: integer&\{\par
 	parser\_state: string\par
 	last\_update: string\par
 \}\\\par
-GET /source/type/&&&\{\par
+GET\par/source/type/&&&\{\par
 	items: [\{\par
 	id: integer\par
 	name: string\par
 \}]\par
 \}\\\par
-GET /bank/&&&\{\par
+GET\par/bank/&&&\{\par
 	items: [\{\par
 	id: integer\par
 	bank\_name: string\par
@@ -106,7 +106,7 @@ GET /bank/&&&\{\par
 	description: string\par
 \}]\par
 \}\\\par
-GET /bank/broker&&&\{\par
+GET\par/bank/broker&&&\{\par
 	items: [\{\par
 	id: integer\par
 	bank\_name: string\par
@@ -114,7 +114,7 @@ GET /bank/broker&&&\{\par
 	description: string\par
 \}]\par
 \}\\\par
-GET /bank/insurance&&&\{\par
+GET\par/bank/insurance&&&\{\par
 	items: [\{\par
 	id: integer\par
 	bank\_name: string\par
@@ -122,7 +122,7 @@ GET /bank/insurance&&&\{\par
 	description: string\par
 \}]\par
 \}\\\par
-GET /bank/mfo&&&\{\par
+GET\par/bank/mfo&&&\{\par
 	items: [\{\par
 	id: integer\par
 	bank\_name: string\par
@@ -130,7 +130,7 @@ GET /bank/mfo&&&\{\par
 	description: string\par
 \}]\par
 \}\\\par
-GET /views/aggregate\_text\_result&start\_year: integer\par
+GET\par/views/aggregate\_text\_result&start\_year: integer\par
 end\_year: integer\par
 bank\_ids: array\par
 model\_names: array\par
@@ -150,7 +150,7 @@ index\_type: None&&\{\par
 	index\_90\_percentile: number\par
 \}]\par
 \}\\\par
-GET /views/reviews\_count&start\_date: string\par
+GET\par/views/reviews\_count&start\_date: string\par
 end\_date: string\par
 source\_sites: array\par
 aggregate\_by: None&&\{\par

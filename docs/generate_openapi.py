@@ -39,7 +39,7 @@ for type_name, sub_types in types.items():
 routes = {}
 for path, val in api["paths"].items():
     for method_type, data in val.items():
-        path_method = f"{method_type.upper()} {path}"
+        path_method = f"{method_type.upper()}\\par{path}"
         routes[path_method] = {}
         p = []
         if data.get("parameters") is not None:
