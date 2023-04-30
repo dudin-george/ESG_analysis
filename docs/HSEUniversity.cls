@@ -12,7 +12,6 @@
 \RequirePackage{csquotes}
 \RequirePackage[main=russian,english]{babel}  % Языки: русский, английский
 
-\RequirePackage{comment}
 \RequirePackage{listings}
 \RequirePackage{xcolor}
 
@@ -40,7 +39,7 @@
 
 \RequirePackage{tabularx} % авто лайнбрейки при достижении лимита в таблице
 \RequirePackage{pdflscape} % горизонтал для приложений
-
+\RequirePackage{comment} % для боков comment \begin{comment} ... \end{comment}
 
 
 \RequirePackage[linktocpage=true,plainpages=false,pdfpagelabels=false]{hyperref}
@@ -53,7 +52,8 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{listingstyle}{
-  backgroundcolor=\color{backcolour},   commentstyle=\color{codegreen},
+  backgroundcolor=\color{backcolour},
+  commentstyle=\color{codegreen},
   keywordstyle=\color{magenta},
   numberstyle=\tiny\color{codegray},
   stringstyle=\color{codepurple},
@@ -68,9 +68,9 @@
   showstringspaces=false,
   showtabs=false,
   tabsize=2,
-      inputencoding=utf8,
-    extendedchars=true,
-    literate=
+  inputencoding=utf8,
+  extendedchars=true,
+  literate=
     {а}{{\cyra}}1
     {б}{{\cyrb}}1
     {в}{{\cyrv}}1
@@ -138,7 +138,7 @@
     {Ю}{{\CYRYU}}1
     {Я}{{\CYRYA}}1
 }
-
+\lstset{style=listingstyle} % для красивых листингов
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Библиография %%%
@@ -249,7 +249,7 @@
 \renewcommand\labelitemiii{--}
 \renewcommand\labelitemiv{--}
 \RequirePackage{enumitem}
-\setlist[enumerate]{label={\arabic*.}, ref={\arabic*}, leftmargin={20mm}, nosep} % все уровни нумерованого списка арабские цифры
+\setlist[enumerate]{label={\arabic*.}, ref={\arabic*}, leftmargin={20mm}, nosep} % все уровни нумерованного списка арабские цифры
 \setlist[itemize]{leftmargin={20mm}, nosep}
 
 
@@ -403,13 +403,13 @@
 \DeclareVoidOption{PI}{
   \def\@facultyString{Факультет социально-экономических и компьютерных наук}
   \def\@specName{Программная инженерия}
-  \def\@specCode{09.03.04 Программная инженерия}
+  \def\@specCode{09.03.04 Программная инженерия}
 }
 % BI -- Бизнес информатика
 \DeclareVoidOption{BI}{
   \def\@facultyString{Факультет социально-экономических и компьютерных наук}
   \def\@specName{Бизнес информатика}
-  \def\@specCode{09.03.04 Программная инженерия}
+  \def\@specCode{09.03.04 Программная инженерия}
 }
 % Available options for the type
 \DeclareVoidOption{KR}{
