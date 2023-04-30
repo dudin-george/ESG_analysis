@@ -72,7 +72,7 @@
 2. Тестирование серверной части
 3. Тестирование клиентской части
 
-В ходе выполнения анализа, проектирования и реализации приложения используется объектно-ориентированный подход. Результаты анализа и решения задач проектирования формализуются с помощью диаграмм =UML=. При разработке базы данных используется реляционная СУБД =PostgreSQL=, а серверная часть приложения реализуется на языке python с помощью фреймворка =FastApi=, а алгоритмы анализы текста будут использовать методы машинного обучения.
+В ходе выполнения анализа, проектирования и реализации приложения используется объектно-ориентированный подход. Результаты анализа и решения задач проектирования формализуются с помощью диаграмм =UML=. При разработке базы данных используется реляционная СУБД =PostgreSQL=, а серверная часть приложения реализуется на языке python [cite:@10.5555/1593511] с помощью фреймворка =FastApi=, а алгоритмы анализы текста будут использовать методы машинного обучения.
 * Анализ предметной области
 В данной главе представлен аналитический обзор оценок этичности компаний и алгоритмов машинного обучения, а также обзор существующих программных решений для поставленной проблемы.
 
@@ -541,9 +541,9 @@ sequenceDiagram
 
 Для обеспечения возможности модернизации базы данных в дальнейшем была использована библиотека alembic, которая обеспечивает миграции базы данных и позволяет вносить изменения в структуру базы данных без потери данных.
 ** Реализация модуля работы с базой данных
-Для реализации API используется асинхронный фреймворк FastAPI и для взаимодействии с базой данных асинхронная библиотека asyncpg. Для валдиции приходящих данных и ответов для каждого запроса была создана своя модель с помощью библиотеки Pydantic.
+Для реализации API используется асинхронный фреймворк FastAPI и для взаимодействии с базой данных асинхронная библиотека asyncpg. Для валидации приходящих данных и ответов для каждого запроса была создана своя модель с помощью библиотеки Pydantic. Также с помощью Pydantic был сделан класс для получения строки подключения к базе данных из переменных окружения.
 
-При старте приложения сначала проверятся подключение с базой данных и проверяется ее версия, если она не актуальна, то выполняются миграции для ее актуализации. Затем проверятся список компаний, если список компаний пустой, то собирается данные о банках, брокера, страховых и микрофинансовых организациях.
+При старте приложения сначала проверятся подключение с базой данных и проверяется ее версия, если она не актуальна, то выполняются миграции для ее актуализации. Затем проверятся список компаний, если список компаний пустой, то собирается данные о банках, брокера, страховых и микрофинансовых организациях. Диаграмма классов рис. [[ref:fig:cbr_parser_class]].
 
 Информация о банках будет собираться по ссылке [[https://www.cbr.ru/banking_sector/credit/FullCoList/]]. Алгоритм начинается с получения объекта BeautifulSoup[cite:@richardsonleonard_beautiful_2007], который содержит HTML-код веб-страницы. Затем происходит итерация по всем элементам таблицы, начиная со второй строки, так как в первой находится заголовки для каждой колонки. Для каждой строки таблицы находятся все ячейки, извлекаются регистрационный номер (номер лицензии) и название банка. В списке также есть платежные небанковские кредитные организации, которые имеют буквы на конце лицензии, например =3511-К= у "Деньги.Мэйл.Ру". Для этого такие номера будут разделяться по "-" и браться номер и преобразовываться в число. Затем собранные данные помещаются в базу данных.
 
@@ -553,9 +553,63 @@ sequenceDiagram
 
 Для сбора данных о микрофинансовых организациях будет обрабатываться excel файл, который доступен по ссылке [[https://www.cbr.ru/vfs/finmarkets/files/supervision/list_ssd.xlsx]]. В этом файле номер лицензии разбит по 5 ячейкам и в части из отсутствуют числа. Поэтому отсутствующие ячейки заполняются нулями и содержание ячеек объединяется для получения результата. Потом также берется название компании и эта информация помещается в базу данных.
 
+#+begin_src d2 :exports results :file img/d2/cbr_parser_class.png
+BaseParser: {
+  shape: class
+
+  create_bank_type(): BankType
+  parse()
+  get_bank_list()
+  get_dataframe(url str, skip_rows int = 3, index_col str \| int \| None): "pd.DataFrame | None"
+}
+
+BankiParser: {
+  shape: class
+
+  create_bank_type(): BankType
+  parse()
+  get_bank_list(): "list[Bank]"
+}
+
+BrokerParser: {
+  shape: class
+
+  create_bank_type(): BankType
+  parse()
+  get_bank_list(): "list[Bank]"
+}
+
+InsuarenceParser: {
+  shape: class
+
+  create_bank_type(): BankType
+  parse()
+  get_bank_list(): "list[Bank]"
+}
+
+MfoParser: {
+  shape: class
+
+  create_bank_type(): BankType
+  parse()
+  get_bank_list(): "list[Bank]"
+}
+
+BaseParser -> BankiParser
+BaseParser -> InsuarenceParser
+BaseParser -> BrokerParser
+BaseParser -> MfoParser
+#+end_src
+
+#+CAPTION: Диаграмма классов для сбора данных с сайта ЦБ
+#+NAME: fig:cbr_parser_class
+#+ATTR_LATEX: :placement [h!] :width \textwidth
+#+RESULTS:
+[[file:img/d2/cbr_parser_class.png]]
+
 API было реализовано согласно требованиям описанными во второй главе.
 
-Алгоритм получения предложений для обработки проверяет, какие из них уже были обработаны моделью, а какие - нет. Если для каждого запроса искать пересечение множества предложений, которые еще не обработаны моделью и уже обработаны, это может занять много времени. Поэтому сначала выполняется запрос ([[ref:lst:insert_unused]]), который ищет предложения, еще не обработанные моделью. Если таких нет, то в таблицу с результатами добавляются 100 000 предложений с пустыми результатами, чтобы было проще искать предложения при дальнейших запросах. Затем с помощью запроса ([[ref:lst:select_unused]]) из таблицы с результатами выбираются предложения, еще не обработанные моделью.
+Алгоритм получения предложений для обработки проверяет, какие из них уже были обработаны моделью, а какие - нет. Если для каждого запроса искать пересечение множества предложений, которые еще не обработаны моделью и уже обработаны, это может занять много времени. Поэтому сначала выполняется запрос ([[ref:lst:insert_unused]]), который ищет предложения, еще не обработанные моделью. Если таких нет, то в таблицу с результатами добавляются 100 000 предложений с пустыми результатами, чтобы было проще искать предложения при дальнейших запросах. Затем с помощью запроса ([[ref:lst:select_unused]]) из таблицы с результатами выбираются предложения, еще не обработанные моделью. Ниже приведены SQL запросы, которые генерирует ORM.
 
 #+NAME: lst:insert_unused
 #+CAPTION: SQL запрос на вставку не обработанных предложений
@@ -588,12 +642,108 @@ JOIN (
 ON text_sentence.id = sub.text_sentence_id;
 #+end_src
 
+Для валидации параметров отвечающих за тип индекса этичности, список источников и период агрегации для получения агрегированных данных были сделаны =Enum=-классы. Если в запрос для получения статистики был передан параметр показывающий, что надо агрегировать только по годам, то в запрос подставлялась дополнительная часть с =group by=.
 
-#+COMMENT: TODO запросы на аггрегацию
+Для получения данных об обработанных предложения в зависимости от типа запрашиваемого индекса в запрос подставлялся нужный тип индекса и проводилась агрегация данных аналогично запросу на получение статистики.
 ** Реализация модуля агрегации данных
+Для реализации этого модуля для взаимодействии с базой данных используется синхронная библиотека psycopg2, а в качестве ORM Sqlalchemy, для регулярного обновления данных используется библиотека schedule, которая позволяет делать регулярные операции.
+
+При запуске модуля начинается подсчет количества собранных отзывов и расчет индекса этичности в разных потоках.
+
+Так как в базе данных находится очень много элементов, то было решено обновлять данные напрямую из SQL. Код запроса на расчет статистки [[ref:lst:count_reviews]].
+
+#+NAME: lst:count_reviews
+#+CAPTION: SQL запрос на подсчет количества предложений
+#+begin_src sql
+INSERT INTO text_sentence_count (count_reviews, date, quarter, source_type, source_site)
+SELECT COUNT(text.id) AS reviews_count,
+       DATE_TRUNC('month', text.date) AS month,
+       EXTRACT('quarter' FROM text.date) AS quarter,
+       source_type.name AS source_type,
+       source.site AS source_site
+FROM text
+JOIN source ON text.source_id = source.id
+JOIN source_type ON source.source_type_id = source_type.id
+GROUP BY month, quarter, source.site, source_type.name;
+#+end_src
+
+Запрос для создания запроса [[ref:lst:sql_aggregate]] на расчет данных было решено использовать несколько подзапросов:
+1. Сначала рассчитывается логарифм результата обработки предложений для каждой колонки. Для избежания проблем с логарифмами к каждому значению добавляется маленькое число, так как у некоторые значения могут быть нулевыми. Этот подзапрос создан для того, чтобы ускорить выполнение, так как этот расчет можно было объединить со следующим подзапросом, но из-за этого пришлось бы пересчитывать одинаковые значения несколько раз.
+2. Затем для подсчета предложений разных типов определяется их категория. Для этого используется конструкция =case when=, где значение обработанных категорий сравнивается попарно.
+3. Потом к полученным данным присоединяются данные из других таблиц. Извлекается информация о квартале и дате, значения с предыдущего шага суммируются. Сам запрос объединяется для каждого квартала компаний, для каждого источника отдельно.
+4. И в конце полученные данные вставляются в таблицу.
+5. Затем уже на агрегированных данных рассчитываются значение индекса согласно формуле [[ref:eq:ethics]].
+
+#+name: lst:sql_aggregate
+#+caption: SQL запрос на агрегацию обработанных предложений
+#+begin_src sql
+INSERT INTO aggregate_table_model_result (bank_id, bank_name, quater, year, model_name, source_site, source_type, positive, neutral, negative, total)
+SELECT
+    extract(year from text.date) as year,
+    extract(QUARTER from text.date) as quarter,
+    bank.id as "bank_id",
+    model.name as "model_name",
+    source.site as "source_site",
+    source_type.name as "source_type_name",
+    sum(positive) as "positive",
+    sum(neutral) as "neutral",
+    sum(negative) as "negative",
+    sum(positive+neutral+negative) as total
+FROM
+    (SELECT
+        text_sentence_id,
+        model_id,
+        case when (log_positive > log_neutral) and (log_positive > log_negative) then 1 else 0 end as "positive",
+        case when (log_neutral  > log_positive) and (log_neutral > log_negative) then 1 else 0 end as "neutral",
+        case when (log_negative > log_neutral) and (log_negative > log_positive) then 1 else 0 end as "negative"
+    FROM (
+        SELECT
+            text_sentence_id,
+            model_id,
+            (LOG(result[1]+0.0000001)) as "log_neutral",
+            (LOG(result[2]+0.0000001)) as "log_positive",
+            (LOG(result[3]+0.0000001)) as "log_negative"
+        FROM text_result
+        WHERE model_id = 1) t) pos_neut_neg
+JOIN
+    text_sentence ON pos_neut_neg.text_sentence_id = text_sentence.id
+JOIN
+    text ON text_sentence.text_id = text.id
+JOIN
+    bank ON text.bank_id = bank.id
+JOIN
+    source ON source.id = text.source_id
+JOIN
+    source_type ON source.source_type_id = source_type.id
+JOIN
+    model ON model.id = pos_neut_neg.model_ida
+GROUP BY quarter, year, source.site, source_type.name, bank.id, model.name
+#+end_src
 ** Реализация модуля сбора данных
-psycopg2
-** Реализация модуля обработки текста
+Для реализации этого модуля для взаимодействии с базой данных используется синхронная библиотека psycopg2, а в качестве ORM Sqlalchemy, для регулярного обновления данных используется библиотека schedule, которая позволяет делать регулярные операции, для обработки html страниц используется библиотека BeautifulSoup, также для обработки данных используется библиотека Pydantic.
+
+Для реализации сборщиков данных было решено сделать базовый класс, который представляет собой интерфейс с функцией =pasrse=. Из него наследуются интерфейсы для сбора данных для каждого сайта (banki.ru, sravni.ru, vk.com). Диаграмма классов рис. [[ref:fig:parser_class_diagram]]. От этих базовых классов для каждого сайта будут наследоваться классы, которые собирают отзывы компаний из различных сфер. Было выбрано такое решение, так как представление информации в рамках одного сайта в различных разделах может сильно различаться.
+
+Для каждого сайта будет создана отдельная папка (модуль) со схожей структурой:
+1. В файле =database= будет лежать схема модели базы данных;
+2. =schemes= pydantic модели для обработки текста;
+3. =queries= запросы в базу данных.
+
+Также для всех сборщиков данных была выделена общая часть, включающая модуль запросов, модулей объектов и настроек, а также модуль для запросов к базе данных. Модуль запросов является модификацией библиотеки requests [cite:@chandra_python_2015] и предоставляет возможность повторного выполнения запросов в случае неудачи и обработки формата json. Модуль моделей содержит pydantic классы объектов для работы с запросами к базе данных и обработки данных. Модуль настроек представляет pydantic класс, который получает данные о подключении к базе данных, ссылке на API и токен для работы с API ВКонтаке из окружения приложения. Модуль для запросов к API предоставляет набор функций для выполнения запросов.
+
+Для удобства развертывания было решено запускать сборщик данных в зависимости от аргумента с которым запущен код. Потом при запуске в зависимости от переданных аргументов создается база данных и запускается сборщик. Процесс сбора данных запускается ежедневно с помощью библиотеки schedule.
+
+*** Разработка сбора данных с banki.ru
+
+*** Разработка сбора данных с sravni.ru
+При сборе данных со sravi.ru будут отправляться запросы на их внутреннее API, которое имеет схожую структуру для всех сфер компаний. При запуске сборщика данных проверяется загружен ли список компаний в базу данных или нет, если нет то в базу данных загружается список компаний. Он будет получать путем отправки запроса на [[https://www.sravni.ru/proxy-organizations/organizations]] с различным значением параметра =organizationType= ("bank" для банков, "insuranceCompany" для страховых компаний и "microcredits" для микрофинансовых организаций). Потом полученный список компаний проверяется со списком, который сохранен в основной базе данных.
+
+Затем запускается процесс сбора данных. Сначала получается на каком момента остановился сборщик данных в прошлый раз из модуля по работе с базой данных. Потом для каждой компании получается список отзывов. Он получается путем отправки запроса по адресу [[https://www.sravni.ru/proxy-reviews/reviews]] с параметром "reviewObjectType" с такими же значениями, как для получения списка компаний, и идентификатором компании на сайте sravni.ru. В результате запроса получается json, в котором находится 1000 отзывов на компанию. Из этих отзывов выбираются новые отзывы с момента предыдущего сбора данных. Потом собранные данные отправляются в основную базу данных.
+*** Разработка сбора данных с vk.com
+Для взаимодействия с API ВКонтакте был реализован класс, который делает запросы к API и подставляет обязательные параметры, такие как токен и версия API, так и параметры которые нужны для различных методов. Также этот класс регулирует количество запросов к API, так как разрешено делать не более трех запросов в секунду.
+
+При запуске сборщика данных проверяется загружен ли список компаний в базу данных или нет, если нет то в базу данных загружается список отобранных заранее компаний. Затем запускается процесс сбора данных. Сначала получается на каком момента остановился сборщик данных в прошлый раз из модуля по работе с базой данных. Затем для каждой компании берет публикации в группе. Для публикаций у которых разница во времени с момента предыдущего сбора данных не более недели собираются новые комментарии. Из собранных комментариев удаляются эмоджи и идентификаторы пользователей из ссылок на профиля ВКонтакте, которые имеют вид =(ID пользователя|Имя пользователя)=. Потом собранные комментарии отправляются в модуль работы с базой данных.
+** TODO Реализация модуля обработки текста
 ** Развертывание системы
 ** Выводы по главе
 * Тестирование системы
@@ -903,8 +1053,146 @@ text  -->  source : source_id:id
 text_result  -->  model : model_id:id
 text_result  -->  text_sentence : text_sentence_id:id
 text_sentence  -->  text : text_id:id
-
 #+end_src
+
+#+LATEX: \begin{landscape}
+* Диаграмма классов
+#+begin_src d2 :exports none :file img/d2/parser_class_v2.png
+BaseParser: {
+  shape: class
+
+  parse()
+  get_source_params(source Source): "tuple[int, int, datetime]"
+}
+
+BankiBase: {
+  shape: class
+
+  create_source(): Source
+  load_bank_list()
+  get_pages_num_html(url str, params dict\[str, Any\] \| None): "int | None"
+  parse()
+  get_pages_num(bank BankiRuBase): "int | None"
+  get_page_bank_reviews(bank BankiRuBase, page_num int, parsed_time datetime): "list[Text] | None"
+  get_reviews_from_url(url str, bank BankiRuBase, parsed_time datetime, params dict\[str, Any\] \| None): "list[Text]"
+}
+
+BankiBroker: {
+  shape: class
+
+  get_broker_licence_from_url(url str): "str | None"
+  load_bank_list()
+  get_page_bank_reviews(bank BankiRuBase, page_num int, parsed_time datetime): "list[Text] | None"
+  get_pages_num(bank BankiRuBase): "int | None"
+}
+
+BankiInsurance: {
+  shape: class
+
+  get_pages_num_insurance_list(url str): int
+  load_bank_list()
+  get_pages_num(bank BankiRuBase): "int | None"
+  get_page_bank_reviews(bank BankiRuBase, page_num int, parsed_time datetime): "list[Text] | None"
+}
+
+MfoParser: {
+  shape: class
+
+  get_mfo_json(page int): "dict[str, Any] | None"
+  get_mfo_json_reviews(bank BankiRuBase, page int): "dict[str, Any] | None"
+  json_total_pages(response dict\[str, Any\]): int
+  get_microfin_list(): "list[BankiRuMfoScheme]"
+  load_bank_list()
+  get_page_bank_reviews(bank BankiRuBase, page_num int, parsed_time datetime): "list[Text] | None"
+  get_pages_num(bank BankiRuBase): "int | None"
+}
+
+BankiNewsParser: {
+  shape: class
+
+  get_pages_num(bank BankiRuBase): "int | None"
+  bank_news_page(bank BankiRuBase, page int = 1): "BeautifulSoup | None"
+  get_news_links(bank BankiRuBase, parsed_time datetime, page_num int = 1): "list[str]"
+  news_from_links(bank BankiRuBase, news_urls list\[str\]): "list[Text]"
+  get_page_bank_reviews(bank BankiRuBase, page_num int, parsed_time datetime): "list[Text]"
+}
+
+BankiParser: {
+  shape: class
+
+  load_bank_list()
+  get_page_bank_reviews(bank BankiRuBase, page_num int, parsed_time datetime): "list[Text] | None"
+  get_pages_num(bank BankiRuBase): "int | None"
+}
+
+BaseSravni: {
+  shape: class
+
+  request_bank_list(): "dict[str, Any] | None"
+  get_bank_reviews(bank_info SravniBankInfo, page_num int, page_size int): "dict[str, Any] | None"
+  get_num_reviews(bank_info SravniBankInfo): int
+  load_bank_list()
+  parse_reviews(reviews_array list\[dict\[str, str\]\], last_date datetime, bank SravniBankInfo): "list[Text]"
+  get_reviews(parsed_time datetime, bank_info SravniBankInfo): "list[Text]"
+  get_review_link(bank_info SravniBankInfo, review dict\[str, Any\]): str
+  parse()
+  width: 1349
+  height: 460
+}
+
+SravniReviews: {
+  shape: class
+
+  load_bank_list()
+  get_review_link(bank_info SravniBankInfo, review dict\[str, Any\]): "str"
+}
+
+SravniInsuranceReviews: {
+  shape: class
+
+  load_bank_list()
+  get_review_link(bank_info SravniBankInfo, review dict\[str, Any\]): str
+}
+
+SravniMfoReviews: {
+  shape: class
+
+  load_bank_list()
+  get_review_link(bank_info SravniBankInfo, review dict\[str, Any\]): str
+}
+
+VKParser: {
+  shape: class
+
+  load_bank_list()
+  json_to_comment_text(domain str, comment dict\[str, Any\], bank_id int, is_thread bool = False): Text
+  get_post_comments(domain str, owner_id str, post_id str, comments_num int, bank_id int): "list[Text]"
+  get_vk_source_params(source Source): "tuple[int, int, int, datetime]"
+  parse()
+  width: 1286
+  height: 322
+}
+
+BaseParser -> BankiBase
+BankiBase -> BankiBroker
+BankiBase -> BankiInsurance
+BankiBase -> MfoParser
+BankiParser -> BankiNewsParser
+BankiBase -> BankiParser
+BaseParser -> BaseSravni
+
+BaseSravni -> SravniInsuranceReviews
+BaseSravni -> SravniMfoReviews
+BaseParser -> VKParser
+BaseSravni -> SravniReviews
+BaseSravni -> SravniMfoReviews
+#+end_src
+
+#+CAPTION: Схема классов сборщиков данных
+#+NAME: fig:parser_class_diagram
+#+ATTR_LATEX: :placement [h!]
+[[file:img/d2/parser_class.png]]
+#+LATEX: \end{landscape}
 * Footnotes
 [fn:1] https://kontur.ru/expert, https://www.esphere.ru/products/spk/financial
 [fn:2] https://proverki.gov.ru/portal/public-search
