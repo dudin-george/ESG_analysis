@@ -32,6 +32,7 @@ class BankiInsurance(BankiBase):
 
     def load_bank_list(self) -> None:
         insurances = []
+        # TODO change to https://www.banki.ru/insurance/company/list/
         existing_insurances = api.get_insurance_list()
         url = "https://www.banki.ru/insurance/companies/"
         total_pages = self.get_pages_num_insurance_list(url)
