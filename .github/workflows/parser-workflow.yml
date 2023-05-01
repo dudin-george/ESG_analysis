@@ -56,7 +56,7 @@ jobs:
           cd parser && make
       - name: Test with pytest
         run: |
-          pytest --cov=app parser/
+          cd parser && pytest --cov=.
         env:
           POSTGRES_DB: test
           POSTGRES_HOST: postgres
