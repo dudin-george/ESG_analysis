@@ -2,11 +2,13 @@
 #+TITLE: Разработка системы для автоматического сбора, анализа и визуализации информации по этичности компаний
 #+AUTHOR: Соломатин Роман Игоревич
 #+LANGUAGE: ru
-#+LATEX_CLASS: HSEUniversity
+#LATEX_CLASS: HSEUniversity
+#LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры информационных технологий в бизнесе НИУ ВШЭ-Пермь}{А. В. Бузмаков}
+#+LATEX_CLASS: HSEUniversityPractice
+#+LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры ИТБ}{A.~В.~Кычкин}
 #+LATEX_CLASS_OPTIONS: [PI, VKR]
 #+cite_export: biblatex
 #+OPTIONS: toc:nil H:4 ':t
-#+LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры информационных технологий в бизнесе НИУ ВШЭ-Пермь}{А. В. Бузмаков}
 #+LATEX_HEADER_EXTRA: \Abstract{В данной работе проведен анализ этичности разных компаний.
 #+LATEX_HEADER_EXTRA:
 #+LATEX_HEADER_EXTRA: В первой главе находится описание используемых алгоримов.
