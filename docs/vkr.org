@@ -1279,4 +1279,5 @@ BaseSravni -> SravniMfoReviews
 
 # Local Variables:
 # org-latex-listings: t
+# org-latex-default-packages-alist: nil
 # End:
