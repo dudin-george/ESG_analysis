@@ -21,7 +21,7 @@ class MFOParser(BaseParser):
         "Unnamed: 3": str,
         "Unnamed: 4": str,
         "Unnamed: 5": str,
-    } # TYPES for register number, because if contains leading zeros
+    }  # TYPES for register number, because if contains leading zeros
 
     async def create_bank_type(self) -> BankType:
         return await create_mfo_type(self.db)

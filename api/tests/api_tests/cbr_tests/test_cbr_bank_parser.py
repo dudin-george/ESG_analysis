@@ -12,7 +12,10 @@ class TestCBRParser:
 
     async def test_get_dataframe_url(self, get_cbr_bank_page):
         _, page = get_cbr_bank_page
-        assert self.cbr.get_dataframe_url(page) == 'https://www.cbr.ru/Queries/UniDbQuery/DownloadExcel/98547?FromDate=05%2F16%2F2023&ToDate=05%2F16%2F2023&posted=False'
+        assert (
+            self.cbr.get_dataframe_url(page)
+            == "https://www.cbr.ru/Queries/UniDbQuery/DownloadExcel/98547?FromDate=05%2F16%2F2023&ToDate=05%2F16%2F2023&posted=False"
+        )
 
     async def test_get_page(self, migrated_postgres):
         await self.cbr.load_banks()

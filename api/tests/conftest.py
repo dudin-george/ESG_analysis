@@ -223,6 +223,7 @@ async def post_text_result(client, post_model, post_text) -> None:
     )
     assert response.status_code == 200, response.text
 
+
 @pytest.fixture
 def mock_request() -> requests_mock.Mocker:
     with requests_mock.Mocker() as m:

@@ -1,5 +1,5 @@
 from app.database import SessionManager
-from app.dataloader import InsuranceParser, BrokerParser, MFOParser, BankParser
+from app.dataloader import BankParser, BrokerParser, InsuranceParser, MFOParser
 
 
 async def load_data() -> None:

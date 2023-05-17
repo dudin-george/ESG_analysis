@@ -3,7 +3,8 @@ from typing import Any
 
 from pydantic import BaseSettings, Field
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))  # This is your Project Root
+
 
 class Settings(BaseSettings):
     echo: bool = Field(env="ECHO", default=False)
