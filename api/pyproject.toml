@@ -105,7 +105,6 @@ omit = [
     "main.py",
     "view_main.py",
     "__init__.py",
-    # "*/versions/*",
 ]
 
 [tool.coverage.report]
@@ -113,7 +112,6 @@ omit = [
     "main.py",
     "view_main.py",
     "__init__.py",
-    # "*/versions/*",
 ]
 skip_empty = true
 
