@@ -14,7 +14,11 @@ class BankParser(BaseParser):
 
     def __init__(self, db: AsyncSession) -> None:
         super().__init__(db)
-        self.URL = self.get_dataframe_url()
+        response = send_get(self.BASE_PAGE_URL)
+        if response is None or response.status_code != 200:
+            self.logger.error("cbr.ru 403 error")
+            raise Exception("cbr.ru 403 error")
+        self.URL = self.get_dataframe_url(response.text)
 
     async def create_bank_type(self) -> BankType:
         return await create_bank_type(self.db)
@@ -29,15 +33,13 @@ class BankParser(BaseParser):
             for index, row in df.iterrows()
         ]
 
-    def get_dataframe_url(self) -> str:
-        response = send_get(self.BASE_PAGE_URL)
-        if response is None or response.status_code != 200:
-            raise Exception("cbr.ru 403 error")
+    @staticmethod
+    def get_dataframe_url(page_text: str) -> str:
         # Pattern to find url in html that contains link to xlsx file
         pattern = re.compile(r'<a\s+class="b-export_button"\s+title="Экспортировать в XLSX"\s+href="([^"]+)"')
-        match = pattern.search(response.text)
+        match = pattern.search(page_text)
         if match is None:
-            self.logger.error("Url not found")
+            BankParser.logger.error("Url not found")
             raise Exception("Url not found")
         path = match.group(1).replace("&amp;", "&")
         return f"https://www.cbr.ru{path}"

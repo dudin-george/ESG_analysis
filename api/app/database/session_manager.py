@@ -35,6 +35,7 @@ async def get_session() -> AsyncGenerator[Any, AsyncSession]:
         yield session
 
 
+# TODO when split aggregation move this
 class SyncSessionManager:
     """
     A class that implements the necessary functionality for working with the database:
