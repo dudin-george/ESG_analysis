@@ -8,7 +8,7 @@ from sqlalchemy_utils import create_database, database_exists
 from starlette.middleware.gzip import GZipMiddleware
 
 from app.database import SessionManager
-from app.dataloader import load_data
+from app.load_data import load_data
 from app.router import (
     bank_router,
     model_router,
