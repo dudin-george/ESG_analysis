@@ -34,9 +34,9 @@ format:
 
 .PHONY: export-dependencies
 export-dependencies:
-	poetry export -f requirements.txt --output requirements/requirements.txt --without-hashes
-	poetry export -f requirements.txt --output requirements/requirements-dev.txt --without-hashes --with=dev
-	poetry export -f requirements.txt --output requirements/requirements-test.txt --without-hashes --with=dev --with=test
+	poetry export -f requirements.txt --output requirements/requirements.txt
+	poetry export -f requirements.txt --output requirements/requirements-dev.txt --with=dev
+	poetry export -f requirements.txt --output requirements/requirements-test.txt --with=dev --with=test
 
 .PHONY: database
 database:
