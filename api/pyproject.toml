@@ -36,7 +36,7 @@ types-beautifulsoup4 = "^4.11.6.7"
 pytest = "^7.1.3"
 setuptools = "^65.4.1"
 pytest-mock = "^3.9.0"
-coverage = "^6.5.0"
+coverage = {extras = ["toml"], version = "^7.2.5"}
 tox = "^3.26.0"
 pytest-cov = "^4.0.0"
 ConfigArgParse = "^1.5.3"
@@ -101,7 +101,21 @@ exclude = '''
 
 [tool.coverage.run]
 source = ["app"]
+omit = [
+    "main.py",
+    "view_main.py",
+    "__init__.py",
+    # "*/versions/*",
+]
 
+[tool.coverage.report]
+omit = [
+    "main.py",
+    "view_main.py",
+    "__init__.py",
+    # "*/versions/*",
+]
+skip_empty = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

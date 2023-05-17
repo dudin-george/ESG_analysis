@@ -38,9 +38,6 @@ def upgrade() -> None:
     op.create_index(
         op.f("ix_aggregate_table_model_result_year"), "aggregate_table_model_result", ["year"], unique=False
     )
-    op.drop_index("ix_temp_sentences_query", table_name="temp_sentences")
-    op.drop_index("ix_temp_sentences_sentence_id", table_name="temp_sentences")
-    op.drop_table("temp_sentences")
     # ### end Alembic commands ###
 
 

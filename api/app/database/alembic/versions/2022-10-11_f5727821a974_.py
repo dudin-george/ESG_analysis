@@ -105,20 +105,6 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "temp_sentences",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("sentence_id", sa.Integer(), nullable=True),
-        sa.Column("sentence", sa.String(), nullable=True),
-        sa.Column("query", sa.String(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ["sentence_id"],
-            ["text_sentence.id"],
-        ),
-        sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_index(op.f("ix_temp_sentences_query"), "temp_sentences", ["query"], unique=False)
-    op.create_index(op.f("ix_temp_sentences_sentence_id"), "temp_sentences", ["sentence_id"], unique=False)
-    op.create_table(
         "text_result",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("text_sentence_id", sa.Integer(), nullable=True),
@@ -146,9 +132,6 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_text_result_model_id"), table_name="text_result")
     op.drop_index(op.f("ix_text_result_id"), table_name="text_result")
     op.drop_table("text_result")
-    op.drop_index(op.f("ix_temp_sentences_sentence_id"), table_name="temp_sentences")
-    op.drop_index(op.f("ix_temp_sentences_query"), table_name="temp_sentences")
-    op.drop_table("temp_sentences")
     op.drop_table("text_sentence")
     op.drop_index(op.f("ix_text_source_id"), table_name="text")
     op.drop_index(op.f("ix_text_id"), table_name="text")
