@@ -271,7 +271,7 @@ Sentense BERT\nbsp{}[cite:@reimers_sentence-bert_2019] -- это модифик�
 \begin{aligned}
 \text{Base index} &= \frac{\text{positive} - \text{negative}}{\text{positive} + \text{negative}} \\
 \text{Std index} &= \sqrt{\frac{\text{positive}}{\text{negative} \cdot (\text{positive} + \text{negative})^{3}} + \frac{\text{negative}}{\text{positive} \cdot (\text{positive} + \text{negative})^{3}}} \\
-\text{Index} &= ({2\cdot({\text{Base index}}-{\text{Mean index}} > 0) - 1})\cdot\\
+\text{Index} &= ({2\cdot(({\text{Base index}}-{\text{Mean index}}) > 0) - 1})\cdot\\
             &{max\left(\left|{\text{Base index}}-{\text{Mean index}}\right|-{\text{Std index}}, 0\right)}
 \end{aligned}
 \end{equation}
