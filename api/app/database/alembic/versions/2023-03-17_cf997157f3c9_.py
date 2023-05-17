@@ -78,19 +78,20 @@ def upgrade() -> None:
         text_result_agg.c.year.label(p_year),
         text_result_agg.c.quater.label(p_quarter),
     ).group_by(text_result_agg.c.year, text_result_agg.c.quater)
+    query = percentiles_query.subquery()
     op.execute(
         sa.update(text_result_agg)
-        .where(text_result_agg.c.year == percentiles_query.c.p_year)
-        .where(text_result_agg.c.quater == percentiles_query.c.p_quarter)
+        .where(text_result_agg.c.year == query.c.p_year)
+        .where(text_result_agg.c.quater == query.c.p_quarter)
         .values(
-            index_base_10_percentile=percentiles_query.c.base_1,
-            index_base_90_percentile=percentiles_query.c.base_9,
-            index_mean_10_percentile=percentiles_query.c.mean_1,
-            index_mean_90_percentile=percentiles_query.c.mean_9,
-            index_std_10_percentile=percentiles_query.c.std_1,
-            index_std_90_percentile=percentiles_query.c.std_9,
-            index_safe_10_percentile=percentiles_query.c.safe_1,
-            index_safe_90_percentile=percentiles_query.c.safe_9,
+            index_base_10_percentile=query.c.base_1,
+            index_base_90_percentile=query.c.base_9,
+            index_mean_10_percentile=query.c.mean_1,
+            index_mean_90_percentile=query.c.mean_9,
+            index_std_10_percentile=query.c.std_1,
+            index_std_90_percentile=query.c.std_9,
+            index_safe_10_percentile=query.c.safe_1,
+            index_safe_90_percentile=query.c.safe_9,
         )
     )
 

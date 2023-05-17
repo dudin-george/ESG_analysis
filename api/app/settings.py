@@ -3,6 +3,8 @@ from typing import Any
 
 from pydantic import BaseSettings, Field
 
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))  # This is your Project Root
+
 
 class Settings(BaseSettings):
     echo: bool = Field(env="ECHO", default=False)
@@ -45,7 +47,7 @@ class Settings(BaseSettings):
         )
 
     class Config:
-        env_file = ".env"
+        env_file = ".env", f"{ROOT_DIR}/../.env"
         env_file_encoding = "utf-8"
 
 
@@ -53,7 +55,5 @@ def get_settings() -> Settings:
     match os.getenv("ENV"):
         case "view":
             return Settings(_env_file="../.env")  # type: ignore[call-arg]
-        case "migrate":
-            return Settings(_env_file="../../.env")  # type: ignore[call-arg]
         case _:
             return Settings()

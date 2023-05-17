@@ -1,15 +1,14 @@
 import asyncio
 import os
-import re
 from os import environ
 from pathlib import Path
 from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
+import requests_mock
 from alembic.command import upgrade
 from alembic.config import Config
-from bs4 import BeautifulSoup
 from configargparse import Namespace
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import (
@@ -132,33 +131,11 @@ def relative_path(path: str) -> str:
     return f"{Path(__file__).parent}/{path}"
 
 
-@pytest.fixture(scope="session")
-def cbr_page() -> BeautifulSoup:
-    path = relative_path("html_pages/cbr_page.html")
-    with open(path) as f:
-        cbr_page = f.read()
-    return BeautifulSoup(cbr_page, "html.parser")
-
-
 @pytest.fixture
-def load_bank_list(cbr_page: BeautifulSoup) -> list[Bank]:
-    cbr_banks = []
-    for bank in cbr_page.find_all("tr")[1:]:
-        items = bank.find_all("td")
-        license_id_text = items[2].text
-        name = re.sub("[\xa0\n\t]", " ", items[4].text)
-        if license_id_text.isnumeric():
-            license_id = int(license_id_text)
-        else:
-            license_id = int(license_id_text.split("-")[0])  # if license id with *-K, *-M, remove suffix
-        cbr_banks.append(Bank(id=license_id, bank_name=name))
-    return cbr_banks
-
-
-@pytest.fixture
-async def client(migrated_postgres, load_bank_list, manager: SessionManager = SessionManager()) -> AsyncClient:
+async def client(migrated_postgres, manager: SessionManager = SessionManager()) -> AsyncClient:
     # utils_module.check_website_exist = AsyncMock(return_value=(True, "Status code < 400"))
     manager.refresh()
+    # TODO refactor session
     async with manager.get_session_maker()() as session:
         await create_bank_type(session)
         await load_banks(
@@ -168,7 +145,6 @@ async def client(migrated_postgres, load_bank_list, manager: SessionManager = Se
                 Bank(id=1000, bank_name="vtb", licence="1000", bank_type_id=1),
             ],
         )
-        # await load_bank(session, load_bank_list)
     async with AsyncClient(app=app, base_url="http://test", follow_redirects=True) as client:
         yield client
 
@@ -246,6 +222,12 @@ async def post_text_result(client, post_model, post_text) -> None:
         ],
     )
     assert response.status_code == 200, response.text
+
+
+@pytest.fixture
+def mock_request() -> requests_mock.Mocker:
+    with requests_mock.Mocker() as m:
+        yield m
 
 
 class APITestMixin:
