@@ -4,12 +4,12 @@
 #+LANGUAGE: ru
 #+cite_export: biblatex
 #+OPTIONS: toc:nil H:4 ':t
-#+BEGIN_COMMENT
-#LATEX_CLASS: HSEUniversity
-#LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры информационных технологий в бизнесе НИУ ВШЭ-Пермь}{А. В. Бузмаков}
-#+END_COMMENT
+#+LATEX_CLASS: HSEUniversity
+#+LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры информационных технологий в бизнесе НИУ ВШЭ-Пермь}{А. В. Бузмаков}
+#+begin_comment
 #+LATEX_CLASS: HSEUniversityPractice
 #+LATEX_CLASS_OPTIONS: [PI, VKR]
+#+end_comment
 #+LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры ИТБ}{A.~В.~Кычкин}
 #+LATEX_HEADER_EXTRA: \Abstract{В данной работе проведен анализ этичности разных компаний на основе отзывов клиентов, которые были собранны с сайтов bani.ru, sravni.ru, vk.com. Данный анализ основан на алгоритмах обработки естественного языка, в частности с помощью модели BERT.
 #+LATEX_HEADER_EXTRA:
@@ -522,8 +522,6 @@ BaseParser -> MfoParser
 Также необходима возможность получения списка компаний с помощью API по различным сферам работы.
 
 В результате проектирования должно получиться API, которое реализует запросы представленные в таблице @@latex:~\ref{tbl:api_doc}@@.
-
-#+LATEX: \include{api_table}
 ** Проектирование модуля агрегации данных
 Для построения индекса этичности компаний будет ежедневно агрегироваться база данных и перестраиваться индексы.
 ** Проектирование модуля сбора данных
@@ -1225,6 +1223,8 @@ text_result  -->  model : model_id:id
 text_result  -->  text_sentence : text_sentence_id:id
 text_sentence  -->  text : text_id:id
 #+end_src
+* Запросы API
+#+LATEX: \include{api_table}
 
 #+LATEX: \begin{landscape}
 * Диаграмма классов
