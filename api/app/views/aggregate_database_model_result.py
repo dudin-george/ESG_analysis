@@ -25,48 +25,63 @@ def recalculate_aggregate_table(session: Session) -> None:
 
 def aggregate_database_sentiment(session: Session) -> None:
     """
-    SELECT EXTRACT(year FROM pos_neut_neg.date)    AS year,
-           EXTRACT(QUARTER FROM pos_neut_neg.date) AS quarter,
-           bank_id                                 AS bank_id,
-           model.name                              AS model_name,
-           source.site                             AS source_site,
-           source_type.name                        AS source_type_name,
-           SUM(positive)                           AS positive,
-           SUM(neutral)                            AS neutral,
-           SUM(negative)                           AS negative,
-           SUM(positive + neutral + negative)      AS total
-    FROM (SELECT pos_neut_neg_reviews.text_id,
-                 pos_neut_neg_reviews.model_id,
-                 pos_neut_neg_reviews.bank_id,
-                 pos_neut_neg_reviews.source_id,
-                 pos_neut_neg_reviews.date,
-                 CASE WHEN (log_positive > log_neutral) AND (log_positive > log_negative) THEN 1 ELSE 0 END AS positive,
-                 CASE WHEN (log_neutral > log_positive) AND (log_neutral > log_negative) THEN 1 ELSE 0 END  AS neutral,
-                 CASE WHEN (log_negative > log_neutral) AND (log_negative > log_positive) THEN 1 ELSE 0 END AS negative
-          FROM (SELECT sum(log_negative) as log_negative,
-                       sum(log_positive) as log_positive,
-                       sum(log_neutral)  as log_neutral,
-                       text.id           as text_id,
-                       text.bank_id,
-                       text.source_id,
-                       text.date,
-                       model_id
-                FROM (SELECT text_result.text_sentence_id,
-                             model_id,
-                             LOG(result[1] + 0.0000001) AS log_neutral,
-                             LOG(result[2] + 0.0000001) AS log_positive,
-                             LOG(result[3] + 0.0000001) AS log_negative
-                      FROM text_result
-                      WHERE model_id = 1) t
-                         JOIN text_sentence ON t.text_sentence_id = text_sentence.id
-                         join text ON text_sentence.text_id = text.id
-                group by text.id, model_id) pos_neut_neg_reviews) pos_neut_neg
-             JOIN bank ON pos_neut_neg.bank_id = bank.id
-             JOIN source ON source.id = pos_neut_neg.source_id
-             JOIN source_type ON source.source_type_id = source_type.id
-             JOIN model ON model.id = pos_neut_neg.model_id
-    GROUP BY year, quarter, source_site, source_type_name, bank_id, model_name
+    INSERT INTO aggregate_table_model_result (bank_id, bank_name, quater, year, model_name, source_site, source_type,
+                                          positive, neutral, negative, total, index_base, index_safe, index_mean,
+                                          index_std)
+    SELECT bank.id,
+           bank.bank_name,
+           EXTRACT(quarter FROM anon_1.date)                         AS quarter,
+           EXTRACT(year FROM anon_1.date)                            AS year,
+           model.name,
+           source.site,
+           source_type.name                                        AS name_1,
+           sum(anon_1.positive)                                    AS positive,
+           sum(anon_1.neutral)                                     AS neutral,
+           sum(anon_1.negative)                                    AS negative,
+           sum(anon_1.positive + anon_1.neutral + anon_1.negative) AS total,
+           0                                                       as index_base,
+           0                                                       as index_safe,
+           0                                                       as index_mean,
+           0                                                       as index_std
+    FROM (SELECT anon_14.text_id   AS text_id,
+                 anon_14.model_id  AS model_id,
+                 anon_14.source_id AS source_id,
+                 anon_14.bank_id   AS bank_id,
+                 anon_14.date      AS date,
+                 CASE
+                     WHEN (anon_14.log_positive > anon_14.log_neutral AND anon_14.log_positive > anon_14.log_negative)
+                         THEN (1)
+                     ELSE (0) END  AS positive,
+                 CASE
+                     WHEN (anon_14.log_neutral > anon_14.log_positive AND anon_14.log_neutral > anon_14.log_negative)
+                         THEN (1)
+                     ELSE (0) END  AS neutral,
+                 CASE
+                     WHEN (anon_14.log_negative > anon_14.log_neutral AND anon_14.log_negative > anon_14.log_positive)
+                         THEN (1)
+                     ELSE (0) END  AS negative
+          FROM (SELECT text.id                                      AS text_id,
+                       text.source_id                               AS source_id,
+                       text.bank_id                                 AS bank_id,
+                       text_result.model_id                         AS model_id,
+                       text.date                                    AS date,
+                       sum(log(text_result.result[(1)] + (0.0001))) AS log_neutral,
+                       sum(log(text_result.result[(2)] + (0.0001))) AS log_positive,
+                       sum(log(text_result.result[(3)] + (0.0001))) AS log_negative
+                FROM text_result
+                         JOIN text_sentence ON text_sentence.id = text_result.text_sentence_id
+                         JOIN text ON text.id = text_sentence.text_id
+                WHERE text_result.model_id = (1)
+                GROUP BY text.id, text_result.model_id, text.bank_id, text.source_id
+                LIMIT (100) -- TODO remove limit
+               ) AS anon_14) AS anon_1
+             JOIN bank ON bank.id = anon_1.bank_id
+             JOIN source ON source.id = anon_1.source_id
+             JOIN source_type ON source_type.id = source.source_type_id
+             JOIN model ON model.id = anon_1.model_id
+    GROUP BY year, quarter, bank.id, bank.bank_name, source_type.name, source.site, model.name
     """
+    # todo: SAWarning: SELECT statement has a cartesian product between FROM element(s) "text" and FROM element "bank_type".  Apply join condition(s) between each element to resolve.
     eps = 1e-7
 
     select_log_result = (
@@ -75,6 +90,7 @@ def aggregate_database_sentiment(session: Session) -> None:
             Text.source_id,
             Text.bank_id,
             TextResult.model_id,
+            Text.date,
             func.sum(func.log(TextResult.result[1] + eps)).label("log_neutral"),
             func.sum(func.log(TextResult.result[2] + eps)).label("log_positive"),
             func.sum(func.log(TextResult.result[3] + eps)).label("log_negative"),
@@ -83,6 +99,7 @@ def aggregate_database_sentiment(session: Session) -> None:
         .join(TextSentence, TextSentence.id == TextResult.text_sentence_id)
         .join(Text, Text.id == TextSentence.text_id)
         .group_by(Text.id, TextResult.model_id, Text.bank_id, Text.source_id)
+        .limit(100)  # TODO remove limit
         .subquery()
     )
     select_pos_neut_neg = select(
@@ -90,6 +107,7 @@ def aggregate_database_sentiment(session: Session) -> None:
         select_log_result.c.model_id,
         select_log_result.c.source_id,
         select_log_result.c.bank_id,
+        select_log_result.c.date,
         case(
             (
                 and_(
@@ -125,8 +143,8 @@ def aggregate_database_sentiment(session: Session) -> None:
         select(
             Bank.id,
             Bank.bank_name,
-            extract("quarter", Text.date).label("quarter"),
-            extract("year", Text.date).label("year"),
+            extract("quarter", select_log_result.c.date).label("quarter"),
+            extract("year", select_log_result.c.date).label("year"),
             Model.name,
             Source.site,
             SourceType.name,
@@ -139,16 +157,14 @@ def aggregate_database_sentiment(session: Session) -> None:
         )
         .select_from(select_pos_neut_neg)
         .join(Bank, Bank.id == select_pos_neut_neg.c.bank_id)
-        .join(BankType)
         .join(Source, Source.id == select_pos_neut_neg.c.source_id)
-        .join(SourceType)
+        .join(SourceType, SourceType.id == Source.source_type_id)
         .join(Model, Model.id == select_pos_neut_neg.c.model_id)
         .group_by(
             "year",
             "quarter",
             Bank.id,
             Bank.bank_name,
-            BankType.name,
             SourceType.name,
             Source.site,
             Model.name,
