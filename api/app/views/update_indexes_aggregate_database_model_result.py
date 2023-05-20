@@ -43,18 +43,17 @@ def calculate_index_mean(session: Session) -> None:
 
 
 def calculate_index_std(session: Session) -> None:
-    eps = 1e-5
     session.execute(
         update(TextResultAgg)
         .where(TextResultAgg.total > 0)
         .values(
-            # (db.POS / (db.TOTAL - db.POS) / db.TOTAL**3 + db.NEG / (db.TOTAL - db.NEG) / db.TOTAL**3)**0.5
+            # (((POS * (TOTAL - POS)) / TOTAL**3) + ((NEG * (TOTAL - NEG)) / TOTAL**3))**0.5
             index_std=func.sqrt(
                 TextResultAgg.positive
-                / (TextResultAgg.total - TextResultAgg.positive + eps)
+                * (TextResultAgg.total - TextResultAgg.positive)
                 / func.pow(TextResultAgg.total, 3)
                 + TextResultAgg.negative
-                / (TextResultAgg.total - TextResultAgg.negative + eps)
+                * (TextResultAgg.total - TextResultAgg.negative)
                 / func.pow(TextResultAgg.total, 3)
             ),
         )
@@ -64,26 +63,24 @@ def calculate_index_std(session: Session) -> None:
 
 
 def calculate_index_safe(session: Session) -> None:
-    # (2 * (db['INDEX'] - db['INDEX_MEAN'] > 0) - 1) * (np.maximum(np.abs(db['INDEX'] - db['INDEX_MEAN']) - db['INDEX_STD'],0))
-    # (2 * (index_base - index_mean > 0) - 1) * (max(abs(index_base - index_mean) - index_std, 0))
+    # (2 * ((index_base - index_mean) > 0) - 1) * (max(abs(index_base - index_mean) - index_std, 0))
     session.execute(
         update(TextResultAgg)
         .where(TextResultAgg.total > 0)
         .values(
             index_safe=(
-                cast(
-                    2
-                    * cast(
+                    (
+                            2
+                            * cast(
                         (TextResultAgg.index_base - TextResultAgg.index_mean) > 0,
                         Integer,
                     )
-                    - 1,
-                    Float,
-                )
-                * func.greatest(
-                    func.abs(TextResultAgg.index_base - TextResultAgg.index_mean) - TextResultAgg.index_std,
-                    0,
-                )
+                            - 1
+                    )
+                    * func.greatest(
+                func.abs(TextResultAgg.index_base - TextResultAgg.index_mean) - TextResultAgg.index_std,
+                0,
+            )
             )
         )
     )
