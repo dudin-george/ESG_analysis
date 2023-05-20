@@ -18,17 +18,13 @@ router = APIRouter(prefix="/model", tags=["model"])
 @router.get("/", response_model=GetModel)
 async def get_models(db: AsyncSession = Depends(get_session)) -> GetModel:
     models = await get_model_items(db)
-    # todo refactor
-    get_model = GetModel(items=[])
-    for model in models:
-        get_model_item = GetModelItem(
-            id=model.id,
-            name=model.name,
-            model_type_id=model.model_type_id,
-            model_type=model.model_type.model_type,
-        )
-        get_model.items.append(get_model_item)
-    return get_model
+    return GetModel(items=[GetModelItem(
+        id=model.id,
+        name=model.name,
+        model_type_id=model.model_type_id,
+        model_type=model.model_type.model_type,
+    )
+        for model in models])
 
 
 @router.post("/", response_model=PostModelResponse)
@@ -40,8 +36,7 @@ async def post_model(model: PostModel, db: AsyncSession = Depends(get_session)) 
 @router.get("/type/", response_model=GetModelType)
 async def get_model_types(db: AsyncSession = Depends(get_session)) -> GetModelType:
     model_types = await get_model_types_items(db)
-    get_model_type = GetModelType(items=[])
-    for model_type in model_types:
-        get_model_item = ModelTypeModel.from_orm(model_type)
-        get_model_type.items.append(get_model_item)
+    get_model_type = GetModelType(items=[
+        ModelTypeModel.from_orm(model_type)
+        for model_type in model_types])
     return get_model_type

@@ -16,6 +16,15 @@ async def create_bank_element_type(db: AsyncSession, bank_type_name: BankTypeVal
     return bank_type
 
 
+async def get_bank_count(db: AsyncSession, bank_type_id: int) -> int:
+    return await db.scalar(select(func.count(Bank.id)).filter(Bank.bank_type_id == bank_type_id))  # type: ignore
+
+
+async def get_companies_list(db: AsyncSession, bank_type: BankTypeVal) -> list[Bank]:
+    bank_type_id = select(BankType.id).filter(BankType.name == bank_type).limit(1).subquery()
+    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+
+
 async def create_bank_type(db: AsyncSession) -> BankType:
     return await create_bank_element_type(db, BankTypeVal.bank)
 
@@ -32,29 +41,20 @@ async def create_mfo_type(db: AsyncSession) -> BankType:
     return await create_bank_element_type(db, BankTypeVal.mfo)
 
 
-# todo make bank_type_id as subquery
-async def get_bank_count(db: AsyncSession, bank_type_id: int) -> int:
-    return await db.scalar(select(func.count(Bank.id)).filter(Bank.bank_type_id == bank_type_id))  # type: ignore
-
-
 async def get_bank_list(db: AsyncSession) -> list[Bank]:
-    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.bank))
-    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+    return await get_companies_list(db, BankTypeVal.bank)
 
 
 async def get_broker_list(db: AsyncSession) -> list[Bank]:
-    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.broker))
-    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+    return await get_companies_list(db, BankTypeVal.broker)
 
 
 async def get_insurance_list(db: AsyncSession) -> list[Bank]:
-    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.insurance))
-    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+    return await get_companies_list(db, BankTypeVal.insurance)
 
 
 async def get_mfo_list(db: AsyncSession) -> list[Bank]:
-    bank_type_id = await db.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.mfo))
-    return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
+    return await get_companies_list(db, BankTypeVal.mfo)
 
 
 async def load_banks(db: AsyncSession, banks: list[Bank]) -> None:

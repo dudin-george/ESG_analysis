@@ -13,6 +13,14 @@ from app.tasks.transform_texts import transform_texts
 
 async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> None:
     text_db = []
+    sources = {
+        source.id: source
+        for source in await db.scalars(select(Source))
+    }
+    banks = {
+        bank.id: bank
+        for bank in await db.scalars(select(Bank))
+    }
 
     for text in post_texts.items:
         text_db_item = Text(
@@ -23,11 +31,10 @@ async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> N
             bank_id=text.bank_id,
             comment_num=text.comments_num,
         )
-        source = await db.scalar(select(Source).filter(Source.id == text_db_item.source_id))
-        bank = await db.scalar(select(Bank).filter(Bank.id == text_db_item.bank_id))
-        if source is None or bank is None:
+        if sources.get(text_db_item.source_id) is None or banks.get(text_db_item.bank_id) is None:
             raise IdNotFoundError("Source or bank not found")
         text_db.append(text_db_item)
+        source = sources[text_db_item.source_id]
         if len(text_db) > 0:
             if post_texts.parser_state:
                 source.parser_state = post_texts.parser_state
@@ -53,8 +60,8 @@ async def insert_new_sentences(db: AsyncSession, model_id: int, sources: list[st
     text_result_subq = select(TextResult).filter(TextResult.model_id == model_id).subquery()
     query = (
         select(TextSentence.id, literal_column(str(model_id)).label("model_id"), false().label("is_processed"))
-        .join(TextSentence.text)
-        .join(Text.source)
+        .join(Text)
+        .join(Source)
         .join(text_result_subq, TextSentence.id == text_result_subq.c.text_sentence_id, isouter=True)
         .filter(Source.site.in_(sources))
         .filter(text_result_subq.c.text_sentence_id == None)  # noqa: E711
@@ -90,7 +97,6 @@ async def get_text_sentences(
     if len(selected_sentences) == 0:
         await insert_new_sentences(db, model_id, sources)
         selected_sentences = await select_sentences(db, model_id, limit)
-    # todo insert texts by id
     return [
         GetTextSentencesItem(sentence_id=sentence_id, sentence=sentence)
         for (sentence_id, sentence) in selected_sentences

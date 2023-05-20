@@ -18,6 +18,7 @@ async def get_sentences(
     db: AsyncSession = Depends(get_session),
 ) -> GetTextSentences | JSONResponse:
     if len(sources) == 0 or sources[0] == "":
+        # TODO add docs for exception, change to HTTPException
         return JSONResponse(status_code=400, content={"message": "sources not found"})
     sentences = await get_text_sentences(db, model_id, sources, limit)
 
@@ -29,7 +30,10 @@ async def post_text(texts: PostTextItem, db: AsyncSession = Depends(get_session)
     try:
         await create_text_sentences(db, texts)
     except IdNotFoundError as e:
+        # TODO add docs for exception, change to HTTPException
         return JSONResponse(status_code=404, content={"message": str(e)})
     except Exception as e:
+        # TODO add docs for exception, change to HTTPException
         return JSONResponse({"message": str(e)}, status_code=400)
+    # TODO add doc for response
     return JSONResponse({"message": "OK"})

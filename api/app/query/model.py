@@ -10,12 +10,10 @@ async def get_model_items(db: AsyncSession) -> list[Model]:
     return await db.scalars(select(Model).options(selectinload(Model.model_type)))  # type: ignore
 
 
-# todo refactor
 async def create_model(db: AsyncSession, post_model: PostModel) -> int:
-    model: Model | None = await db.scalar(select(Model).filter(Model.name == post_model.model_name).limit(1))
+    model = await db.scalar(select(Model).filter(Model.name == post_model.model_name).limit(1))
     if model:
-        model_id = model.id
-        return model_id
+        return model.id
 
     model_type = await db.scalar(select(ModelType).filter(ModelType.model_type == post_model.model_type).limit(1))
     if model_type is None:
@@ -23,7 +21,6 @@ async def create_model(db: AsyncSession, post_model: PostModel) -> int:
     model = Model(name=post_model.model_name, model_type=model_type)
     db.add(model)
     await db.commit()
-    await db.refresh(model)
     return model.id
 
 
