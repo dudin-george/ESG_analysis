@@ -21,7 +21,7 @@ async def get_bank_count(db: AsyncSession, bank_type_id: int) -> int:
 
 
 async def get_companies_list(db: AsyncSession, bank_type: BankTypeVal) -> list[Bank]:
-    bank_type_id = select(BankType.id).filter(BankType.name == bank_type).limit(1).subquery()
+    bank_type_id = select(BankType.id).filter(BankType.name == bank_type).limit(1).scalar_subquery()
     return await db.scalars(select(Bank).where(Bank.bank_type_id == bank_type_id))  # type: ignore
 
 
