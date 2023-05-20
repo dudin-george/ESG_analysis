@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 
@@ -12,9 +14,9 @@ router = APIRouter(prefix="/text", tags=["text"])
 @router.get("/sentences", response_model=GetTextSentences, response_model_by_alias=False)
 async def get_sentences(
     db: Session,
-    sources: list[str] = Query(example=["example.com"]),
-    model_id: int = Query(),
-    limit: int = 100,
+    sources: Annotated[list[str], Query(example=["example.com"])],
+    model_id: Annotated[int, Query()],
+    limit: Annotated[int, Query(description="total values")] = 100,
 ) -> GetTextSentences | JSONResponse:
     if len(sources) == 0 or sources[0] == "":
         # TODO add docs for exception, change to HTTPException
