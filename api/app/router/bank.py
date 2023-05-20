@@ -8,7 +8,7 @@ from app.query.bank import (
     get_insurance_list,
     get_mfo_list,
 )
-from app.schemes.bank import Bank, GetBankList
+from app.schemes.bank import BankModel, GetBankList
 
 router = APIRouter(prefix="/bank", tags=["bank"])
 
@@ -16,22 +16,22 @@ router = APIRouter(prefix="/bank", tags=["bank"])
 @router.get("/", response_model=GetBankList)
 async def get_banks(db: AsyncSession = Depends(get_session)) -> GetBankList:
     banks_db = await get_bank_list(db)
-    return GetBankList(items=[Bank.from_orm(bank) for bank in banks_db])
+    return GetBankList(items=[BankModel.from_orm(bank) for bank in banks_db])
 
 
 @router.get("/broker", response_model=GetBankList)
 async def get_broker(db: AsyncSession = Depends(get_session)) -> GetBankList:
     banks_db = await get_broker_list(db)
-    return GetBankList(items=[Bank.from_orm(bank) for bank in banks_db])
+    return GetBankList(items=[BankModel.from_orm(bank) for bank in banks_db])
 
 
 @router.get("/insurance", response_model=GetBankList)
 async def get_insurance(db: AsyncSession = Depends(get_session)) -> GetBankList:
     banks_db = await get_insurance_list(db)
-    return GetBankList(items=[Bank.from_orm(bank) for bank in banks_db])
+    return GetBankList(items=[BankModel.from_orm(bank) for bank in banks_db])
 
 
 @router.get("/mfo", response_model=GetBankList)
 async def get_mfo(db: AsyncSession = Depends(get_session)) -> GetBankList:
     banks_db = await get_mfo_list(db)
-    return GetBankList(items=[Bank.from_orm(bank) for bank in banks_db])
+    return GetBankList(items=[BankModel.from_orm(bank) for bank in banks_db])

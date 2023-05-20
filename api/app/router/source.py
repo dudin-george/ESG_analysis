@@ -17,7 +17,7 @@ from app.schemes.source import (
     GetSourceTypes,
     PatchSource,
     SourceModel,
-    SourceTypes,
+    SourceTypesModel,
 )
 
 router = APIRouter(prefix="/source", tags=["source"])
@@ -79,6 +79,6 @@ async def get_source_types(db: AsyncSession = Depends(get_session)) -> GetSource
     # todo refactor
     get_source_type = GetSourceTypes(items=[])
     for source_item in source_types:
-        get_source_item = SourceTypes.from_orm(source_item)
+        get_source_item = SourceTypesModel.from_orm(source_item)
         get_source_type.items.append(get_source_item)
     return get_source_type

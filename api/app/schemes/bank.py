@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class Bank(BaseModel):
+class BankModel(BaseModel):
     id: int
     bank_name: str
     licence: str
@@ -12,4 +12,4 @@ class Bank(BaseModel):
 
 
 class GetBankList(BaseModel):
-    items: list[Bank]
+    items: list[BankModel]

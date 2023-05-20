@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import Enum  # in python 3.11 replace with StrEnum
+from enum import Enum  # TODO in python 3.11 replace with StrEnum
 
 from pydantic import BaseModel
 
@@ -52,7 +52,7 @@ class PostSourceResponse(BaseModel):
     source_id: int
 
 
-class SourceTypes(BaseModel):
+class SourceTypesModel(BaseModel):
     id: int
     name: str
 
@@ -61,7 +61,7 @@ class SourceTypes(BaseModel):
 
 
 class GetSourceTypes(BaseModel):
-    items: list[SourceTypes]
+    items: list[SourceTypesModel]
 
 
 class PatchSource(BaseModel):

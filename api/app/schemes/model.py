@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class ModelType(BaseModel):
+class ModelTypeModel(BaseModel):
     id: int
     model_type: str
 
@@ -9,7 +9,7 @@ class ModelType(BaseModel):
         orm_mode = True
 
 
-class Model(BaseModel):
+class ModelScheme(BaseModel):
     id: int
     name: str
     model_type_id: int
@@ -18,7 +18,7 @@ class Model(BaseModel):
         orm_mode = True
 
 
-class GetModelItem(Model):
+class GetModelItem(ModelScheme):
     model_type: str
 
 
@@ -36,4 +36,4 @@ class PostModelResponse(BaseModel):
 
 
 class GetModelType(BaseModel):
-    items: list[ModelType]
+    items: list[ModelTypeModel]

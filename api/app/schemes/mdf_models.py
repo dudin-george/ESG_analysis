@@ -1,4 +1,4 @@
-from enum import Enum  # in python 3.11 replace with StrEnum
+from enum import Enum  # TODO in python 3.11 replace with StrEnum
 
 
 class MdfModels(str, Enum):

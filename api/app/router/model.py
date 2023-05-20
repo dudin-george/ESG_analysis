@@ -7,7 +7,7 @@ from app.schemes.model import (
     GetModel,
     GetModelItem,
     GetModelType,
-    ModelType,
+    ModelTypeModel,
     PostModel,
     PostModelResponse,
 )
@@ -42,6 +42,6 @@ async def get_model_types(db: AsyncSession = Depends(get_session)) -> GetModelTy
     model_types = await get_model_types_items(db)
     get_model_type = GetModelType(items=[])
     for model_type in model_types:
-        get_model_item = ModelType.from_orm(model_type)
+        get_model_item = ModelTypeModel.from_orm(model_type)
         get_model_type.items.append(get_model_item)
     return get_model_type

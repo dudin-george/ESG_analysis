@@ -13,7 +13,7 @@ class TextItem(BaseModel):
     comments_num: int | None = None
 
 
-class Text(BaseModel):
+class TextModel(BaseModel):
     id: int
     link: str
     source: str
@@ -27,7 +27,7 @@ class Text(BaseModel):
         orm_mode = True
 
 
-class TextResult(BaseModel):
+class TextResultModel(BaseModel):
     id: int
     text_sentence_id: int
     model_id: int
@@ -37,7 +37,7 @@ class TextResult(BaseModel):
         orm_mode = True
 
 
-class TextSentence(BaseModel):
+class TextSentenceModel(BaseModel):
     id: int
     text_id: int
     sentence: str
@@ -60,7 +60,6 @@ class GetTextSentencesItem(BaseModel):
 
 class GetTextSentences(BaseModel):
     items: list[GetTextSentencesItem]
-    # table_name: str
 
 
 class GetTextResultItem(BaseModel):
