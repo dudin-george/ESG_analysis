@@ -17,7 +17,6 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from app.database import SessionManager
 from app.database.models.bank import Bank
 from app.main import app
 from app.query.bank import create_bank_type, load_banks
@@ -69,12 +68,11 @@ def alembic_config(postgres) -> Config:
 
 
 @pytest.fixture
-def alembic_engine():
+def alembic_engine(postgres):
     """
     Override this fixture to provide pytest-alembic powered tests with a database handle.
     """
-    settings = Settings()
-    return create_async_engine(settings.database_uri_sync, echo=True)
+    return create_async_engine(postgres, echo=True)
 
 
 @pytest.fixture
@@ -86,7 +84,7 @@ async def migrated_postgres(postgres, alembic_config: Config):
 
 
 @pytest.fixture
-async def engine_async(postgres) -> AsyncEngine:
+async def engine_async(postgres, migrated_postgres) -> AsyncEngine:
     engine = create_async_engine(postgres, future=True)
     yield engine
     await engine.dispose()
@@ -108,19 +106,15 @@ def relative_path(path: str) -> str:
 
 
 @pytest.fixture
-async def client(migrated_postgres, manager: SessionManager = SessionManager()) -> AsyncClient:
-    # utils_module.check_website_exist = AsyncMock(return_value=(True, "Status code < 400"))
-    manager.refresh()
-    # TODO refactor session
-    async with manager.get_session_maker()() as session:
-        await create_bank_type(session)
-        await load_banks(
-            session,
-            [
-                Bank(id=1, bank_name="unicredit", licence="1", bank_type_id=1),
-                Bank(id=1000, bank_name="vtb", licence="1000", bank_type_id=1),
-            ],
-        )
+async def client(session) -> AsyncClient:
+    await create_bank_type(session)
+    await load_banks(
+        session,
+        [
+            Bank(id=1, bank_name="unicredit", licence="1", bank_type_id=1),
+            Bank(id=1000, bank_name="vtb", licence="1000", bank_type_id=1),
+        ],
+    )
     async with AsyncClient(app=app, base_url="http://test", follow_redirects=True) as client:
         yield client
 
