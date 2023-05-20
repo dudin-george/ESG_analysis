@@ -1,5 +1,8 @@
+import logging
 import threading
 from collections.abc import Callable
+
+import schedule
 
 from app.database import get_sync
 from app.misc.logger import get_logger
@@ -42,13 +45,13 @@ def run_threaded(job_func: Callable[[None], None]) -> None:
 
 def setup() -> None:
     logger.info("Starting views")
-    # count_sentences()
+    count_sentences()
     calculate_aggregate_database_sentiment()
-    # logging.getLogger("schedule")
-    # schedule.every().day.do(run_threaded, count_sentences)
-    # schedule.every().day.do(run_threaded, calculate_aggregate_database_sentiment)
-    # while True:
-    #     schedule.run_pending()
+    logging.getLogger("schedule")
+    schedule.every().day.do(run_threaded, count_sentences)
+    schedule.every().day.do(run_threaded, calculate_aggregate_database_sentiment)
+    while True:
+        schedule.run_pending()
 
 
 def main() -> None:

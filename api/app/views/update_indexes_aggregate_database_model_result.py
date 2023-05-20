@@ -69,18 +69,18 @@ def calculate_index_safe(session: Session) -> None:
         .where(TextResultAgg.total > 0)
         .values(
             index_safe=(
-                    (
-                            2
-                            * cast(
+                (
+                    2
+                    * cast(
                         (TextResultAgg.index_base - TextResultAgg.index_mean) > 0,
                         Integer,
                     )
-                            - 1
-                    )
-                    * func.greatest(
-                func.abs(TextResultAgg.index_base - TextResultAgg.index_mean) - TextResultAgg.index_std,
-                0,
-            )
+                    - 1
+                )
+                * func.greatest(
+                    func.abs(TextResultAgg.index_base - TextResultAgg.index_mean) - TextResultAgg.index_std,
+                    0,
+                )
             )
         )
     )
