@@ -26,16 +26,19 @@ router = APIRouter(prefix="/source", tags=["source"])
 @router.get("/", response_model=GetSource)
 async def get_sources(db: AsyncSession = Depends(get_session)) -> GetSource:
     source_items = await get_source_items(db)
-    get_source_response_item = GetSource(items=[
-        GetSourceItemModel(
-            id=source_item.id,
-            site=source_item.site,
-            source_type_id=source_item.source_type_id,
-            source_type=source_item.source_type.name,
-            parser_state=source_item.parser_state,
-            last_update=source_item.last_update,
-        ) for source_item in source_items
-    ])
+    get_source_response_item = GetSource(
+        items=[
+            GetSourceItemModel(
+                id=source_item.id,
+                site=source_item.site,
+                source_type_id=source_item.source_type_id,
+                source_type=source_item.source_type.name,
+                parser_state=source_item.parser_state,
+                last_update=source_item.last_update,
+            )
+            for source_item in source_items
+        ]
+    )
     return get_source_response_item
 
 
@@ -63,7 +66,7 @@ async def get_source(source_id: int, db: AsyncSession = Depends(get_session)) ->
 
 @router.patch("/item/{source_id}", response_model=SourceModel)
 async def patch_source(
-        source_id: int, patch_source_item: PatchSource, db: AsyncSession = Depends(get_session)
+    source_id: int, patch_source_item: PatchSource, db: AsyncSession = Depends(get_session)
 ) -> SourceModel | JSONResponse:
     if patch_source_item.parser_state is None and patch_source_item.last_update is None:
         # TODO add docs for exception, change to HTTPException

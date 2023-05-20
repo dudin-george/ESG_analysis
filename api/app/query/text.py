@@ -13,14 +13,8 @@ from app.tasks.transform_texts import transform_texts
 
 async def create_text_sentences(db: AsyncSession, post_texts: PostTextItem) -> None:
     text_db = []
-    sources = {
-        source.id: source
-        for source in await db.scalars(select(Source))
-    }
-    banks = {
-        bank.id: bank
-        for bank in await db.scalars(select(Bank))
-    }
+    sources = {source.id: source for source in await db.scalars(select(Source))}
+    banks = {bank.id: bank for bank in await db.scalars(select(Bank))}
 
     for text in post_texts.items:
         text_db_item = Text(
