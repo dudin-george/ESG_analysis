@@ -1,10 +1,9 @@
 from datetime import date, datetime
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Query
 from pydantic import conlist
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_session
+from app.dependencies import Session
 from app.query.views import aggregate_text_result, text_reviews_count
 from app.schemes.source import SourceSitesEnum
 from app.schemes.views import (
@@ -19,6 +18,7 @@ router = APIRouter(prefix="/views", tags=["aggregate"])
 
 @router.get("/aggregate_text_result", response_model=AggregateTetResultResponse)
 async def get_aggregate_text_result(
+    db: Session,
     start_year: int = Query(
         default=datetime.fromtimestamp(1).year,
         ge=datetime.fromtimestamp(1).year,
@@ -37,7 +37,6 @@ async def get_aggregate_text_result(
     # todo test in request 0 elems # https://github.com/pydantic/pydantic/issues/975
     aggregate_by_year: bool = Query(default=False, description="Типы агрегации год/квартал"),
     index_type: IndexTypeVal = Query(default=IndexTypeVal.index_base, description="Тип индекса"),
-    db: AsyncSession = Depends(get_session),
 ) -> AggregateTetResultResponse:
     data = await aggregate_text_result(
         db,
@@ -54,7 +53,7 @@ async def get_aggregate_text_result(
 
 @router.get("/reviews_count", response_model=ReviewsCountResponse)
 async def get_reviews_count(
-    session: AsyncSession = Depends(get_session),
+    session: Session,
     start_date: date = Query(
         default=datetime.fromtimestamp(1).date(),
         # ge=datetime.fromtimestamp(1).timestamp(),

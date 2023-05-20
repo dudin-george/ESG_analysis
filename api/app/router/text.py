@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_session
+from app.dependencies import Session
 from app.exceptions import IdNotFoundError
 from app.query.text import create_text_sentences, get_text_sentences
 from app.schemes.text import GetTextSentences, PostTextItem
@@ -12,10 +11,10 @@ router = APIRouter(prefix="/text", tags=["text"])
 
 @router.get("/sentences", response_model=GetTextSentences, response_model_by_alias=False)
 async def get_sentences(
+    db: Session,
     sources: list[str] = Query(example=["example.com"]),
     model_id: int = Query(),
     limit: int = 100,
-    db: AsyncSession = Depends(get_session),
 ) -> GetTextSentences | JSONResponse:
     if len(sources) == 0 or sources[0] == "":
         # TODO add docs for exception, change to HTTPException
@@ -26,7 +25,7 @@ async def get_sentences(
 
 
 @router.post("/")
-async def post_text(texts: PostTextItem, db: AsyncSession = Depends(get_session)) -> JSONResponse:
+async def post_text(texts: PostTextItem, db: Session) -> JSONResponse:
     try:
         await create_text_sentences(db, texts)
     except IdNotFoundError as e:
