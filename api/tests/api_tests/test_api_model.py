@@ -18,7 +18,7 @@ class TestModel(APITestMixin):
         response = await self.client.post("/model/", json=data)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    async def test_get_model_200(self, post_model):
+    async def test_get_model_200(self, add_model):
         response = await self.client.get("/model")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()
@@ -30,7 +30,7 @@ class TestModel(APITestMixin):
         data = response.json()
         assert data == {"items": []}
 
-    async def test_get_model_type_200(self, post_model):
+    async def test_get_model_type_200(self, add_model):
         response = await self.client.get("/model/type")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()

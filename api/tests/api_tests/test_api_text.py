@@ -113,12 +113,12 @@ class TestText(APITestMixin):
             },
         ],
     )
-    async def test_post_text_404(self, data, post_source):
+    async def test_post_text_404(self, data, add_source):
         response = await self.client.post("/text/", json=data)
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
         assert response.json() == {"message": "Source or bank not found"}
 
-    async def test_get_text(self, post_text, post_source, post_model):
+    async def test_get_text(self, add_source, add_text, add_model):
         response = await self.client.get("/text/sentences?sources=example.com&model_id=1")
         sentences = [
             {
@@ -189,7 +189,7 @@ class TestText(APITestMixin):
             },
         ],
     )
-    async def test_post_text_200(self, item, data, post_source):
+    async def test_post_text_200(self, item, data, add_source):
         response = await self.client.post(
             "/text/",
             json={
@@ -200,7 +200,7 @@ class TestText(APITestMixin):
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {"message": "OK"}
 
-    async def test_update_source(self, post_source):
+    async def test_update_source(self, add_source):
         date = datetime.now().isoformat()
         parser_state = "test"
         response = await self.client.post(

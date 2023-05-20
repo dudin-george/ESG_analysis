@@ -5,7 +5,7 @@ from tests.conftest import APITestMixin
 
 
 class TestTextResult(APITestMixin):
-    async def test_post_text_result_200(self, post_model, post_text):
+    async def test_post_text_result_200(self, add_model, add_text):
         response = await self.client.post(
             "/text_result/",
             json={
@@ -24,7 +24,7 @@ class TestTextResult(APITestMixin):
             {"items": [{"text_result": [0.1, 1, 3], "model_id": 1}]},
         ],
     )
-    async def test_post_text_result_422(self, data, post_text, post_model):
+    async def test_post_text_result_422(self, data, add_text, add_model):
         response = await self.client.post(
             "/text_result/",
             json=data,
@@ -39,26 +39,14 @@ class TestTextResult(APITestMixin):
             {"items": [{"text_result": [0.1, 1, 3], "text_sentence_id": 100, "model_id": 1}]},
         ],
     )
-    async def test_post_text_result_400(self, data, post_text, post_model):
+    async def test_post_text_result_400(self, data, add_text, add_model):
         response = await self.client.post(
             "/text_result/",
             json=data,
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST, response.text
 
-    async def test_get_text_result_200(self, post_text, post_model):
-        response = await self.client.get("/text/sentences?sources=example.com&model_id=1")
-        assert response.status_code == status.HTTP_200_OK, response.text
-        data = response.json()
-        assert data == {"items": [{"id": 1, "sentence": "string"}, {"id": 2, "sentence": "some text"}]}
-        for _ in range(2):
-            response = await self.client.post(
-                "/text_result/",
-                json={
-                    "items": [{"text_result": [0.1, 1, 3], "text_sentence_id": data["items"][0]["id"], "model_id": 1}],
-                },
-            )
-            assert response.status_code == status.HTTP_200_OK, response.text
+    async def test_get_text_result_200(self, add_text_result):
         response = await self.client.get("/text_result/item/1")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()

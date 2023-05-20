@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from os import environ
 from pathlib import Path
 from types import SimpleNamespace
@@ -9,6 +10,7 @@ import requests_mock
 from alembic.command import upgrade
 from alembic.config import Config
 from httpx import AsyncClient
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -17,9 +19,18 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from app.database.models.bank import Bank
+from app.database import (
+    Model,
+    ModelType,
+    Source,
+    SourceType,
+    Text,
+    TextResult,
+    TextSentence,
+)
+from app.database.models.bank import Bank, BankType
 from app.main import app
-from app.query.bank import create_bank_type, load_banks
+from app.schemes.bank_types import BankTypeVal
 from app.settings import Settings
 from tests.utils import make_alembic_config
 
@@ -106,92 +117,94 @@ def relative_path(path: str) -> str:
 
 
 @pytest.fixture
-async def client(session) -> AsyncClient:
-    await create_bank_type(session)
-    await load_banks(
-        session,
-        [
-            Bank(id=1, bank_name="unicredit", licence="1", bank_type_id=1),
-            Bank(id=1000, bank_name="vtb", licence="1000", bank_type_id=1),
-        ],
-    )
+async def add_banks(session) -> list[Bank]:
+    # bank type for banks created in migrations
+    bank_type_id = await session.scalar(select(BankType.id).filter(BankType.name == BankTypeVal.bank))
+    if bank_type_id is None:
+        bank_type = BankType(name=BankTypeVal.bank)
+        session.add(bank_type)
+        await session.commit()
+        bank_type_id = bank_type.id
+    banks = [
+        Bank(id=1, bank_name="unicredit", licence="1", bank_type_id=bank_type_id),
+        Bank(id=1000, bank_name="vtb", licence="1000", bank_type_id=bank_type_id),
+    ]
+    session.add_all(banks)
+    await session.commit()
+    return banks
+
+
+@pytest.fixture
+async def client(session, add_banks) -> AsyncClient:
     async with AsyncClient(app=app, base_url="http://test", follow_redirects=True) as client:
         yield client
 
 
 @pytest.fixture
-async def post_source(client) -> None:
-    response = await client.post(
-        "/source/",
-        json={"site": "example.com", "source_type": "review"},
-    )
-    assert response.status_code == 200, response.text
+async def add_source(session: AsyncSession) -> Source:
+    source = Source(site="example.com", source_type=SourceType(name="review"))
+    session.add(source)
+    await session.commit()
+    assert source.id == 1
+    assert source.source_type_id == 1
+    return source
 
 
 @pytest.fixture
-async def post_model(client):
-    response = await client.post("/model/", json={"model_name": "test_model", "model_type": "test_type"})
-    assert response.status_code == 200, response.text
+async def add_model(session) -> Model:
+    model = Model(name="test_model", model_type=ModelType(model_type="test_type"))
+    session.add(model)
+    await session.commit()
+    assert model.id == 1
+    assert model.model_type_id == 1
+    return model
 
 
 @pytest.fixture
-async def post_text(client) -> None:
-    response = await client.post(
-        "/source/",
-        json={"site": "example.com", "source_type": "review"},
-    )
-    assert response.status_code == 200, response.text  # async errors
-
-    response = await client.post(
-        "/text/",
-        json={
-            "items": [
-                {
-                    "source_id": 1,
-                    "date": "2022-10-02T10:12:01.154Z",
-                    "title": "string",
-                    "text": "string",
-                    "bank_id": 1000,
-                    "link": "string",
-                    "comments_num": 0,
-                }
+async def add_text(session, add_source, add_banks) -> list[Text]:
+    texts = [
+        Text(
+            source=add_source,
+            date=datetime(2022, 10, 2, 10, 12, 1),
+            title="string",
+            bank=add_banks[0],  # type: ignore
+            text_sentences=[
+                TextSentence(
+                    sentence="string",
+                    sentence_num=1,
+                )
             ],
-        },
-    )
-    assert response.status_code == 200, response.text
-
-    response = await client.post(
-        "/text/",
-        json={
-            "items": [
-                {
-                    "source_id": 1,
-                    "date": "2022-10-02T10:12:01.154Z",
-                    "title": "string",
-                    "text": "some text",
-                    "bank_id": 1,
-                    "link": "string",
-                    "comments_num": 0,
-                }
+            link="string",
+        ),
+        Text(
+            source=add_source,
+            date=datetime(2022, 10, 2, 10, 12, 1),
+            title="string",
+            text_sentences=[
+                TextSentence(
+                    sentence="some text",
+                    sentence_num=1,
+                )
             ],
-        },
-    )
-    assert response.status_code == 200, response.text
+            bank=add_banks[1],  # type: ignore
+            link="string",
+        ),
+    ]
+    session.add_all(texts)
+    await session.commit()
+    return texts
 
 
 @pytest.fixture
-async def post_text_result(client, post_model, post_text) -> None:
-    response = await client.post(
-        "/text_result/",
-        json=[
-            {
-                "text_result": [0.1, 1, 3],
-                "source_id": 1,
-                "model_id": 1,
-            }
-        ],
+async def add_text_result(session, add_model, add_text) -> TextResult:
+    text_result = TextResult(
+        text_sentence=add_text[0].text_sentences[0],  # type: ignore
+        model=add_model,
+        result=[0.1, 1, 3],
     )
-    assert response.status_code == 200, response.text
+    session.add(text_result)
+    await session.commit()
+    return text_result
 
 
 @pytest.fixture

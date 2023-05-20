@@ -37,7 +37,7 @@ class TestSource(APITestMixin):
         )
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
-    async def test_get_source_200(self, post_source):
+    async def test_get_source_200(self, add_source):
         response = await self.client.get("/source")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()
@@ -45,7 +45,7 @@ class TestSource(APITestMixin):
             "items": [{"id": 1, "site": "example.com", "source_type_id": 1, "last_update": None, "parser_state": None}]
         }
 
-    async def test_get_source_item_200(self, post_source):
+    async def test_get_source_item_200(self, add_source):
         response = await self.client.get("/source/item/1")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()
@@ -66,7 +66,7 @@ class TestSource(APITestMixin):
         response = await self.client.get("/source/item/1")
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
-    async def test_get_source_type(self, post_source):
+    async def test_get_source_type(self, add_source):
         response = await self.client.post(
             "/source/",
             json={"site": "example2.com", "source_type": "news"},
@@ -106,7 +106,7 @@ class TestSource(APITestMixin):
             {"parser_state": "test", "last_update": datetime.now().isoformat()},
         ],
     )
-    async def test_patch_source_200(self, post_source, data):
+    async def test_patch_source_200(self, add_source, data):
         response = await self.client.patch(
             "/source/item/1",
             json=data,
@@ -119,7 +119,7 @@ class TestSource(APITestMixin):
         assert response_data["parser_state"] == data.get("parser_state", None)
         assert response_data["last_update"] == data.get("last_update", None)
 
-    async def test_patch_source_404(self, post_source):
+    async def test_patch_source_404(self, add_source):
         response = await self.client.patch(
             "/source/item/2",
             json={"parser_state": "test"},
@@ -127,7 +127,7 @@ class TestSource(APITestMixin):
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
 
     @pytest.mark.parametrize("data", [{"last_update": "test"}, {"last_update": "2021-01-01"}])
-    async def test_patch_source_422(self, post_source, data):
+    async def test_patch_source_422(self, add_source, data):
         response = await self.client.patch(
             "/source/item/1",
             json=data,
@@ -141,7 +141,7 @@ class TestSource(APITestMixin):
             {"parser_state": None, "last_update": None},
         ],
     )
-    async def test_patch_source_400(self, post_source, data):
+    async def test_patch_source_400(self, add_source, data):
         response = await self.client.patch(
             "/source/item/1",
             json=data,
