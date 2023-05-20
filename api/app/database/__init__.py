@@ -8,9 +8,5 @@ from app.database.models.views import (  # noqa: F401
     AggregateTableModelResult,
     TextSentenceCount,
 )
-from app.database.session_manager import (  # noqa: F401
-    SessionManager,
-    SyncSessionManager,
-    get_session,
-    get_sync,
-)
+from app.database.session_manager import SessionManager, get_session  # noqa: F401
+from app.database.sync_session_manager import SyncSessionManager, get_sync  # noqa: F401
