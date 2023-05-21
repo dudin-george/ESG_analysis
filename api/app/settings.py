@@ -56,4 +56,4 @@ def get_settings() -> Settings:
         case "view":
             return Settings(_env_file="../.env")  # type: ignore[call-arg]
         case _:
-            return Settings()
+            return Settings()  # type: ignore[call-arg]

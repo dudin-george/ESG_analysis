@@ -44,6 +44,7 @@ pytest-aiohttp = "^1.0.4"
 httpx = "^0.23.0"
 vcrpy = "^4.2.1"
 requests-mock = "^1.10.0"
+mypy = {extras = ["reports"], version = "^1.3.0"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -51,6 +52,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
 profile = "black"
+combine_as_imports = true
+skip_gitignore = true
+py_version = 310
 
 # https://github.com/tiangolo/sqlmodel/blob/main/pyproject.toml
 [tool.mypy]

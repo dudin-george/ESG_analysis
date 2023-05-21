@@ -46,8 +46,9 @@ def run_upgrade(connection: AsyncEngine, cfg: Config) -> None:
 
 @app.on_event("startup")
 async def startup() -> None:
-    if not database_exists(Settings().database_uri_sync):
-        create_database(Settings().database_uri_sync)
+    settings = Settings()  # type: ignore[call-arg]
+    if not database_exists(settings.database_uri_sync):
+        create_database(settings.database_uri_sync)
     # Base.metadata.create_all(bind=engine)
     config = Config("alembic.ini")
     config.attributes["configure_logger"] = False
