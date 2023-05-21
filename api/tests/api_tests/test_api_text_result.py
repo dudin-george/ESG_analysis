@@ -5,14 +5,14 @@ from tests.conftest import APITestMixin
 
 
 class TestTextResult(APITestMixin):
-    async def test_post_text_result_200(self, add_model, add_text):
+    async def test_post_text_result_201(self, add_model, add_text):
         response = await self.client.post(
             "/text_result/",
             json={
                 "items": [{"text_result": [0.1, 1, 3], "text_sentence_id": 1, "model_id": 1}],
             },
         )
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_201_CREATED, response.text
         data = response.json()
         assert data == {"message": "OK"}
 
@@ -69,7 +69,7 @@ class TestTextResult(APITestMixin):
                     "items": [{"text_result": [0.1, 1, 3], "text_sentence_id": item["id"], "model_id": 1}],
                 },
             )
-            assert response.status_code == status.HTTP_200_OK, response.text
+            assert response.status_code == status.HTTP_201_CREATED, response.text
 
     async def test_several_sources_and_models(self):
         for i in range(3):
@@ -99,7 +99,7 @@ class TestTextResult(APITestMixin):
                         ]
                     },
                 )
-                assert response.status_code == status.HTTP_200_OK, response.text
+                assert response.status_code == status.HTTP_201_CREATED, response.text
         response = await self.client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1&limit=5")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()
@@ -121,7 +121,7 @@ class TestTextResult(APITestMixin):
                     ]
                 },
             )
-            assert response.status_code == status.HTTP_200_OK, response.text
+            assert response.status_code == status.HTTP_201_CREATED, response.text
         response = await self.client.get("text/sentences?sources=example0.com&sources=example1.com&model_id=1")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()

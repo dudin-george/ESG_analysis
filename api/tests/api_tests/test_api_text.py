@@ -116,7 +116,7 @@ class TestText(APITestMixin):
     async def test_post_text_404(self, data, add_source):
         response = await self.client.post("/text/", json=data)
         assert response.status_code == status.HTTP_404_NOT_FOUND, response.text
-        assert response.json() == {"message": "Source or bank not found"}
+        assert response.json() == {"detail": "Source or bank not found"}
 
     async def test_get_text(self, add_source, add_text, add_model):
         response = await self.client.get("/text/sentences?sources=example.com&model_id=1")
@@ -150,7 +150,7 @@ class TestText(APITestMixin):
                 ]
             },
         )
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_201_CREATED, response.text
         response = await self.client.get("/text/sentences?sources=example.com&sources=test&model_id=1")
         assert response.status_code == status.HTTP_200_OK, response.text
         assert response.json() == {"items": sentences}
@@ -189,7 +189,7 @@ class TestText(APITestMixin):
             },
         ],
     )
-    async def test_post_text_200(self, item, data, add_source):
+    async def test_post_text_201(self, item, data, add_source):
         response = await self.client.post(
             "/text/",
             json={
@@ -197,8 +197,8 @@ class TestText(APITestMixin):
             }
             | data,
         )
-        assert response.status_code == status.HTTP_200_OK, response.text
-        assert response.json() == {"message": "OK"}
+        assert response.status_code == status.HTTP_201_CREATED, response.text
+        assert response.json() == {"message": "ok"}
 
     async def test_update_source(self, add_source):
         date = datetime.now().isoformat()
@@ -221,7 +221,7 @@ class TestText(APITestMixin):
                 "parser_state": parser_state,
             },
         )
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_201_CREATED, response.text
         response = await self.client.get("/source/item/1")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()
@@ -268,7 +268,7 @@ class TestText(APITestMixin):
                 "parser_state": parser_state,
             },
         )
-        assert response.status_code == status.HTTP_200_OK, response.text
+        assert response.status_code == status.HTTP_201_CREATED, response.text
         response = await self.client.get("/source/item/1")
         assert response.status_code == status.HTTP_200_OK, response.text
         data = response.json()
