@@ -25,11 +25,10 @@ async def get_text_results(text_id: int, db: Session) -> GetTextResult:
     return get_text_result
 
 
-@router.post("/")
+@router.post("/", status_code=201, responses={400: {"description": "Text sentence or model not found"}})
 async def post_text_result(texts: PostTextResult, db: Session) -> dict[str, str]:
     try:
         await create_text_results(db, texts.items)
     except IdNotFoundError:
-        # TODO add docs for exception
         raise HTTPException(status_code=400, detail="Text sentence or model not found")
     return {"message": "OK"}

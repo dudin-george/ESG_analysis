@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 
 from app.dependencies import Session
@@ -54,24 +54,25 @@ async def post_source(source: CreateSource, db: Session) -> SourceModel:
     )
 
 
-@router.get("/item/{source_id}", response_model=SourceModel)
+@router.get("/item/{source_id}", response_model=SourceModel, responses={404: {"description": "Source not found"}})
 async def get_source(source_id: int, db: Session) -> SourceModel | JSONResponse:
     source_item = await get_source_item_by_id(db, source_id)
     if source_item is None:
-        # TODO add docs for exception, change to HTTPException
-        return JSONResponse(status_code=404, content={"detail": "Source not found"})
+        raise HTTPException(status_code=404, detail="Source not found")
     return SourceModel.from_orm(source_item)
 
 
-@router.patch("/item/{source_id}", response_model=SourceModel)
+@router.patch(
+    "/item/{source_id}",
+    response_model=SourceModel,
+    responses={404: {"description": "Source not found"}, 400: {"description": "Bad request"}},
+)
 async def patch_source(source_id: int, patch_source_item: PatchSource, db: Session) -> SourceModel | JSONResponse:
     if patch_source_item.parser_state is None and patch_source_item.last_update is None:
-        # TODO add docs for exception, change to HTTPException
-        return JSONResponse(status_code=400, content={"detail": "Bad request"})
+        raise HTTPException(status_code=400, detail="Either parser_state or last_update must be set")
     source_item = await patch_source_by_id(db, source_id, patch_source_item)
     if source_item is None:
-        # TODO add docs for exception, change to HTTPException
-        return JSONResponse(status_code=404, content={"detail": "Source not found"})
+        raise HTTPException(status_code=404, detail="Source not found")
     return SourceModel.from_orm(source_item)
 
 
