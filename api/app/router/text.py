@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, Query
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Annotated
 
-from app.database import get_session
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import JSONResponse
+
+from app.dependencies import Session
 from app.exceptions import IdNotFoundError
 from app.query.text import create_text_sentences, get_text_sentences
 from app.schemes.text import GetTextSentences, PostTextItem
@@ -10,30 +11,38 @@ from app.schemes.text import GetTextSentences, PostTextItem
 router = APIRouter(prefix="/text", tags=["text"])
 
 
-@router.get("/sentences", response_model=GetTextSentences, response_model_by_alias=False)
+@router.get(
+    "/sentences",
+    response_model=GetTextSentences,
+    response_model_by_alias=False,
+    responses={400: {"description": "Sources cannot be empty"}},
+)
 async def get_sentences(
-    sources: list[str] = Query(example=["example.com"]),
-    model_id: int = Query(),
-    limit: int = 100,
-    db: AsyncSession = Depends(get_session),
+    db: Session,
+    sources: Annotated[list[str], Query(example=["example.com"])],
+    model_id: Annotated[int, Query()],
+    limit: Annotated[int, Query(description="total values")] = 100,
 ) -> GetTextSentences | JSONResponse:
     if len(sources) == 0 or sources[0] == "":
-        # TODO add docs for exception, change to HTTPException
-        return JSONResponse(status_code=400, content={"message": "sources not found"})
+        raise HTTPException(status_code=400, detail="Sources cannot be empty")
     sentences = await get_text_sentences(db, model_id, sources, limit)
 
     return GetTextSentences(items=sentences)
 
 
-@router.post("/")
-async def post_text(texts: PostTextItem, db: AsyncSession = Depends(get_session)) -> JSONResponse:
+@router.post(
+    "/",
+    responses={
+        201: {"description": "ok"},
+        400: {"description": "Model id cannot be empty"},
+        404: {"description": "Model not found"},
+    },
+)
+async def post_text(texts: PostTextItem, db: Session) -> JSONResponse:
     try:
         await create_text_sentences(db, texts)
     except IdNotFoundError as e:
-        # TODO add docs for exception, change to HTTPException
-        return JSONResponse(status_code=404, content={"message": str(e)})
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        # TODO add docs for exception, change to HTTPException
-        return JSONResponse({"message": str(e)}, status_code=400)
-    # TODO add doc for response
-    return JSONResponse({"message": "OK"})
+        raise HTTPException(status_code=400, detail=str(e))
+    return JSONResponse(status_code=201, content={"message": "ok"})

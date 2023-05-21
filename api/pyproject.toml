@@ -7,7 +7,7 @@ authors = ["Samoed <samoed.roman@gmail.com>"]
 [tool.poetry.dependencies]
 python = "~3.10"
 requests = "^2.28.0"
-fastapi = "^0.92.0"
+fastapi = "^0.95"
 pydantic = { extras = ["dotenv"], version = "^1.10.2" }
 sqlalchemy = "^2.0.4"
 uvicorn = "^0.18.3"
