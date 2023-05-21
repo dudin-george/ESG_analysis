@@ -42,9 +42,13 @@ export-dependencies:
 database:
 	docker run --name postgresql -e POSTGRES_USER=myusername -e POSTGRES_PASSWORD=mypassword -p 5432:5432 -d postgres
 
+.PHONY: test-docker
+test-docker:
+	docker compose -f docker-compose.test.yaml up --build
+
 .PHONY: test
 test:
-	docker compose -f docker-compose.test.yaml up --build
+	poetry run pytest --cov=app --cov-report=html
 
 .PHONY: migrate
 migrate:
