@@ -133,3 +133,4 @@ dmypy.json
 pretrained_models/
 *.zip
 *.xlsx
+experiments/data/
