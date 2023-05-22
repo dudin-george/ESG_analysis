@@ -134,3 +134,4 @@ pretrained_models/
 *.zip
 *.xlsx
 experiments/data/
+experiments/mlruns/
