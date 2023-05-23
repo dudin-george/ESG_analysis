@@ -1,4 +1,4 @@
-from sqlalchemy import Float, Integer, cast, func, select, update
+from sqlalchemy import BigInteger, Float, Integer, cast, func, select, update
 from sqlalchemy.orm import Session
 
 from app.database.models import AggregateTableModelResult as TextResultAgg
@@ -43,19 +43,24 @@ def calculate_index_mean(session: Session) -> None:
 
 
 def calculate_index_std(session: Session) -> None:
+    # TODO test for big numbers
     session.execute(
         update(TextResultAgg)
         .where(TextResultAgg.total > 0)
         .values(
             # (((POS * (TOTAL - POS)) / TOTAL**3) + ((NEG * (TOTAL - NEG)) / TOTAL**3))**0.5
             index_std=func.sqrt(
-                TextResultAgg.positive
-                * (TextResultAgg.total - TextResultAgg.positive)
-                / func.pow(TextResultAgg.total, 3)
-                + TextResultAgg.negative
-                * (TextResultAgg.total - TextResultAgg.negative)
-                / func.pow(TextResultAgg.total, 3)
-            ),
+                (
+                    cast(TextResultAgg.positive, BigInteger)
+                    * (cast(TextResultAgg.total, BigInteger) - cast(TextResultAgg.positive, BigInteger))
+                    / func.power(cast(TextResultAgg.total, BigInteger), 3)
+                )
+                + (
+                    cast(TextResultAgg.negative, BigInteger)
+                    * (cast(TextResultAgg.total, BigInteger) - cast(TextResultAgg.negative, BigInteger))
+                    / func.power(cast(TextResultAgg.total, BigInteger), 3)
+                )
+            )
         )
     )
     session.commit()
