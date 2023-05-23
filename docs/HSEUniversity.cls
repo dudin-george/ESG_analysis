@@ -39,7 +39,7 @@
 
 \RequirePackage{tabularx} % авто лайнбрейки при достижении лимита в таблице
 \RequirePackage{pdflscape} % горизонтал для приложений
-\RequirePackage{comment} % для боков comment \begin{comment} ... \end{comment}
+\RequirePackage{comment} % для блоков comment \begin{comment} ... \end{comment}
 
 
 \RequirePackage[linktocpage=true,plainpages=false,pdfpagelabels=false]{hyperref}
@@ -67,7 +67,7 @@
   showspaces=false,
   showstringspaces=false,
   showtabs=false,
-  tabsize=2,
+  tabsize=4,
   inputencoding=utf8,
   extendedchars=true,
   literate=
@@ -157,10 +157,11 @@
   language=autobib,% получение языка из babel/polyglossia, default: autobib % если ставить autocite или auto, то цитаты в тексте с указанием страницы, получат указание страницы на языке оригинала
   autolang=other,% многоязычная библиография
   clearlang=true,% внутренний сброс поля language, если он совпадает с языком из babel/polyglossia
-  %defernumbers=true,% нумерация проставляется после двух компиляций, зато позволяет выцеплять библиографию по ключевым словам и нумеровать не из большего списка
+  % defernumbers=true,% нумерация проставляется после двух компиляций, зато позволяет выцеплять библиографию по ключевым словам и нумеровать не из большего списка
   sortcites=true,% сортировать номера затекстовых ссылок при цитировании (если в квадратных скобках несколько ссылок, то отображаться будут отсортированно, а не абы как)
-  ]{biblatex}
-
+  maxnames=50,
+]{biblatex}
+\let\bibnamedelimd\addnbspace % имена с неразрывным пробелом tex.stackexchange.com/questions/567160
 %%%%%%%% для форматирования под гост 2011
 %%% https://github.com/AndreyAkinshin/Russian-Phd-LaTeX-Dissertation-Template/blob/dbd175fb59fe5d1d29df3048ce4aded671fb7db9/Readme/Bibliography.md#%D1%81%D1%82%D1%80%D0%BE%D0%B3%D0%BE%D1%81%D1%82%D1%8C-%D1%81%D0%BE%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D1%81%D1%82%D0%B2%D0%B8%D1%8F-%D0%B3%D0%BE%D1%81%D1%82
 \renewcommand*{\multicitedelim}{\addcomma\space}
@@ -258,23 +259,23 @@
 \let\@originalchapter\chapter
 \def\chapter{
   \@ifstar\chapterstar\@originalchapter
- }
+}
 \def\chapterstar{
-   \@ifstar\chapter@nonum@notoc\chapter@nonum
+  \@ifstar\chapter@nonum@notoc\chapter@nonum
 }
 \newcommand\chapter@nonum@notoc[2][]{
-   \@originalchapter*{#2}
+  \@originalchapter*{#2}
 }
 \newcommand\chapter@nonum[2][]{
-   \@originalchapter*{#2}
-   \addcontentsline{toc}{chapter}{#2}
+  \@originalchapter*{#2}
+  \addcontentsline{toc}{chapter}{#2}
 }
 \titlecontents{chapter}% <section-type>
-  [0pt]% <left>
-  {}% <above-code>
-  {\chaptername\ \thecontentslabel\enskip}% <numbered-entry-format>
-  {}% <numberless-entry-format>
-  {\dotfill\contentspage}% <filler-page-format>
+[0pt]% <left>
+{}% <above-code>
+{\chaptername\ \thecontentslabel\enskip}% <numbered-entry-format>
+{}% <numberless-entry-format>
+{\dotfill\contentspage}% <filler-page-format>
 
 
 % author @makspepe
@@ -322,11 +323,11 @@
 {
   \hbox_set:Nn \l__tblr_caption_box
   {
-    \UseTblrTemplate { caption-tag } { default }
+    \UseTblrTemplate { conthead-text } { default }
+    \space
+    \UseTblrTemplate { caption-tag }{ empty } {\thetable} %%% PISS
     \UseTblrTemplate { caption-sep } { empty } {~--~}
     \UseTblrTemplate { caption-text } { default }
-    \space
-    \UseTblrTemplate { conthead-text } { default }
   }
   \dim_compare:nNnTF { \box_wd:N \l__tblr_caption_box } > { \hsize }
   {
@@ -351,34 +352,31 @@
   }
 }
 
-
 \SetTblrTemplate{caption}{normal} % применяем изменения
 \SetTblrTemplate{capcont}{normal}
 \ExplSyntaxOff
 
-
-
 % подписи на русском
-\DefTblrTemplate{conthead-text}{fancy}{(Продолжение)}
-    \SetTblrTemplate{conthead-text}{fancy}
+\DefTblrTemplate{conthead-text}{fancy}{Продолжение таблицы}
+\SetTblrTemplate{conthead-text}{fancy}
 
-\DefTblrTemplate{contfoot-text}{fancy}{Продолжение на следующей странице}
-    \SetTblrTemplate{contfoot-text}{fancy}
+\DefTblrTemplate{contfoot-text}{fancy}{(Продолжение на следующей странице)}
+\SetTblrTemplate{contfoot-text}{fancy}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Для ротации номеров в горизонт позиции страницы %%%%%
 \RequirePackage{pdflscape}
 
 \AddToHook{env/landscape/begin}
- {
+{
   \clearpage
   \pagestyle{empty}
   \AddToHook{shipout/background}[sven/page]
-    {
-     \put(0.9\paperwidth,-0.5\paperheight)%adapt values
-      {\rotatebox{90}{\thepage}}
-    }
- }
+  {
+    \put(0.9\paperwidth,-0.5\paperheight)%adapt values
+    {\rotatebox{90}{\thepage}}
+  }
+}
 
 \AddToHook{env/landscape/after}
 {\RemoveFromHook{shipout/background}[sven/page]}
@@ -403,13 +401,13 @@
 \DeclareVoidOption{PI}{
   \def\@facultyString{Факультет социально-экономических и компьютерных наук}
   \def\@specName{Программная инженерия}
-  \def\@specCode{09.03.04 Программная инженерия}
+  \def\@specCode{09.03.04 Программная инженерия}
 }
 % BI -- Бизнес информатика
 \DeclareVoidOption{BI}{
   \def\@facultyString{Факультет социально-экономических и компьютерных наук}
   \def\@specName{Бизнес информатика}
-  \def\@specCode{09.03.04 Программная инженерия}
+  \def\@specCode{09.03.04 Программная инженерия}
 }
 % Available options for the type
 \DeclareVoidOption{KR}{
@@ -453,90 +451,91 @@
   \def\@abstract{#1}
 }
 
+%% TODO make title as class options
 \renewcommand{\maketitle}{
-{
-  \thispagestyle{empty}
-
-  \centering
-
   {
-    Пермский филиал федерального государственного автономного \\
-    образовательного учреждения высшего образования \\
-    Национальный исследовательский университет \\
-    <<Высшая школа экономики>>
-  }
+    \thispagestyle{empty}
 
-  \vfill
+    \centering
 
-  \@facultyString
+    {
+      Пермский филиал федерального государственного автономного \\
+      образовательного учреждения высшего образования \\
+      Национальный исследовательский университет \\
+      <<Высшая школа экономики>>
+    }
 
-  \vfill
-  \vfill
-  \vfill
+    \vfill
 
-  \@author
+    \@facultyString
 
-  \vfill
-  \vfill
+    \vfill
+    \vfill
+    \vfill
 
-  \textbf{\MakeUppercase{\@title}}
+    \@author
 
-  \textit{\@typeString}
+    \vfill
+    \vfill
 
-  \vfill
+    \textbf{\MakeUppercase{\@title}}
 
-  студента образовательной программы <<\@specName>> \\
-  по направлению подготовки \underline{\@specCode}
+    \textit{\@typeString}
 
-  \vfill
-  \vfill
-  \vfill
+    \vfill
 
-  \ifHasReviewer
+    студента образовательной программы <<\@specName>> \\
+    по направлению подготовки \underline{\@specCode}
+
+    \vfill
+    \vfill
+    \vfill
+
+    \ifHasReviewer
+      \begin{minipage}[t]{0.4\textwidth}
+        \begin{flushleft}
+          Рецензент \\
+          \nohyphens{\@reviewerTitle}
+
+          \vspace{2mm}
+
+          \@reviewerName
+        \end{flushleft}
+      \end{minipage}
+    \fi
+    \hfill
     \begin{minipage}[t]{0.4\textwidth}
       \begin{flushleft}
-        Рецензент \\
-        \nohyphens{\@reviewerTitle}
+        Руководитель \\
+        \nohyphens{\@supervisorTitle}, \nohyphens{\@supervisorAcademic}
 
-        \vspace{2mm}
+        \vspace{10mm}
 
-        \@reviewerName
+        \hrule
+        \vspace{3mm}
+
+        \@supervisorName
       \end{flushleft}
     \end{minipage}
-  \fi
-  \hfill
-  \begin{minipage}[t]{0.4\textwidth}
-    \begin{flushleft}
-      Руководитель \\
-      \nohyphens{\@supervisorTitle}, \nohyphens{\@supervisorAcademic}
 
-      \vspace{10mm}
+    \vfill
+    \vfill
+    \vfill
 
-      \hrule
-      \vspace{3mm}
+    Пермь, \@year{} год
 
-      \@supervisorName
-    \end{flushleft}
-  \end{minipage}
+    \newpage
+  }
 
-  \vfill
-  \vfill
-  \vfill
+  \chapter**{Аннотация}
+  \thispagestyle{empty}
+  \@abstract
 
-  Пермь, \@year{} год
+  \chapter**{Оглавление}
+
+  \@starttoc{toc}
 
   \newpage
-}
-
-\chapter**{Аннотация}
-\thispagestyle{empty}
-\@abstract
-
-\chapter**{Оглавление}
-
-\@starttoc{toc}
-
-\newpage
 
 }
 
@@ -583,17 +582,15 @@
 \renewcommand{\appendix}{%
   \label{pg:end} % для указания на номер последней страницы
   \originalappendix
-  %\renewcommand{\thechapter}{\Asbuk{chapter}}
+  % \renewcommand{\thechapter}{\Asbuk{chapter}}
   \renewcommand{\thechapter}{\cyrtoc{\value{chapter}}}
   \renewcommand{\appendixname}{ПРИЛОЖЕНИЕ} % Можно не менять и заменить на команду с \MakeUppercase в \renewcommand у меня локально не компилит, а в overleaf все нормально
-  \titleformat{\chapter}
-    {\Large\bfseries\centering}
-    {\MakeUppercase{\chaptertitlename}\ \thechapter}{4pt}{}
+  \titleformat{\chapter}{\Large\bfseries\centering}{\MakeUppercase{\chaptertitlename}\ \thechapter}{4pt}{}
 
   \addtocontents{toc}{\protect\value{tocdepth}=\chaptertocdepth}
   \renewcommand\addchaptertocentry[2]{%
     \addtocentrydefault{chapter}{}{\appendixname~##1 ##2}
-    %\addtocentrydefault{chapter}{}{\MakeUppercase{\appendixname~##1} ##2}
+    % \addtocentrydefault{chapter}{}{\MakeUppercase{\appendixname~##1} ##2}
   }
 }
 
