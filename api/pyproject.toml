@@ -6,7 +6,7 @@ authors = ["Samoed <samoed.roman@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "~3.10"
-requests = "^2.28.0"
+requests = "^2.31"
 fastapi = "^0.95"
 pydantic = { extras = ["dotenv"], version = "^1.10.2" }
 sqlalchemy = "^2.0.4"
@@ -21,6 +21,7 @@ openpyxl = "^3.0.10"
 aiohttp = "^3.8.3"
 psycopg2-binary = "^2.9.5"
 schedule = "^1.1.0"
+urllib3 = "^1"
 
 
 [tool.poetry.group.dev.dependencies]
