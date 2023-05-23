@@ -1,5 +1,6 @@
 import argparse
 from enum import Enum
+
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
