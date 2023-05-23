@@ -10,6 +10,7 @@ class Datasets(Enum):
     tfidf = "tfidf.npz"
     fast_text = "fasttext.npz"
     word_2_vec = "w2v.npz"
+    word_2_vec_navec = "w2v_navec.npz"
     rubert_base_sentence = "rubert_base_cased_sentence.npz"
     rubert_base_parsed = "rubert_base_cased_parsed.npz"
     rubert_reviews_sentence = "rubert_base_cased_sentiment_rurewiews_sentence.npz"

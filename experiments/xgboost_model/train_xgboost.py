@@ -25,13 +25,13 @@ def objective(trial: Trial) -> float:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     with mlflow.start_run(nested=True) as run:
-        # Define hyperparameters for Logistic Regression
         params = {
             "n_estimators": trial.suggest_int("n_estimators", 100, 500),
             "max_depth": trial.suggest_int("max_depth", 1, 10),
             "learning_rate": trial.suggest_float("learning_rate", 0.001, 1),
             "gamma": trial.suggest_float("gamma", 0, 20),
             "subsample": trial.suggest_float("subsample", 0.8, 1),
+            "tree_method": trial.suggest_categorical("tree_method", ["gpu_hist"]),
         }
         model = XGBClassifier(**params)
         model.fit(X_train, y_train)
@@ -47,7 +47,7 @@ def objective(trial: Trial) -> float:
 
 def main():
     name, X, y = args.parse_args()
-    experiment_name = f"Logreg with {name}"
+    experiment_name = f"XGBoost with {name}"
 
     with mlflow.start_run(run_name=experiment_name, description=experiment_name) as run:
         study = optuna.create_study(direction="maximize")
