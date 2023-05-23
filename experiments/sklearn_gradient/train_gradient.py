@@ -1,6 +1,8 @@
 import mlflow
 import numpy as np
-from sklearn.linear_model import LogisticRegression
+import optuna
+from optuna.trial import Trial
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 import optuna
@@ -14,21 +16,23 @@ sys.path.append(PATH)
 import args
 
 
-def objective(trial):
+def objective(trial: Trial) -> float:
     name, X, y = args.parse_args()
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     with mlflow.start_run(nested=True) as run:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
         # Define hyperparameters to optimize
         params = {
-            "C": trial.suggest_float("C", 1e-5, 1e5, log=True),
-            "penalty": trial.suggest_categorical("penalty", ["l1", "l2"]),
-            "solver": trial.suggest_categorical("solver", ["liblinear", "saga"]),
-            "max_iter": trial.suggest_int("max_iter", 100, 5000),
+            "loss": trial.suggest_categorical("loss", ["log_loss"]),
+            "learning_rate": trial.suggest_float("learning_rate", 0.001, 1, log=True),
+            "n_estimators": trial.suggest_int("n_estimators", 100, 1000),
+            "max_depth": trial.suggest_int("max_depth", 1, 10),
+            "max_features": trial.suggest_categorical("max_features", ["sqrt", "log2"]),
         }
 
         # Train model with hyperparameters
-        model = LogisticRegression(**params)
+        model = GradientBoostingClassifier(**params)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
@@ -43,19 +47,19 @@ def objective(trial):
 
 def main():
     name, X, y = args.parse_args()
-    experiment_name = f"Logreg with {name}"
+    experiment_name = f"GradientBoostingClassifier with {name}"
+
     with mlflow.start_run(run_name=experiment_name, description=experiment_name) as run:
         study = optuna.create_study(direction="maximize")
         study.optimize(objective, n_trials=1, n_jobs=-1)
 
         best_params = study.best_params
         name, X, y = args.parse_args()
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        model = LogisticRegression(**best_params)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        model = GradientBoostingClassifier(**best_params)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
-
         mlflow.log_metric("accuracy", accuracy_score(y_test, y_pred))
         mlflow.log_metric("f1", f1_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("precision", precision_score(y_test, y_pred, average="macro"))

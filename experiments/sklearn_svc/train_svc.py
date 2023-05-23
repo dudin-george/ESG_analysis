@@ -1,11 +1,15 @@
 import mlflow
 import numpy as np
+import optuna
+from optuna.trial import Trial
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 import optuna
 import sys
 import os
+from sklearn.svm import SVC
 from sklearn.metrics import ConfusionMatrixDisplay
 
 
@@ -14,22 +18,25 @@ sys.path.append(PATH)
 import args
 
 
-def objective(trial):
+def objective(trial: Trial) -> float:
     name, X, y = args.parse_args()
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    # Log metrics to MLflow
     with mlflow.start_run(nested=True) as run:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
         # Define hyperparameters to optimize
         params = {
-            "C": trial.suggest_float("C", 1e-5, 1e5, log=True),
-            "penalty": trial.suggest_categorical("penalty", ["l1", "l2"]),
-            "solver": trial.suggest_categorical("solver", ["liblinear", "saga"]),
-            "max_iter": trial.suggest_int("max_iter", 100, 5000),
+            "C": trial.suggest_float("C", 1e-3, 1e3),
+            "kernel": trial.suggest_categorical("kernel", ["linear", "poly", "rbf", "sigmoid"]),
+            "gamma": trial.suggest_categorical("gamma", ["scale", "auto"]),
+            "degree": trial.suggest_int("degree", 1, 5),
         }
 
         # Train model with hyperparameters
-        model = LogisticRegression(**params)
+        model = SVC(**params)
         model.fit(X_train, y_train)
+
         y_pred = model.predict(X_test)
 
         # Log metrics
@@ -43,16 +50,17 @@ def objective(trial):
 
 def main():
     name, X, y = args.parse_args()
-    experiment_name = f"Logreg with {name}"
+    experiment_name = f"SVC with {name}"
+
     with mlflow.start_run(run_name=experiment_name, description=experiment_name) as run:
         study = optuna.create_study(direction="maximize")
         study.optimize(objective, n_trials=1, n_jobs=-1)
 
         best_params = study.best_params
         name, X, y = args.parse_args()
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        model = LogisticRegression(**best_params)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        model = SVC(**best_params)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
@@ -61,6 +69,7 @@ def main():
         mlflow.log_metric("precision", precision_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
         mlflow.sklearn.log_model(model, "model")
+
         conf_matrix = ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
         mlflow.log_figure(conf_matrix.figure_, f"Best {experiment_name}.png")
 
