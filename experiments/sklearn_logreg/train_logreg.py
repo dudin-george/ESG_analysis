@@ -24,7 +24,6 @@ def objective(trial):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     with mlflow.start_run(nested=True) as run:
-        # Define hyperparameters to optimize
         params = {
             "C": trial.suggest_float("C", 1e-5, 1e5, log=True),
             "penalty": trial.suggest_categorical("penalty", ["l1", "l2"]),
@@ -51,7 +50,7 @@ def main():
     experiment_name = f"Logreg with {name}"
     with mlflow.start_run(run_name=experiment_name, description=experiment_name) as run:
         study = optuna.create_study(direction="maximize")
-        study.optimize(objective, n_trials=1, n_jobs=-1)
+        study.optimize(objective, n_trials=30, n_jobs=-1)
 
         best_params = study.best_params
         name, X, y = args.parse_args()

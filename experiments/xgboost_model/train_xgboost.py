@@ -31,7 +31,7 @@ def objective(trial: Trial) -> float:
             "learning_rate": trial.suggest_float("learning_rate", 0.001, 1),
             "gamma": trial.suggest_float("gamma", 0, 20),
             "subsample": trial.suggest_float("subsample", 0.8, 1),
-            "tree_method": trial.suggest_categorical("tree_method", ["gpu_hist"]),
+            # "tree_method": trial.suggest_categorical("tree_method", ["gpu_hist"]),
         }
         model = XGBClassifier(**params)
         model.fit(X_train, y_train)
@@ -51,7 +51,7 @@ def main():
 
     with mlflow.start_run(run_name=experiment_name, description=experiment_name) as run:
         study = optuna.create_study(direction="maximize")
-        study.optimize(objective, n_trials=1, n_jobs=-1)
+        study.optimize(objective, n_trials=30, n_jobs=-1)
 
         best_params = study.best_params
         name, X, y = args.parse_args()
