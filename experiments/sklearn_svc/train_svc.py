@@ -30,7 +30,7 @@ def objective(trial: Trial) -> float:
 
         # Define hyperparameters to optimize
         params = {
-            "C": trial.suggest_float("C", 1e-3, 1e3),
+            "C": trial.suggest_float("C", 1e-5, 1e5, log=True),
             "kernel": trial.suggest_categorical("kernel", ["linear", "poly", "rbf", "sigmoid"]),
             "gamma": trial.suggest_categorical("gamma", ["scale", "auto"]),
             "degree": trial.suggest_int("degree", 1, 5),

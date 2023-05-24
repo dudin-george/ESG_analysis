@@ -26,9 +26,9 @@ def objective(trial: Trial) -> float:
 
     with mlflow.start_run(nested=True) as run:
         params = {
-            "n_estimators": trial.suggest_int("n_estimators", 100, 500),
+            "n_estimators": trial.suggest_int("n_estimators", 100, 5000),
             "max_depth": trial.suggest_int("max_depth", 1, 10),
-            "learning_rate": trial.suggest_float("learning_rate", 0.001, 1),
+            "learning_rate": trial.suggest_float("learning_rate", 1e-5, 1, log=True),
             "gamma": trial.suggest_float("gamma", 0, 20),
             "subsample": trial.suggest_float("subsample", 0.8, 1),
             # "tree_method": trial.suggest_categorical("tree_method", ["gpu_hist"]),

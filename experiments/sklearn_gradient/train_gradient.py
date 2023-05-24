@@ -29,8 +29,8 @@ def objective(trial: Trial) -> float:
         # Define hyperparameters to optimize
         params = {
             "loss": trial.suggest_categorical("loss", ["log_loss"]),
-            "learning_rate": trial.suggest_float("learning_rate", 0.001, 1, log=True),
-            "n_estimators": trial.suggest_int("n_estimators", 100, 1000),
+            "learning_rate": trial.suggest_float("learning_rate", 1e-5, 1, log=True),
+            "n_estimators": trial.suggest_int("n_estimators", 100, 5000),
             "max_depth": trial.suggest_int("max_depth", 1, 10),
             "max_features": trial.suggest_categorical("max_features", ["sqrt", "log2"]),
         }
