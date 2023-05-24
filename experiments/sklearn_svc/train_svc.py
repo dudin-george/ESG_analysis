@@ -47,6 +47,7 @@ def objective(trial: Trial) -> float:
         mlflow.log_metric("f1", f1_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("precision", precision_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
+        mlflow.log_params(params)
 
     return f1_score(y_test, y_pred, average="macro")
 
@@ -71,6 +72,7 @@ def main():
         mlflow.log_metric("f1", f1_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("precision", precision_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
+        mlflow.log_params(best_params)
         # mlflow.sklearn.log_model(model, "model")
 
         conf_matrix = ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
