@@ -71,7 +71,7 @@ def main():
         mlflow.log_metric("f1", f1_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("precision", precision_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
-        mlflow.sklearn.log_model(model, "model")
+        # mlflow.sklearn.log_model(model, "model")
 
         conf_matrix = ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
         mlflow.log_figure(conf_matrix.figure_, f"Best {experiment_name}.png")
