@@ -5075,14 +5075,14 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Fri, 26 May 2023 18:33:00 GMT
+      - Fri, 26 May 2023 20:11:50 GMT
       Keep-Alive:
       - timeout=60
       Server:
       - ddos-guard
       Set-Cookie:
-      - __ddg1_=7wUr748vMGPRP7KVnTWB; Domain=.cbr.ru; HttpOnly; Path=/; Expires=Sat,
-        25-May-2024 18:33:00 GMT
+      - __ddg1_=dVbHuQhQTENPSG3OrO2H; Domain=.cbr.ru; HttpOnly; Path=/; Expires=Sat,
+        25-May-2024 20:11:50 GMT
       Vary:
       - Accept-Encoding
       X-AspNet-Version:

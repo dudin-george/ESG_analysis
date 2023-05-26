@@ -53,13 +53,13 @@ def upgrade() -> None:
     op.create_index(op.f("ix_source_type_id"), "source_type", ["id"], unique=True)
     op.alter_column("text", "link", existing_type=sa.VARCHAR(), nullable=False)
     op.alter_column("text", "source_id", existing_type=sa.INTEGER(), nullable=False)
-    op.alter_column("text", "date", existing_type=postgresql.TIMESTAMP(), nullable=False)  # type: ignore
+    op.alter_column("text", "date", existing_type=postgresql.TIMESTAMP(), nullable=False)
     op.alter_column("text", "title", existing_type=sa.VARCHAR(), nullable=False)
     op.alter_column("text", "bank_id", existing_type=sa.INTEGER(), nullable=False)
     op.alter_column("text_result", "text_sentence_id", existing_type=sa.INTEGER(), nullable=False)
     op.alter_column("text_result", "model_id", existing_type=sa.INTEGER(), nullable=False)
     op.alter_column("text_result", "is_processed", existing_type=sa.BOOLEAN(), nullable=False)
-    op.alter_column("text_reviews_count", "date", existing_type=postgresql.TIMESTAMP(), nullable=False)  # type: ignore
+    op.alter_column("text_reviews_count", "date", existing_type=postgresql.TIMESTAMP(), nullable=False)
     op.alter_column("text_reviews_count", "quarter", existing_type=sa.INTEGER(), nullable=False)
     op.alter_column("text_reviews_count", "source_site", existing_type=sa.VARCHAR(), nullable=False)
     op.alter_column("text_reviews_count", "source_type", existing_type=sa.VARCHAR(), nullable=False)
@@ -81,13 +81,13 @@ def downgrade() -> None:
     op.alter_column("text_reviews_count", "source_type", existing_type=sa.VARCHAR(), nullable=True)
     op.alter_column("text_reviews_count", "source_site", existing_type=sa.VARCHAR(), nullable=True)
     op.alter_column("text_reviews_count", "quarter", existing_type=sa.INTEGER(), nullable=True)
-    op.alter_column("text_reviews_count", "date", existing_type=postgresql.TIMESTAMP(), nullable=True)  # type: ignore
+    op.alter_column("text_reviews_count", "date", existing_type=postgresql.TIMESTAMP(), nullable=True)
     op.alter_column("text_result", "is_processed", existing_type=sa.BOOLEAN(), nullable=True)
     op.alter_column("text_result", "model_id", existing_type=sa.INTEGER(), nullable=True)
     op.alter_column("text_result", "text_sentence_id", existing_type=sa.INTEGER(), nullable=True)
     op.alter_column("text", "bank_id", existing_type=sa.INTEGER(), nullable=True)
     op.alter_column("text", "title", existing_type=sa.VARCHAR(), nullable=True)
-    op.alter_column("text", "date", existing_type=postgresql.TIMESTAMP(), nullable=True)  # type: ignore
+    op.alter_column("text", "date", existing_type=postgresql.TIMESTAMP(), nullable=True)
     op.alter_column("text", "source_id", existing_type=sa.INTEGER(), nullable=True)
     op.alter_column("text", "link", existing_type=sa.VARCHAR(), nullable=True)
     op.drop_index(op.f("ix_source_type_id"), table_name="source_type")

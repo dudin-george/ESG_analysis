@@ -30,7 +30,7 @@ class BankParser(BaseParser):
                 id=row["cregnum"],
                 licence=str(row["cregnum"]),
                 bank_name=row["csname"],
-                bank_type_id=self.bank_type.id
+                bank_type_id=self.bank_type.id,
                 # Set id because on first implementation, when insurance and brokers weren't collected licence = id
             )
             for index, row in df.iterrows()
