@@ -25,10 +25,10 @@ def objective(trial):
 
     with mlflow.start_run(nested=True) as run:
         params = {
-            "C": trial.suggest_float("C", 1e-5, 1e5, log=True),
+            "C": trial.suggest_float("C", 1e-5, 100, log=True),
             "penalty": trial.suggest_categorical("penalty", ["l1", "l2"]),
             "solver": trial.suggest_categorical("solver", ["liblinear", "saga"]),
-            "max_iter": trial.suggest_int("max_iter", 100, 5000),
+            "max_iter": trial.suggest_int("max_iter", 100, 1000),
         }
 
         # Train model with hyperparameters
@@ -67,7 +67,7 @@ def main():
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
         mlflow.log_params(best_params)
 
-        # mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(model, "model")
         conf_matrix = ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
         mlflow.log_figure(conf_matrix.figure_, f"Best {experiment_name}.png")
 

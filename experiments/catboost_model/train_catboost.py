@@ -26,11 +26,11 @@ def objective(trial: Trial) -> float:
 
     with mlflow.start_run(nested=True) as run:
         params = {
-            "n_estimators": trial.suggest_int("n_estimators", 100, 5000),
+            "n_estimators": trial.suggest_int("n_estimators", 100, 1000),
             "max_depth": trial.suggest_int("max_depth", 1, 10),
             "learning_rate": trial.suggest_float("learning_rate", 1e-5, 1, log=True),
             "silent": trial.suggest_categorical("silent", [True]),
-            # "task_type": trial.suggest_categorical("task_type", ["GPU"]),
+            "task_type": trial.suggest_categorical("task_type", ["GPU"]),
         }
 
         model = CatBoostClassifier(**params)
@@ -52,7 +52,7 @@ def main():
 
     with mlflow.start_run(run_name=experiment_name, description=experiment_name) as run:
         study = optuna.create_study(direction="maximize")
-        study.optimize(objective, n_trials=30, n_jobs=-1)
+        study.optimize(objective, n_trials=30, n_jobs=1)
 
         best_params = study.best_params
         name, X, y = args.parse_args()
@@ -68,7 +68,7 @@ def main():
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
         mlflow.log_params(best_params)
 
-        # mlflow.catboost.log_model(clf, "model")
+        mlflow.catboost.log_model(clf, "model")
         conf_matrix = ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
         mlflow.log_figure(conf_matrix.figure_, f"Best {experiment_name}.png")
 

@@ -15,6 +15,8 @@ class Datasets(Enum):
     rubert_base_parsed = "rubert_base_cased_parsed.npz"
     rubert_reviews_sentence = "rubert_base_cased_sentiment_rurewiews_sentence.npz"
     rubert_reviews_parsed = "rubert_base_cased_sentiment_rurewiews_parsed.npz"
+    rubert_base_unfreeze_one_last = "DeepPavlovrubert-base-casedUnfreeze last layer.npz"
+    rubert_base_unfreeze_two_last = "DeepPavlovrubert-base-casedUnfreeze last 2 layers.npz"
 
 
 def get_dataset(args: argparse.Namespace) -> str:

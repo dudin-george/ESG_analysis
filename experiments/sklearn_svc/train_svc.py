@@ -30,7 +30,7 @@ def objective(trial: Trial) -> float:
 
         # Define hyperparameters to optimize
         params = {
-            "C": trial.suggest_float("C", 1e-5, 1e5, log=True),
+            "C": trial.suggest_float("C", 1e-5, 100, log=True),
             "kernel": trial.suggest_categorical("kernel", ["linear", "poly", "rbf", "sigmoid"]),
             "gamma": trial.suggest_categorical("gamma", ["scale", "auto"]),
             "degree": trial.suggest_int("degree", 1, 5),
@@ -73,7 +73,7 @@ def main():
         mlflow.log_metric("precision", precision_score(y_test, y_pred, average="macro"))
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
         mlflow.log_params(best_params)
-        # mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(model, "model")
 
         conf_matrix = ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
         mlflow.log_figure(conf_matrix.figure_, f"Best {experiment_name}.png")

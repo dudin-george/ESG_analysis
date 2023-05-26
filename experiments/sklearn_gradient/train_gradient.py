@@ -30,7 +30,7 @@ def objective(trial: Trial) -> float:
         params = {
             "loss": trial.suggest_categorical("loss", ["log_loss"]),
             "learning_rate": trial.suggest_float("learning_rate", 1e-5, 1, log=True),
-            "n_estimators": trial.suggest_int("n_estimators", 100, 5000),
+            "n_estimators": trial.suggest_int("n_estimators", 100, 1000),
             "max_depth": trial.suggest_int("max_depth", 1, 10),
             "max_features": trial.suggest_categorical("max_features", ["sqrt", "log2"]),
         }
@@ -71,7 +71,7 @@ def main():
         mlflow.log_metric("recall", recall_score(y_test, y_pred, average="macro"))
         mlflow.log_params(best_params)
 
-        # mlflow.sklearn.log_model(model, "model")
+        mlflow.sklearn.log_model(model, "model")
         conf_matrix = ConfusionMatrixDisplay.from_predictions(y_test, y_pred)
         mlflow.log_figure(conf_matrix.figure_, f"Best {experiment_name}.png")
 
