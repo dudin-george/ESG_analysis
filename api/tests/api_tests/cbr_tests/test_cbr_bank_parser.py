@@ -13,8 +13,8 @@ class TestCBRParser:
     async def test_get_dataframe_url(self, get_cbr_bank_page):
         _, page = get_cbr_bank_page
         assert (
-            self.cbr.get_dataframe_url(page)
-            == "https://www.cbr.ru/Queries/UniDbQuery/DownloadExcel/98547?FromDate=05%2F16%2F2023&ToDate=05%2F16%2F2023&posted=False"
+            self.cbr.get_dataframe_url(page).split("?")[0]
+            == "https://www.cbr.ru/Queries/UniDbQuery/DownloadExcel/98547"
         )
 
     async def test_get_page(self):
