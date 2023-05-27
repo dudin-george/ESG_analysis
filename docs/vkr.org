@@ -4,25 +4,10 @@
 #+LANGUAGE: ru
 #+cite_export: biblatex
 #+OPTIONS: toc:nil H:4 ':t
-#+begin_comment
-#+LATEX_CLASS: HSEUniversityPractice
-#+LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры ИТБ}{A.~В.~Кычкин}
-#+end_comment
 #+LATEX_CLASS: HSEUniversity
 #+LATEX_CLASS_OPTIONS: [PI, VKR]
 #+LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры информационных технологий в бизнесе НИУ ВШЭ-Пермь}{А. В. Бузмаков}
-#+LATEX_HEADER_EXTRA: \Abstract{В данной работе проведен анализ этичности разных компаний на основе отзывов клиентов, которые были собранны с сайтов bani.ru, sravni.ru, vk.com. Данный анализ основан на алгоритмах обработки естественного языка, в частности с помощью модели BERT.
-#+LATEX_HEADER_EXTRA:
-#+LATEX_HEADER_EXTRA: В первой главе находится описание используемых алгоримов.
-#+LATEX_HEADER_EXTRA:
-#+LATEX_HEADER_EXTRA: Во второй главе представлено проектирование системы.
-#+LATEX_HEADER_EXTRA:
-#+LATEX_HEADER_EXTRA: В третьей главе представлена реализация системы.
-#+LATEX_HEADER_EXTRA:
-#+LATEX_HEADER_EXTRA: В четвертой главе представлено тестирование работы системы.
-#+LATEX_HEADER_EXTRA:
-#+LATEX_HEADER_EXTRA: Количество страниц -- \pageref*{pg:end}, количество иллюстраций -- \TotalValue{totalfigures}, количетсво таблиц -- \TotalValue{totaltables}.
-#+LATEX_HEADER_EXTRA: }
+#+LATEX_HEADER_EXTRA: \include{abstract_header}
 #+COMMENT: Header extra иначе не генерит нормально previews
 #+COMMENT: Написать аннотацию. Как-то сделать ограничения (упор) на отзывы клиентов
 
@@ -152,7 +137,7 @@ DJSI оценивает показатели устойчивости компа
 
 Для российских компаний нет аналогичных индексов. Сейчас данные об этичности компаний можно получить из агрегаторов отзывов и отчётности. Агрегаторы позволяют собрать информацию о клиентском обслуживании, а отчетность компаний о положении дел в целом. Но сейчас не существует способов, как можно оценить все вместе.
 #+COMMENT: Расисать, чем не устраивают
-** Алгоритмы для векторного представления слов :noexport:
+** Алгоритмы для представления слов :noexport:
 [cite:@korogodina_evaluation_2020]
 *** BOW
 *** TF-iDF
@@ -164,6 +149,7 @@ DJSI оценивает показатели устойчивости компа
 **** BERT
 **** Sentence-Bert
 *** Выводы
+** Метрики для классификации :noexport:
 ** Алгоритмы для классификации :noexport:
 *** LOGREG
 *** SVM
