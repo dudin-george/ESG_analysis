@@ -88,9 +88,9 @@ async def get_reviews_count(
 ) -> ReviewsCountResponse:
     if start_date > end_date:
         raise HTTPException(status_code=400, detail="Start date cannot be greater than end date")
-    if start_date < datetime.fromtimestamp(1) or end_date < datetime.fromtimestamp(1):
+    if start_date < datetime.fromtimestamp(1).date() or end_date < datetime.fromtimestamp(1).date():
         raise HTTPException(status_code=400, detail="Date cannot be less than 1970")
-    if start_date > datetime.now() or end_date > datetime.now():
+    if start_date > datetime.now().date() or end_date > datetime.now().date():
         raise HTTPException(status_code=400, detail="Date cannot be greater than now")
     data = await text_reviews_count(session, start_date, end_date, source_sites, aggregate_by)
     return ReviewsCountResponse(items=data)
