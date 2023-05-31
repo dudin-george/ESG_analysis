@@ -220,6 +220,9 @@
 \linespread{1.5} % Полуторный интервал
 \setlength{\parindent}{12.5mm} % Отступ красной строки
 
+
+
+%\RequirePackage{pdfpages} % вставка pdf
 \RequirePackage{float}
 % Попись таблицы и рисунка
 \captionsetup[table]{position=t, singlelinecheck=false, justification=raggedleft, labelsep=endash, name=Таблица}
