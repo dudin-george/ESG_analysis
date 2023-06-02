@@ -161,7 +161,7 @@
   sortcites=true,% сортировать номера затекстовых ссылок при цитировании (если в квадратных скобках несколько ссылок, то отображаться будут отсортированно, а не абы как)
   maxnames=50,
 ]{biblatex}
-\let\bibnamedelimd\addnbspace % имена с неразрывным пробелом tex.stackexchange.com/questions/567160
+
 %%%%%%%% для форматирования под гост 2011
 %%% https://github.com/AndreyAkinshin/Russian-Phd-LaTeX-Dissertation-Template/blob/dbd175fb59fe5d1d29df3048ce4aded671fb7db9/Readme/Bibliography.md#%D1%81%D1%82%D1%80%D0%BE%D0%B3%D0%BE%D1%81%D1%82%D1%8C-%D1%81%D0%BE%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D1%81%D1%82%D0%B2%D0%B8%D1%8F-%D0%B3%D0%BE%D1%81%D1%82
 \renewcommand*{\multicitedelim}{\addcomma\space}
@@ -220,9 +220,6 @@
 \linespread{1.5} % Полуторный интервал
 \setlength{\parindent}{12.5mm} % Отступ красной строки
 
-
-
-%\RequirePackage{pdfpages} % вставка pdf
 \RequirePackage{float}
 % Попись таблицы и рисунка
 \captionsetup[table]{position=t, singlelinecheck=false, justification=raggedleft, labelsep=endash, name=Таблица}
@@ -360,7 +357,7 @@
 \ExplSyntaxOff
 
 % подписи на русском
-\DefTblrTemplate{conthead-text}{fancy}{Продолжение таблицы}
+\DefTblrTemplate{conthead-text}{fancy}{Продолжение таблицы} % PISS
 \SetTblrTemplate{conthead-text}{fancy}
 
 \DefTblrTemplate{contfoot-text}{fancy}{(Продолжение на следующей странице)}
@@ -432,13 +429,19 @@
 \ProcessKeyvalOptions*
 
 \def\@year{\the\year{}}
-\def\@supervisorTitle{}
-\def\@supervisorAcademic{}
+\def\@supervisorTitle{supervisor title}
+\def\@supervisorAcademic{supervisor academic}
 \def\@supervisorName{I.I.~Ivanov}
 \def\@reviewerTitle{}
 \def\@reviewerName{I.I.~Ivanov}
 \def\@abstract{TODO}
+\def\@group{Unknown-00-0}
+\def\@companyReviewerTitle{company reviewer title}
+\def\@companyReviewerName{I.I.~Ivanov}
+\newif\ifHasCompany
+\HasCompanyfalse
 
+\newcommand{\Group}[1]{\def\@group{#1}}
 \newcommand{\Year}[1]{\def\@year{#1}}
 \newcommand{\supervisor}[3]{
   \def\@supervisorTitle{#1}
@@ -450,95 +453,104 @@
   \def\@reviewerName{#2}
   \HasReviewertrue
 }
+\newcommand{\company}[2]{
+  \def\@companyReviewerTitle{#1}
+  \def\@companyReviewerName{#2}
+  \HasCompanytrue
+}
 \newcommand{\Abstract}[1]{
   \def\@abstract{#1}
 }
 
-%% TODO make title as class options
+%https://tex.stackexchange.com/questions/55698/text-under-a-line
+\newcommand\tline[3]{
+    $\underset{\text{\tiny{(#3)}}}{\underline{\makebox[#1\textwidth][l]{#2}}}$
+}
+
+% \newcommand\tline[3]{
+%     $\underset{\text{\tiny{(#3)}}}{
+%     \begin{minipage}[l]{#1\textwidth}
+%     \underline{{#2}}
+%     \end{minipage}
+%     }$
+% }
+
 \renewcommand{\maketitle}{
+{
+  \thispagestyle{empty}
+
+  \centering
+
   {
-    \thispagestyle{empty}
-
-    \centering
-
-    {
-      Пермский филиал федерального государственного автономного \\
-      образовательного учреждения высшего образования \\
-      Национальный исследовательский университет \\
-      <<Высшая школа экономики>>
-    }
-
-    \vfill
-
-    \@facultyString
-
-    \vfill
-    \vfill
-    \vfill
-
-    \@author
-
-    \vfill
-    \vfill
-
-    \textbf{\MakeUppercase{\@title}}
-
-    \textit{\@typeString}
-
-    \vfill
-
-    студента образовательной программы <<\@specName>> \\
-    по направлению подготовки \underline{\@specCode}
-
-    \vfill
-    \vfill
-    \vfill
-
-    \ifHasReviewer
-      \begin{minipage}[t]{0.4\textwidth}
-        \begin{flushleft}
-          Рецензент \\
-          \nohyphens{\@reviewerTitle}
-
-          \vspace{2mm}
-
-          \@reviewerName
-        \end{flushleft}
-      \end{minipage}
-    \fi
-    \hfill
-    \begin{minipage}[t]{0.4\textwidth}
-      \begin{flushleft}
-        Руководитель \\
-        \nohyphens{\@supervisorTitle}, \nohyphens{\@supervisorAcademic}
-
-        \vspace{10mm}
-
-        \hrule
-        \vspace{3mm}
-
-        \@supervisorName
-      \end{flushleft}
-    \end{minipage}
-
-    \vfill
-    \vfill
-    \vfill
-
-    Пермь, \@year{} год
-
-    \newpage
+    Пермский филиал федерального государственного автономного образовательного\\ учреждения высшего образования
+    Национальный исследовательский университет\\
+    <<Высшая школа экономики>>
   }
 
-  \chapter**{Аннотация}
-  \thispagestyle{empty}
-  \@abstract
+  \@facultyString
 
-  \chapter**{Оглавление}
 
-  \@starttoc{toc}
+  Образовательная программа бакалавриата <<\@specName>>
+
+  \vfill
+  \vfill
+  \textbf{ОТЧЕТ\\ по преддипломной практике}
+
+  \vfill
+  \vfill
+  \hfill\begin{minipage}[c]{0.5\textwidth}
+    Выполнил студент группы~\underline{\makebox[0.37\textwidth][l]{\@group}}\\
+    \tline{1}{\@author}{Фамилия, Имя, Отчество}\\
+    \tline{1}{\phantom{TEXT}}{подпись}
+  \end{minipage}
+
+  \vfill
+  {
+  \raggedright
+  \begin{minipage}{0.5\textwidth}
+    Проверили:\\
+    \ifHasCompany
+      Руководитель практики\\
+      от предприятия:\\
+      \tline{1}{\@companyReviewerTitle}{должность}\\
+      \tline{1}{\@companyReviewerName}{Фамилия, Имя, Отчество}\\
+      % если убрать phantom, то размер линии изменится
+      \tline{0.25}{\phantom{TEXT}}{оценка}\hfill\tline{0.5}{\phantom{TEXT}}{подпись}\\
+      \begin{minipage}{\textwidth}
+        \hspace{0.5\textwidth}\tline{0.4}{\phantom{TEXT}}{дата}
+      \end{minipage}\hfill
+      \fi
+    \end{minipage}\hfill
+
+  \begin{minipage}{0.5\textwidth}
+    Руководитель практики\\
+    от НИУ ВШЭ -- Пермь:\\
+    \tline{1}{\@supervisorTitle, \@supervisorAcademic}{должность, ученая степень, ученое звание}\\
+    \tline{1}{\@supervisorName}{Фамилия, Имя, Отчество}\\
+    \tline{0.25}{\phantom{TEXT}}{оценка}\hfill\tline{0.5}{\phantom{TEXT}}{подпись}\\
+    \begin{minipage}{\textwidth}
+        \hspace{0.5\textwidth}\tline{0.4}{\phantom{TEXT}}{дата}
+    \end{minipage}
+  \end{minipage}\hfill
+  }
+  \vfill
+  \vfill
+  \vfill
+
+  \textbf{Пермь, \@year{} год}
 
   \newpage
+}
+
+\chapter**{Аннотация}
+
+\@abstract
+
+\chapter**{Оглавление}
+
+\@starttoc{toc}
+
+\newpage
 
 }
 
@@ -585,15 +597,17 @@
 \renewcommand{\appendix}{%
   \label{pg:end} % для указания на номер последней страницы
   \originalappendix
-  % \renewcommand{\thechapter}{\Asbuk{chapter}}
+  %\renewcommand{\thechapter}{\Asbuk{chapter}}
   \renewcommand{\thechapter}{\cyrtoc{\value{chapter}}}
   \renewcommand{\appendixname}{ПРИЛОЖЕНИЕ} % Можно не менять и заменить на команду с \MakeUppercase в \renewcommand у меня локально не компилит, а в overleaf все нормально
-  \titleformat{\chapter}{\Large\bfseries\centering}{\MakeUppercase{\chaptertitlename}\ \thechapter}{4pt}{}
+  \titleformat{\chapter}
+    {\Large\bfseries\centering}
+    {\MakeUppercase{\chaptertitlename}\ \thechapter}{4pt}{}
 
   \addtocontents{toc}{\protect\value{tocdepth}=\chaptertocdepth}
   \renewcommand\addchaptertocentry[2]{%
     \addtocentrydefault{chapter}{}{\appendixname~##1 ##2}
-    % \addtocentrydefault{chapter}{}{\MakeUppercase{\appendixname~##1} ##2}
+    %\addtocentrydefault{chapter}{}{\MakeUppercase{\appendixname~##1} ##2}
   }
 }
 

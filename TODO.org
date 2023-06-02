@@ -2,6 +2,7 @@
 
 * Fixes
 ** API
+*** TODO Ready on postgresql health check
 *** DONE check if model id exists in =text/sentences=
 CLOSED: [2022-11-01 Вт 16:21]
 *** NO Run tox command before startup (for parsers)
@@ -26,6 +27,8 @@ CLOSED: [2022-11-23 Ср 21:00]
 [[file:docs/img/bnkiru_mfo_vtb_problems.png]]
 *** TODO Проверить как парсит остальное irecommend
 *** TODO parser sentences background task
+*** TODO async alembic
+*** TODO bulk insert/update
 *** TODO add FastAPI annotations 0.95.x
 - [[https://github.com/tiangolo/fastapi/releases/tag/0.95.0][release notes]]
 *** Tests
@@ -121,3 +124,7 @@ requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 ** Json
 - https://github.com/ultrajson/ultrajson
 - https://github.com/ijl/orjson
+* Docs
+** DONE =citar-export-local-bib-file=
+CLOSED: [2023-03-15 Ср 20:44]
+* Спросить про то как обучалась модель и про сайт будет или нет
