@@ -4,6 +4,7 @@
 #+LANGUAGE: ru
 #+cite_export: biblatex
 #+OPTIONS: toc:nil H:4 ':t
+#+COMMENT: ':t for https://stackoverflow.com/questions/15097114/how-to-get-smart-quotes-on-org-mode-export
 #+LATEX_CLASS: HSEUniversity
 #+LATEX_CLASS_OPTIONS: [PI, VKR]
 #+LATEX_HEADER_EXTRA: \supervisor{к.т.н.}{доцент кафедры информационных технологий в бизнесе НИУ ВШЭ-Пермь}{А. В. Бузмаков}
@@ -366,7 +367,7 @@ f(z)=\frac{1}{1+\exp(-z)},
 \begin{equation}
 \begin{aligned}
     \text{Base index} &= \frac{\text{positive} - \text{negative}}{\text{total}} \\
-    \text{Std index} &= \sqrt{\frac{\text{positive}\cdot(\text{total-positive})}{total^{3}} + \frac{\text{negative}\cdot(\text{total - neutral})}{total^{3}}} \\
+    \text{Std index} &= \sqrt{\frac{\text{positive}\cdot(\text{total-positive})}{total^{3}} + \frac{\text{negative}\cdot(\text{total - negative})}{total^{3}}} \\
     \text{Index} &=
         \begin{cases}
             \max(\text{Base Index}-\text{Mean Index}-\text{Std Index},0), & \text{Base index} > \text{Mean index} \\
@@ -1207,8 +1208,6 @@ text_sentence -> text: text_id
 #+CAPTION: Схема базы данных
 #+NAME: fig:database
 #+ATTR_LATEX: :placement [h!] :width 0.8\textwidth
-#+RESULTS:
-[[file:img/d2/database.png]]
 
 #+begin_src d2 :exports results :file img/d2/views_database.png
 aggregate_table_model_result: {
@@ -1263,9 +1262,9 @@ banki\.ru: {
   shape: sql_table
 
   id: integer {constraint: primary_key}
-  bank_id: integer
-  bank_name: varchar
-  bank_code: varchar
+  company_id: integer
+  company_name: varchar
+  company_code: varchar
 }
 #+end_src
 
@@ -1280,13 +1279,13 @@ sravni\.ru: {
   shape: sql_table
 
   id: integer {constraint: primary_key}
-  bank_id: integer
+  company_id: integer
   sravni_id: integer
   sravni_old_id: integer
   alias: varchar
-  bank_name: varchar
-  bank_full_name: varchar
-  bank_official_name: varchar
+  name: varchar
+  full_name: varchar
+  official_name: varchar
 }
 #+end_src
 
