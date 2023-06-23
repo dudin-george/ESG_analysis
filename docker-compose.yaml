@@ -64,7 +64,7 @@ services:
     environment:
       POSTGRES_DB: "database"
     ports:
-      - 8000:90030
+      - 8000:30930
 
   api-https:
     depends_on:
