@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     volumes:
-      - /ESGdata:/var/lib/postgresql/data
+      - /mnt/ESGdata:/var/lib/postgresql/data
 #    ports:
 #      - "5432:5432"
     healthcheck:
@@ -64,7 +64,7 @@ services:
     environment:
       POSTGRES_DB: "database"
     ports:
-      - 8000:8000
+      - 8000:90030
 
   api-https:
     depends_on:
