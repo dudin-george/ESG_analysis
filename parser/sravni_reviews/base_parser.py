@@ -60,7 +60,7 @@ class BaseSravniReviews(BaseParser):
 
     def get_num_reviews(self, bank_info: SravniBankInfo) -> int:
         json_response = self.get_bank_reviews(bank_info, page_size=1)
-        if json_response is None:
+        if json_response is None or not json_response['items']:
             return 0
         reviews_total = int(json_response["total"])
         return ceil(reviews_total / 1000)
