@@ -1,4 +1,5 @@
 # https://github.com/samuelcolvin/pydantic/blob/master/Makefile
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
 .DEFAULT_GOAL := all
 
 .PHONY: lint

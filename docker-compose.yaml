@@ -33,25 +33,25 @@ services:
     profiles:
       - "grafana"
 
-  selenium-hub:
-    image: selenium/hub:4.5
-    container_name: selenium-hub
-    ports:
-      - 4442:4442
-      - 4443:4443
-      - 4444:4444
-      - 7900:7900 # to view browsers
-    profiles:
-      - "irecommend"
+#  selenium-hub:
+#    image: selenium/hub:4.5
+#    container_name: selenium-hub
+#    ports:
+#      - 4442:4442
+#      - 4443:4443
+#      - 4444:4444
+#      - 7900:7900 # to view browsers
+#    profiles:
+#      - "irecommend"
 
-  firefox:
-    image: selenium/node-firefox:105.0
-    depends_on:
-      - selenium-hub
-    env_file:
-      - .env
-    profiles:
-      - "irecommend"
+#  firefox:
+#    image: selenium/node-firefox:105.0
+#    depends_on:
+#      - selenium-hub
+#    env_file:
+#      - .env
+#    profiles:
+#      - "irecommend"
 
   api:
     depends_on:
@@ -221,17 +221,17 @@ services:
       - "parsers"
       - "vk"
 
-  irecommend-reviews-parser:
-    depends_on:
-      - api
-      - selenium-hub
-    build: parser
-    command: ["python", "main.py", "--site", "irecommend_reviews"]
-    environment:
-      POSTGRES_DB: "irecommend_reviews"
-    profiles:
-      - "parsers"
-      - "vk"
+#  irecommend-reviews-parser:
+#    depends_on:
+#      - api
+#      - selenium-hub
+#    build: parser
+#    command: ["python", "main.py", "--site", "irecommend_reviews"]
+#    environment:
+#      POSTGRES_DB: "irecommend_reviews"
+#    profiles:
+#      - "parsers"
+#      - "vk"
 
   views:
     depends_on:
